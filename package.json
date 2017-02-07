@@ -1,0 +1,29 @@
+{
+  "name": "CraneAccounting",
+  "version": "1.0.0",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Calvinnix/CraneAccounting.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Calvinnix/CraneAccounting/issues"
+  },
+  "homepage": "https://github.com/Calvinnix/CraneAccounting#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-babel": "^6.1.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-connect": "^5.0.0",
+    "gulp-minify-css": "^1.2.4",
+    "gulp-react": "^3.1.0",
+    "gulp-sass": "^3.1.0",
+    "gulp-util": "^3.0.8",
+    "gulp-watch": "^4.3.11",
+    "scss-loader": "0.0.1"
+  },
+  "private": true
+}
