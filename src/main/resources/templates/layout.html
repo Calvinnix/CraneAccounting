@@ -29,6 +29,7 @@
                 <ul class="nav navbar-nav">
                     <li class="active"><a href="/"><span class="glyphicon glyphicon-home" aria-hidden="true"></span><span class="sr-only">(current)</span></a></li>
                     <li sec:authorize="hasRole('ROLE_ADMIN')"><a href="/admin">Admin</a></li>
+                    <li sec:authorize="hasRole('ROLE_ADMIN')"><a href="/console">Console</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">

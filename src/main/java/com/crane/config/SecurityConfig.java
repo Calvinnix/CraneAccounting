@@ -4,6 +4,7 @@ package com.crane.config;
 import com.crane.service.UserService;
 import com.crane.web.FlashMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.repository.query.spi.EvaluationContextExtension;
@@ -21,6 +22,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+
+import org.h2.server.web.WebServlet;
 
 /**
  * Created by Calvin on 1/9/17.
@@ -60,6 +63,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                     .antMatchers("/signup").permitAll()
                     .antMatchers("/admin/**").hasRole("ADMIN")
+                    .antMatchers("/console/**").hasRole("ADMIN")
                     .anyRequest().authenticated()
                     .and()
                 .formLogin()
@@ -74,7 +78,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .and()
                 .rememberMe().tokenValiditySeconds(TIMEOUT)
                     .and()
-                .csrf();
+                .csrf()
+                .disable() //todo disable csrf
+                ;
+
+        http.headers().frameOptions().disable();
 
     }
 
@@ -103,5 +111,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 return new SecurityExpressionRoot(authentication) {};
             }
         };
+    }
+
+    @Bean
+    public ServletRegistrationBean h2servletRegistration() {
+        ServletRegistrationBean registration = new ServletRegistrationBean(new WebServlet());
+        registration.addUrlMappings("/console/*");
+        registration.addInitParameter("webAllowOthers", "true"); //todo may need to remove
+        return registration;
     }
 }

@@ -23,7 +23,6 @@ var User = React.createClass({
     propTypes: {
         roles:        React.PropTypes.array.isRequired,
         user:         React.PropTypes.object.isRequired,
-        csrf_element: React.PropTypes.string.isRequired,
         key:          React.PropTypes.string.isRequired
     },
     /**
@@ -57,18 +56,6 @@ var User = React.createClass({
     */
     handleDelete() {
         var self = this;
-
-        /**
-            Since a post request is being made. We must pass along this
-            CSRF token.
-
-            We need this because we have csrf protection enabled in SecurityConfig
-        */
-        if (csrf_element !== null) {
-          $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
-             jqXHR.setRequestHeader('X-CSRF-Token', csrf_element.value);
-          });
-        }
         $.ajax({
             url: self.props.user._links.self.href,
             type: 'DELETE',
@@ -101,19 +88,6 @@ var User = React.createClass({
     */
     handleEditChange: function() {
         var self = this;
-
-        /**
-            Since a post request is being made. We must pass along this
-            CSRF token.
-
-            We need this because we have csrf protection enabled in SecurityConfig
-        */
-
-        if (csrf_element !== null) {
-            $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
-                jqXHR.setRequestHeader('X-CSRF-Token', csrf_element.value);
-            });
-        }
         $.ajax({
             url: "http://localhost:8080/admin/editUser",
             type: "POST",
@@ -283,7 +257,7 @@ var UserTable = React.createClass({
         var self = this;
         var rows = [];
         this.props.users.forEach(function(user) {
-            rows.push(<User csrf_element={csrf_element} user={user} key={user.username} roles={self.props.roles} />);
+            rows.push(<User user={user} key={user.username} roles={self.props.roles} />);
         });
         return (
             <div className="container">
@@ -429,18 +403,6 @@ var AllUsers = React.createClass({
     */
     handleAddUser: function() {
         var self = this;
-        /**
-            Since a post request is being made. We must pass along this
-            CSRF token.
-
-            We need this because we have csrf protection enabled in SecurityConfig
-        */
-
-        if (csrf_element !== null) {
-            $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
-                jqXHR.setRequestHeader('X-CSRF-Token', csrf_element.value);
-            });
-        }
         $.ajax({
             url: "http://localhost:8080/admin/addUser",
             type: "POST",
@@ -545,7 +507,7 @@ var AllUsers = React.createClass({
                     </div>
                     <hr />
                 </div>
-                <UserTable csrf_element={csrf_element} users={this.state.users} roles={this.state.roles} />
+                <UserTable users={this.state.users} roles={this.state.roles} />
             </div>
         );
     }
@@ -555,8 +517,7 @@ var AllUsers = React.createClass({
     This is where the main React component, 'AllUsers' in this case, is being rendered.
 */
 if (document.getElementById('allUsers') != null) {
-    var csrf_element = document.getElementById('csrf_token');
-    ReactDOM.render(<AllUsers csrf_element="{{csrf_element}}"/>, document.getElementById('allUsers'));
+    ReactDOM.render(<AllUsers />, document.getElementById('allUsers'));
 }
 
 
