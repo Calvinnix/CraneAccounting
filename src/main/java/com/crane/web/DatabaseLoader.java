@@ -1,16 +1,13 @@
 package com.crane.web;
 
-import com.crane.dao.ChartOfAccountDao;
+import com.crane.dao.AccountDao;
 import com.crane.dao.UserDao;
 import com.crane.dao.RoleDao;
-import com.crane.model.ChartOfAccount;
 import com.crane.model.User;
 import com.crane.model.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
-import java.util.Date;
 
 /**
  * Created by Calvin on 1/9/17.
@@ -21,13 +18,13 @@ public class DatabaseLoader implements CommandLineRunner {
 
     private final UserDao userDao;
     private final RoleDao roleDao;
-    private final ChartOfAccountDao chartOfAccountsDao;
+    private final AccountDao accountDao;
 
     @Autowired
-    public DatabaseLoader(UserDao userDao, RoleDao roleDao, ChartOfAccountDao chartOfAccountsDao) {
+    public DatabaseLoader(UserDao userDao, RoleDao roleDao, AccountDao AccountsDao) {
         this.userDao = userDao;
         this.roleDao = roleDao;
-        this.chartOfAccountsDao = chartOfAccountsDao;
+        this.accountDao = AccountsDao;
     }
 
     @Override

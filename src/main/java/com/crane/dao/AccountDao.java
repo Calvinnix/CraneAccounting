@@ -1,6 +1,6 @@
 package com.crane.dao;
 
-import com.crane.model.ChartOfAccount;
+import com.crane.model.Account;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,8 +9,7 @@ import org.springframework.stereotype.Repository;
  */
 
 @Repository
-public interface ChartOfAccountDao extends CrudRepository<ChartOfAccount, Long> {
-
-    ChartOfAccount findById(Long l);
+public interface AccountDao extends CrudRepository<Account, Long> {
+    Account findById(Long l);
     void delete(Long l);
 }

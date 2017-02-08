@@ -1,10 +1,10 @@
 package com.crane.web.controller;
 
 import com.crane.dao.UserDao;
-import com.crane.model.ChartOfAccount;
+import com.crane.model.Account;
 import com.crane.model.Role;
 import com.crane.model.User;
-import com.crane.service.ChartOfAccountService;
+import com.crane.service.AccountService;
 import com.crane.service.UserService;
 import com.crane.web.UserValidator;
 import org.slf4j.Logger;
@@ -31,7 +31,7 @@ public class AppController {
     private UserValidator userValidator;
 
     @Autowired
-    private ChartOfAccountService chartOfAccountService;
+    private AccountService accountService;
 
     @Autowired
     private UserDao userDao;
@@ -99,9 +99,9 @@ public class AppController {
         return "redirect:/admin";
     }
 
-    @RequestMapping(value = "/addChartOfAccount", method = RequestMethod.POST)
-    public String addChartOfAccount(HttpServletRequest request) {
-        logger.info(" --- RequestMapping from /addChartOfAccount");
+    @RequestMapping(value = "/addAccount", method = RequestMethod.POST)
+    public String addAccount(HttpServletRequest request) {
+        logger.info(" --- RequestMapping from /addAccount");
 
         String name = request.getParameter("name");
         String initialBalance = request.getParameter("initialBalance");
@@ -116,9 +116,9 @@ public class AppController {
         Date date = new Date();
         Long l1 = Long.parseLong(initialBalance);
 
-        ChartOfAccount coa = new ChartOfAccount(101L, l1, user, date, comment);
+        Account coa = new Account(101L, l1, user, date, comment);
 
-        chartOfAccountService.save(coa);
+        accountService.save(coa);
 
         logger.info(" --- Redirecting to /");
         return "redirect:/";

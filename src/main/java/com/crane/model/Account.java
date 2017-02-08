@@ -8,7 +8,7 @@ import java.util.Date;
  */
 
 @Entity
-public class ChartOfAccount {
+public class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +36,7 @@ public class ChartOfAccount {
 
     private String mGroup;
 
-    public ChartOfAccount(Long id, Long code, String name, String type, Boolean isLeftNormalSide, Long initialBalance, Long priority, User addedBy, Date addedOn, Boolean active, String mGroup, String comment) {
+    public Account(Long id, Long code, String name, String type, Boolean isLeftNormalSide, Long initialBalance, Long priority, User addedBy, Date addedOn, Boolean active, String mGroup, String comment) {
         this.id = id;
         this.code = code;
         this.name = name;
@@ -149,10 +149,10 @@ public class ChartOfAccount {
         this.comment = comment;
     }
 
-    public ChartOfAccount() {
+    public Account() {
     }
 
-    public ChartOfAccount(Long code, Long initialBalance, User addedBy, Date addedOn, String comment) {
+    public Account(Long code, Long initialBalance, User addedBy, Date addedOn, String comment) {
         this.code = code;
         this.initialBalance = initialBalance;
         this.addedBy = addedBy;

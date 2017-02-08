@@ -1,8 +1,8 @@
 package com.crane.service;
 
-import com.crane.dao.ChartOfAccountDao;
+import com.crane.dao.AccountDao;
 import com.crane.dao.UserDao;
-import com.crane.model.ChartOfAccount;
+import com.crane.model.Account;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,21 +13,21 @@ import org.springframework.stereotype.Service;
  */
 
 @Service
-public class ChartOfAccountServiceImpl implements ChartOfAccountService {
+public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private UserDao userDao;
 
     @Autowired
-    private ChartOfAccountDao chartOfAccountsDao;
+    private AccountDao accountDao;
 
-    private static final Logger logger = LoggerFactory.getLogger(ChartOfAccountServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
 
     @Override
-    public void save(ChartOfAccount coa) {
+    public void save(Account coa) {
         logger.info(String.format(" --- Entering: %s", Thread.currentThread().getStackTrace()[1].getMethodName()));
 
-        chartOfAccountsDao.save(coa);
+        accountDao.save(coa);
 
         logger.info(String.format(" --- Exiting: %s", Thread.currentThread().getStackTrace()[1].getMethodName()));
     }

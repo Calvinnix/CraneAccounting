@@ -22,8 +22,7 @@ var User = React.createClass({
     */
     propTypes: {
         roles:        React.PropTypes.array.isRequired,
-        user:         React.PropTypes.object.isRequired,
-        key:          React.PropTypes.string.isRequired
+        user:         React.PropTypes.object.isRequired
     },
     /**
         This sets the initial state of the User class. As well as defines initial state variables
@@ -576,10 +575,10 @@ var COACodeSelect = React.createClass({
     }
 });
 
-var AllChartOfAccounts = React.createClass({
+var AllAccounts = React.createClass({
 
     getInitialState: function() {
-            return {chartOfAccounts: [],
+            return {Accounts: [],
                     name: '',
                     initialBalance: 0,
                     comment: ''};
@@ -588,7 +587,7 @@ var AllChartOfAccounts = React.createClass({
     handleAddAccount: function() {
         var self = this;
         $.ajax({
-            url: "http://localhost:8080/addChartOfAccount",
+            url: "http://localhost:8080/addAccount",
             type: "POST",
             data: {name: this.state.name,
                    initialBalance: this.state.initialBalance,
@@ -669,8 +668,8 @@ var AllChartOfAccounts = React.createClass({
     }
 });
 
-if (document.getElementById('AllChartOfAccounts') != null) {
-    ReactDOM.render(<AllChartOfAccounts />, document.getElementById('AllChartOfAccounts'));
+if (document.getElementById('AllAccounts') != null) {
+    ReactDOM.render(<AllAccounts />, document.getElementById('AllAccounts'));
 }
 
 /*TODO:ctn Eventually will want to convert this code (as well as the login/signup page) to utilize REACT */
