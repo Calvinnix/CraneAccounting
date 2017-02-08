@@ -520,6 +520,158 @@ if (document.getElementById('allUsers') != null) {
     ReactDOM.render(<AllUsers />, document.getElementById('allUsers'));
 }
 
+var COAName = React.createClass({
+    propTypes: {
+            name: React.PropTypes.string
+    },
+    render: function() {
+        return (
+            <option value={this.props.name}>{this.props.name}</option>
+        );
+    }
+});
+
+var COANameSelect = React.createClass({
+    propTypes: {
+          name: React.PropTypes.string
+    },
+    render: function() {
+        var names = [];
+        this.props.names.forEach(function(name) {
+            names.push(<COAName name={name} key={name}/>);
+        });
+        return (
+            <select className="form-control" name="selectCOAName" value={this.props.name} onChange={this.props.onChange}>
+                {names}
+            </select>
+        );
+    }
+});
+
+var COACode = React.createClass({
+    propTypes: {
+            code: React.PropTypes.number
+    },
+    render: function() {
+        return (
+            <option value={this.props.code}>{this.props.code}</option>
+        );
+    }
+});
+
+var COACodeSelect = React.createClass({
+    propTypes: {
+          code: React.PropTypes.number
+    },
+    render: function() {
+        var codes = [];
+        this.props.codes.forEach(function(code) {
+            codes.push(<COACode code={code} key={code}/>);
+        });
+        return (
+            <select className="form-control" name="selectCOACode" value={this.props.code} onChange={this.props.onChange}>
+                {codes}
+            </select>
+        );
+    }
+});
+
+var AllChartOfAccounts = React.createClass({
+
+    getInitialState: function() {
+            return {chartOfAccounts: [],
+                    name: '',
+                    initialBalance: 0,
+                    comment: ''};
+    },
+
+    handleAddAccount: function() {
+        var self = this;
+        $.ajax({
+            url: "http://localhost:8080/addChartOfAccount",
+            type: "POST",
+            data: {name: this.state.name,
+                   initialBalance: this.state.initialBalance,
+                   comment: this.state.comment},
+            success: function() {
+                toastr.options = {
+                    "debug": false,
+                    "positionClass": "toast-top-center",
+                    "onclick": null,
+                    "fadeIn": 300,
+                    "fadeOut": 1000,
+                    "timeOut": 5000,
+                    "extendedTimeOut": 1000
+                }
+                toastr.success("Successfully Added Account!");
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                toastr.options = {
+                    "debug": false,
+                    "positionClass": "toast-top-center",
+                    "onclick": null,
+                    "fadeIn": 300,
+                    "fadeOut": 1000,
+                    "timeOut": 5000,
+                    "extendedTimeOut": 1000
+                }
+                toastr.error("Not Authorized");
+            }
+        });
+    },
+    updateCOAName: function(evt) {
+        this.setState({
+            name: evt.target.value
+        });
+    },
+    updateCOAAmount: function(evt) {
+        this.setState({
+            initialBalance: evt.target.value
+        });
+    },
+    updateCOAComment: function(evt) {
+        this.setState({
+            comment: evt.target.value
+        });
+    },
+    render: function() {
+        return (
+            <div>
+                <div className="container">
+                    <div className="row header-row">
+                        <div className="col-md-5"><h5>Account Name</h5></div>
+                          <div className="col-md-2"><h5>Initial Balance</h5></div>
+                          <div className="col-md-3"><h5>Comments</h5></div>
+                          <div className="col-md-2"></div>
+                        </div>
+                     <hr />
+                    <div className="row">
+                        <div className="col-md-5">
+                            <COANameSelect onChange={this.updateCOAName} names={["", "101 - test", "102 - best", "103 - rest"]}/>
+                        </div>
+                        <div className="col-md-2">
+                            <div className="input-group">
+                              <span className="input-group-addon">$</span>
+                              <input type="text" className="form-control" onChange={this.updateCOAAmount} aria-label="Amount"/>
+                            </div>
+                        </div>
+                        <div className="col-md-3">
+                              <textarea type="text" className="form-control" onChange={this.updateCOAComment} aria-label="Comment"/>
+                        </div>
+                        <div className="col-md-2">
+                            <button className="btn btn-success" onClick={this.handleAddAccount}>Add Account</button>
+                        </div>
+                    </div>
+                    <hr />
+                </div>
+            </div>
+        );
+    }
+});
+
+if (document.getElementById('AllChartOfAccounts') != null) {
+    ReactDOM.render(<AllChartOfAccounts />, document.getElementById('AllChartOfAccounts'));
+}
 
 /*TODO:ctn Eventually will want to convert this code (as well as the login/signup page) to utilize REACT */
 /*TODO:ctn some code is repeated... This should be cleaned up */

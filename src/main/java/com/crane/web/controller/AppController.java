@@ -1,7 +1,10 @@
 package com.crane.web.controller;
 
+import com.crane.dao.UserDao;
+import com.crane.model.ChartOfAccount;
 import com.crane.model.Role;
 import com.crane.model.User;
+import com.crane.service.ChartOfAccountService;
 import com.crane.service.UserService;
 import com.crane.web.UserValidator;
 import org.slf4j.Logger;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 
 /**
  * Created by Calvin on 1/9/17.
@@ -25,6 +29,12 @@ public class AppController {
 
     @Autowired
     private UserValidator userValidator;
+
+    @Autowired
+    private ChartOfAccountService chartOfAccountService;
+
+    @Autowired
+    private UserDao userDao;
 
     private static final Logger logger = LoggerFactory.getLogger(AppController.class);
 
@@ -87,6 +97,31 @@ public class AppController {
 
         logger.info(" --- Redirecting to /admin");
         return "redirect:/admin";
+    }
+
+    @RequestMapping(value = "/addChartOfAccount", method = RequestMethod.POST)
+    public String addChartOfAccount(HttpServletRequest request) {
+        logger.info(" --- RequestMapping from /addChartOfAccount");
+
+        String name = request.getParameter("name");
+        String initialBalance = request.getParameter("initialBalance");
+        String comment = request.getParameter("comment");
+
+        System.out.println(String.format("name: %s, initialBalance: %s, comment: %s",
+                                    name,
+                                    initialBalance,
+                                    comment));
+
+        User user = userDao.findByUsername("cnix"); //todo: initial setup. need to eventually dynamically add
+        Date date = new Date();
+        Long l1 = Long.parseLong(initialBalance);
+
+        ChartOfAccount coa = new ChartOfAccount(101L, l1, user, date, comment);
+
+        chartOfAccountService.save(coa);
+
+        logger.info(" --- Redirecting to /");
+        return "redirect:/";
     }
 
 }
