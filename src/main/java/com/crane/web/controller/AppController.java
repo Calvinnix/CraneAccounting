@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Created by Calvin on 1/9/17.
@@ -116,7 +117,10 @@ public class AppController {
         Date date = new Date();
         Long l1 = Long.parseLong(initialBalance);
 
-        Account coa = new Account(101L, l1, user, date, comment);
+        Double code = 101.1;
+
+        Account coa = new Account(code, l1, user, date, comment);
+        coa.setActive(true); //When first saving the account always default to true
 
         accountService.save(coa);
 

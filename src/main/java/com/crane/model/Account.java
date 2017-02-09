@@ -1,7 +1,7 @@
 package com.crane.model;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.util.*;
 
 /**
  * Created by nixc1 on 2/8/17.
@@ -14,7 +14,7 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long code;
+    private Double code;
 
     private String name;
 
@@ -36,7 +36,7 @@ public class Account {
 
     private String mGroup;
 
-    public Account(Long id, Long code, String name, String type, Boolean isLeftNormalSide, Long initialBalance, Long priority, User addedBy, Date addedOn, Boolean active, String mGroup, String comment) {
+    public Account(Long id, Double code, String name, String type, Boolean isLeftNormalSide, Long initialBalance, Long priority, User addedBy, Date addedOn, Boolean active, String mGroup, String comment) {
         this.id = id;
         this.code = code;
         this.name = name;
@@ -61,11 +61,11 @@ public class Account {
         this.id = id;
     }
 
-    public Long getCode() {
+    public Double getCode() {
         return code;
     }
 
-    public void setCode(Long code) {
+    public void setCode(Double code) {
         this.code = code;
     }
 
@@ -152,11 +152,19 @@ public class Account {
     public Account() {
     }
 
-    public Account(Long code, Long initialBalance, User addedBy, Date addedOn, String comment) {
+    public Account(Double code, Long initialBalance, User addedBy, Date addedOn, String comment) {
         this.code = code;
         this.initialBalance = initialBalance;
         this.addedBy = addedBy;
         this.addedOn = addedOn;
         this.comment = comment;
+    }
+
+    public Account(String name, String type, Boolean isLeftNormalSide, Long priority, String mGroup) {
+        this.name = name;
+        this.type = type;
+        this.isLeftNormalSide = isLeftNormalSide;
+        this.priority = priority;
+        this.mGroup = mGroup;
     }
 }

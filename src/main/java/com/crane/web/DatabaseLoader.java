@@ -1,8 +1,10 @@
 package com.crane.web;
 
 import com.crane.dao.AccountDao;
+import com.crane.dao.ChartOfAccountsDao;
 import com.crane.dao.UserDao;
 import com.crane.dao.RoleDao;
+import com.crane.model.ChartOfAccounts;
 import com.crane.model.User;
 import com.crane.model.Role;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +20,14 @@ public class DatabaseLoader implements CommandLineRunner {
 
     private final UserDao userDao;
     private final RoleDao roleDao;
-    private final AccountDao accountDao;
+    private final ChartOfAccountsDao chartOfAccountsDao;
+
 
     @Autowired
-    public DatabaseLoader(UserDao userDao, RoleDao roleDao, AccountDao AccountsDao) {
+    public DatabaseLoader(UserDao userDao, RoleDao roleDao, ChartOfAccountsDao chartOfAccountsDao) {
         this.userDao = userDao;
         this.roleDao = roleDao;
-        this.accountDao = AccountsDao;
+        this.chartOfAccountsDao = chartOfAccountsDao;
     }
 
     @Override
@@ -41,5 +44,9 @@ public class DatabaseLoader implements CommandLineRunner {
         this.userDao.save(new User(username, password, true, ROLE_ADMIN));
         this.userDao.save(new User("TEST1", password, true, ROLE_USER));
         this.userDao.save(new User("TEST2", password, true, ROLE_USER));
+
+
+        this.chartOfAccountsDao.save(new ChartOfAccounts(101.0, "Cash", "Asset", true, 1L, "Cash Related Accounts"));
+        this.chartOfAccountsDao.save(new ChartOfAccounts(105.0, "Petty Cash", "Asset", true, 2L, "Cash Related Accounts"));
     }
 }
