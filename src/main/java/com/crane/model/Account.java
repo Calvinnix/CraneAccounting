@@ -36,8 +36,7 @@ public class Account {
 
     private String mGroup;
 
-    public Account(Long id, Double code, String name, String type, Boolean isLeftNormalSide, Long initialBalance, Long priority, User addedBy, Date addedOn, Boolean active, String mGroup, String comment) {
-        this.id = id;
+    public Account(Double code, String name, String type, Boolean isLeftNormalSide, Long initialBalance, Long priority, User addedBy, Date addedOn, Boolean active, String mGroup, String comment) {
         this.code = code;
         this.name = name;
         this.type = type;
@@ -152,7 +151,8 @@ public class Account {
     public Account() {
     }
 
-    public Account(Double code, Long initialBalance, User addedBy, Date addedOn, String comment) {
+    public Account(String name, Double code, Long initialBalance, User addedBy, Date addedOn, String comment) {
+        this.name = name;
         this.code = code;
         this.initialBalance = initialBalance;
         this.addedBy = addedBy;

@@ -519,57 +519,37 @@ if (document.getElementById('allUsers') != null) {
     ReactDOM.render(<AllUsers />, document.getElementById('allUsers'));
 }
 
-var COAName = React.createClass({
+var Account = React.createClass({
     propTypes: {
-            name: React.PropTypes.string
+            account: React.PropTypes.object.isRequired,
+            id: React.PropTypes.number.isRequired
     },
     render: function() {
         return (
-            <option value={this.props.name}>{this.props.name}</option>
+            <option value={this.props.id}>{this.props.account.code} - {this.props.account.name}</option>
         );
     }
 });
 
-var COANameSelect = React.createClass({
+var AccountSelect = React.createClass({
     propTypes: {
-          name: React.PropTypes.string
+          accounts: React.PropTypes.array
     },
     render: function() {
-        var names = [];
-        this.props.names.forEach(function(name) {
-            names.push(<COAName name={name} key={name}/>);
+        var accounts = [];
+        var id = 0;
+        this.props.accounts.forEach(function(account) {
+            /**
+                There is no id property on account by default
+                so we will add via this loop. We will just increment
+                by one each time.
+            */
+            id = id + 1;
+            accounts.push(<Account id={id} account={account} key={account.name}/>);
         });
         return (
-            <select className="form-control" name="selectCOAName" value={this.props.name} onChange={this.props.onChange}>
-                {names}
-            </select>
-        );
-    }
-});
-
-var COACode = React.createClass({
-    propTypes: {
-            code: React.PropTypes.number
-    },
-    render: function() {
-        return (
-            <option value={this.props.code}>{this.props.code}</option>
-        );
-    }
-});
-
-var COACodeSelect = React.createClass({
-    propTypes: {
-          code: React.PropTypes.number
-    },
-    render: function() {
-        var codes = [];
-        this.props.codes.forEach(function(code) {
-            codes.push(<COACode code={code} key={code}/>);
-        });
-        return (
-            <select className="form-control" name="selectCOACode" value={this.props.code} onChange={this.props.onChange}>
-                {codes}
+            <select className="form-control" name="selectAccountName" value={this.props.id} onChange={this.props.onChange}>
+                {accounts}
             </select>
         );
     }
@@ -578,20 +558,76 @@ var COACodeSelect = React.createClass({
 var AllAccounts = React.createClass({
 
     getInitialState: function() {
-            return {Accounts: [],
+            return {ChartOfAccounts: [],
+                    id: 0,
+                    code: 0,
                     name: '',
+                    type: '',
+                    mGroup: '',
+                    leftNormalSide: '',
                     initialBalance: 0,
-                    comment: ''};
+                    comment: '',
+                    priority: 0};
     },
+   componentDidMount: function () {
+        this.loadChartOfAccountsFromServer();
+    },
+    loadChartOfAccountsFromServer: function() {
+        var self = this;
+        $.ajax({
+            url: "http://localhost:8080/api/chartOfAccountses"
+        }).then(function (data) {
+            self.setState({ChartOfAccounts: data._embedded.chartOfAccountses});
+        });
+    },
+    loadAccountInformationById: function() {
+        var id = this.state.id;
+        var username = document.getElementById("username").innerText;
 
+        var self = this;
+        $.ajax({
+            url: "http://localhost:8080/api/chartOfAccountses/"+id
+        }).then(function (data) {
+            self.setState(
+                {code: data.code,
+                 name: data.name,
+                 type: data.type,
+                 mGroup: data.mGroup,
+                 leftNormalSide: data.leftNormalSide,
+                 priority: id,
+                 username: username
+                 },
+                function () {
+                    /**
+                       this method calls handleAddAccount because
+                        we need it to be called before the other one.
+                        React does stuff asynchronously and without doing it this way
+                        the state wasn't being set correctly
+                    */
+                    this.handleAddAccount();
+                }
+            )
+        });
+    },
     handleAddAccount: function() {
         var self = this;
+
         $.ajax({
             url: "http://localhost:8080/addAccount",
             type: "POST",
-            data: {name: this.state.name,
+            data: {
+
+                   name: this.state.name,
+                   code: this.state.code,
+                   type: this.state.type,
+                   mGroup: this.state.mGroup,
+                   leftNormalSide: this.state.leftNormalSide,
                    initialBalance: this.state.initialBalance,
-                   comment: this.state.comment},
+                   comment: this.state.comment,
+                   priority: this.state.priority,
+                   username: this.state.username
+
+                   },
             success: function() {
                 toastr.options = {
                     "debug": false,
@@ -618,22 +654,24 @@ var AllAccounts = React.createClass({
             }
         });
     },
-    updateCOAName: function(evt) {
+
+    updateAccountId: function(evt) {
         this.setState({
-            name: evt.target.value
+            id: evt.target.value
         });
     },
-    updateCOAAmount: function(evt) {
+    updateAccountAmount: function(evt) {
         this.setState({
             initialBalance: evt.target.value
         });
     },
-    updateCOAComment: function(evt) {
+    updateAccountComment: function(evt) {
         this.setState({
             comment: evt.target.value
         });
     },
     render: function() {
+        var self = this;
         return (
             <div>
                 <div className="container">
@@ -646,19 +684,19 @@ var AllAccounts = React.createClass({
                      <hr />
                     <div className="row">
                         <div className="col-md-5">
-                            <COANameSelect onChange={this.updateCOAName} names={["", "101 - test", "102 - best", "103 - rest"]}/>
+                            <AccountSelect onChange={this.updateAccountId} accounts={this.state.ChartOfAccounts} id={this.state.id}/>
                         </div>
                         <div className="col-md-2">
                             <div className="input-group">
                               <span className="input-group-addon">$</span>
-                              <input type="text" className="form-control" onChange={this.updateCOAAmount} aria-label="Amount"/>
+                              <input type="text" className="form-control" onChange={this.updateAccountAmount} aria-label="Amount"/>
                             </div>
                         </div>
                         <div className="col-md-3">
-                              <textarea type="text" className="form-control" onChange={this.updateCOAComment} aria-label="Comment"/>
+                              <textarea type="text" className="form-control" onChange={this.updateAccountComment} aria-label="Comment"/>
                         </div>
                         <div className="col-md-2">
-                            <button className="btn btn-success" onClick={this.handleAddAccount}>Add Account</button>
+                            <button className="btn btn-success" onClick={this.loadAccountInformationById}>Add Account</button>
                         </div>
                     </div>
                     <hr />

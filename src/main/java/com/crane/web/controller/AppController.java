@@ -2,6 +2,7 @@ package com.crane.web.controller;
 
 import com.crane.dao.UserDao;
 import com.crane.model.Account;
+import com.crane.model.ChartOfAccounts;
 import com.crane.model.Role;
 import com.crane.model.User;
 import com.crane.service.AccountService;
@@ -105,24 +106,36 @@ public class AppController {
         logger.info(" --- RequestMapping from /addAccount");
 
         String name = request.getParameter("name");
-        String initialBalance = request.getParameter("initialBalance");
+        String strCode = request.getParameter("code");
+        String type = request.getParameter("type");
+        String mGroup = request.getParameter("mGroup");
+        String strLeftNormalSide = request.getParameter("leftNormalSide");
+        String strInitialBalance = request.getParameter("initialBalance");
         String comment = request.getParameter("comment");
+        String strPriority = request.getParameter("priority");
+        String username = request.getParameter("username");
 
-        System.out.println(String.format("name: %s, initialBalance: %s, comment: %s",
-                                    name,
-                                    initialBalance,
-                                    comment));
-
-        User user = userDao.findByUsername("cnix"); //todo: initial setup. need to eventually dynamically add
+        User user = userDao.findByUsername(username); //todo: initial setup. need to eventually dynamically add
         Date date = new Date();
-        Long l1 = Long.parseLong(initialBalance);
+        Double code = Double.parseDouble(strCode);
+        Boolean leftNormalSide = Boolean.parseBoolean(strLeftNormalSide);
+        Long initialBalance = Long.parseLong(strInitialBalance);
+        Long priority = Long.parseLong(strPriority);
 
-        Double code = 101.1;
+        Account account = new Account();
+        account.setName(name);
+        account.setCode(code);
+        account.setType(type);
+        account.setmGroup(mGroup);
+        account.setLeftNormalSide(leftNormalSide);
+        account.setAddedBy(user);
+        account.setAddedOn(date);
+        account.setInitialBalance(initialBalance);
+        account.setComment(comment);
+        account.setPriority(priority);
+        account.setActive(true); //When first saving the account always default to true
 
-        Account coa = new Account(code, l1, user, date, comment);
-        coa.setActive(true); //When first saving the account always default to true
-
-        accountService.save(coa);
+        accountService.save(account);
 
         logger.info(" --- Redirecting to /");
         return "redirect:/";
