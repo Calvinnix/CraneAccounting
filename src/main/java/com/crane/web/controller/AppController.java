@@ -1,5 +1,6 @@
 package com.crane.web.controller;
 
+import com.crane.dao.AccountDao;
 import com.crane.dao.UserDao;
 import com.crane.model.Account;
 import com.crane.model.ChartOfAccounts;
@@ -115,7 +116,7 @@ public class AppController {
         String strPriority = request.getParameter("priority");
         String username = request.getParameter("username");
 
-        User user = userDao.findByUsername(username); //todo: initial setup. need to eventually dynamically add
+        User user = userDao.findByUsername(username);
         Date date = new Date();
         Double code = Double.parseDouble(strCode);
         Boolean leftNormalSide = Boolean.parseBoolean(strLeftNormalSide);
@@ -129,6 +130,7 @@ public class AppController {
         account.setmGroup(mGroup);
         account.setLeftNormalSide(leftNormalSide);
         account.setAddedBy(user);
+        account.setAddedByUsername(username);
         account.setAddedOn(date);
         account.setInitialBalance(initialBalance);
         account.setComment(comment);
@@ -136,6 +138,43 @@ public class AppController {
         account.setActive(true); //When first saving the account always default to true
 
         accountService.save(account);
+
+        logger.info(" --- Redirecting to /");
+        return "redirect:/";
+    }
+
+    @RequestMapping(value = "/editAccount", method = RequestMethod.POST)
+    public String editAccount(HttpServletRequest request) {
+        logger.info(" --- RequestMapping from /deactivateAccount");
+
+        String name = request.getParameter("name");
+        String strCode = request.getParameter("code");
+        String type = request.getParameter("type");
+        String mGroup = request.getParameter("mGroup");
+        String strLeftNormalSide = request.getParameter("leftNormalSide");
+        String strInitialBalance = request.getParameter("initialBalance");
+        String comment = request.getParameter("comment");
+        String strPriority = request.getParameter("priority");
+        String strActive = request.getParameter("active");
+
+        Double code = Double.parseDouble(strCode);
+        Boolean leftNormalSide = Boolean.parseBoolean(strLeftNormalSide);
+        Long initialBalance = Long.parseLong(strInitialBalance);
+        Long priority = Long.parseLong(strPriority);
+        Boolean active = Boolean.parseBoolean(strActive);
+
+        Account account = new Account();
+        account.setName(name);
+        account.setCode(code);
+        account.setType(type);
+        account.setmGroup(mGroup);
+        account.setLeftNormalSide(leftNormalSide);
+        account.setInitialBalance(initialBalance);
+        account.setComment(comment);
+        account.setPriority(priority);
+        account.setActive(active);
+
+        accountService.update(account);
 
         logger.info(" --- Redirecting to /");
         return "redirect:/";

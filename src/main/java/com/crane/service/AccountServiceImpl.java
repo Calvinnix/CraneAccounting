@@ -24,8 +24,38 @@ public class AccountServiceImpl implements AccountService {
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
 
     @Override
+    public Account findAccountByName(String name) {
+        logger.info(String.format(" --- Entering: %s", Thread.currentThread().getStackTrace()[1].getMethodName()));
+
+        Account account = accountDao.findByName(name);
+
+        logger.info(String.format(" --- Exiting: %s", Thread.currentThread().getStackTrace()[1].getMethodName()));
+        return account;
+    }
+
+    @Override
     public void save(Account account) {
         logger.info(String.format(" --- Entering: %s", Thread.currentThread().getStackTrace()[1].getMethodName()));
+
+        accountDao.save(account);
+
+        logger.info(String.format(" --- Exiting: %s", Thread.currentThread().getStackTrace()[1].getMethodName()));
+    }
+
+    @Override
+    public void update(Account account) {
+        logger.info(String.format(" --- Entering: %s", Thread.currentThread().getStackTrace()[1].getMethodName()));
+
+        Account accountFound = accountDao.findByName(account.getName());
+
+        if (accountFound == null) {
+            logger.error(" --- The account does not exist.");
+        } else {
+            account.setId(accountFound.getId());
+            account.setAddedBy(accountFound.getAddedBy());
+            account.setAddedOn(accountFound.getAddedOn());
+            account.setAddedByUsername(accountFound.getAddedByUsername());
+        }
 
         accountDao.save(account);
 

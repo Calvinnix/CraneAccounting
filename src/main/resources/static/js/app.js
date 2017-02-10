@@ -521,8 +521,7 @@ if (document.getElementById('allUsers') != null) {
 
 var Account = React.createClass({
     propTypes: {
-            account: React.PropTypes.object.isRequired,
-            id: React.PropTypes.number.isRequired
+            account: React.PropTypes.object.isRequired
     },
     render: function() {
         return (
@@ -555,11 +554,188 @@ var AccountSelect = React.createClass({
     }
 });
 
+var AccountRow = React.createClass({
+
+    getInitialState: function() {
+        return { active: this.props.account.active,
+                 editing: false};
+    },
+    handleDeactivate: function() {
+        var self = this;
+        self.setState({
+            active: false
+        });
+        $.ajax({
+            url: "http://localhost:8080/editAccount",
+            type: "POST",
+            data: {
+               name: this.props.account.name,
+               code: this.props.account.code,
+               type: this.props.account.type,
+               mGroup: this.props.account.mGroup,
+               leftNormalSide: this.props.account.leftNormalSide,
+               initialBalance: this.props.account.initialBalance,
+               comment: this.props.account.comment,
+               priority: this.props.account.priority,
+               active: false
+            },
+            success: function() {
+                self.props.loadAccountsFromServer();
+                toastr.options = {
+                    "debug": false,
+                    "positionClass": "toast-top-center",
+                    "onclick": null,
+                    "fadeIn": 300,
+                    "fadeOut": 1000,
+                    "timeOut": 5000,
+                    "extendedTimeOut": 1000
+                }
+                toastr.success("Successfully deactivated account");
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                toastr.options = {
+                    "debug": false,
+                    "positionClass": "toast-top-center",
+                    "onclick": null,
+                    "fadeIn": 300,
+                    "fadeOut": 1000,
+                    "timeOut": 5000,
+                    "extendedTimeOut": 1000
+                }
+                toastr.error("Not Authorized");
+            }
+        });
+    },
+    handleActivate: function() {
+        var self = this;
+        self.setState({
+            active: true
+        });
+        $.ajax({
+            url: "http://localhost:8080/editAccount",
+            type: "POST",
+            data: {
+               name: this.props.account.name,
+               code: this.props.account.code,
+               type: this.props.account.type,
+               mGroup: this.props.account.mGroup,
+               leftNormalSide: this.props.account.leftNormalSide,
+               initialBalance: this.props.account.initialBalance,
+               comment: this.props.account.comment,
+               priority: this.props.account.priority,
+               active: true
+            },
+            success: function() {
+                self.props.loadAccountsFromServer();
+                toastr.options = {
+                    "debug": false,
+                    "positionClass": "toast-top-center",
+                    "onclick": null,
+                    "fadeIn": 300,
+                    "fadeOut": 1000,
+                    "timeOut": 5000,
+                    "extendedTimeOut": 1000
+                }
+                toastr.success("Successfully activated account");
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                toastr.options = {
+                    "debug": false,
+                    "positionClass": "toast-top-center",
+                    "onclick": null,
+                    "fadeIn": 300,
+                    "fadeOut": 1000,
+                    "timeOut": 5000,
+                    "extendedTimeOut": 1000
+                }
+                toastr.error("Not Authorized");
+            }
+        });
+    },
+    handleEdit: function() {
+        alert("editing");
+        this.setState({
+            editing: true
+        });
+    },
+    confirmEdit: function() {
+        alert("finished edit");
+        this.setState({
+            editing: false
+        });
+    },
+    render: function() {
+        return (
+        <div className="row">
+             <div className={this.state.active ? "thumbnail" : "thumbnail nonactive"}>
+                <div className="caption">
+                  <h3>{this.props.account.code} - {this.props.account.name}</h3>
+                  <hr />
+                  <div className="row">
+                      <div className="col-md-4"><h4>Type: <b>{this.props.account.type}</b></h4></div> 
+                      <div className="col-md-4"><h4>Sub-Group: <b>{this.props.account.mGroup}</b></h4></div> 
+                      <div className="col-md-4"><h4>Active: <b>{this.props.account.active ? "True" : "False"}</b></h4></div>
+                  </div>
+                   <div className="row">
+                        <div className="col-md-4"><h4>Priority: <b>{this.props.account.priority}</b></h4></div> 
+                        <div className="col-md-4"><h4>Normal Side: <b>{this.props.account.leftNormalSide ? "Left" : "Right"}</b></h4></div>
+                        <div className="col-md-4"><h4>Added On: <b>{this.props.account.addedOn}</b></h4></div> 
+                   </div>
+                   <div className="row">
+                      <div className="col-md-4"><h4>Added by: <b>{this.props.account.addedByUsername}</b></h4></div> 
+                      <div className="col-md-4"><h4>Initial Balance: <b>{this.props.account.initialBalance}</b></h4></div>
+                       <div className="col-md-4"><h4>Comments: <b>{this.props.account.comment}</b></h4></div> 
+                    </div>
+                  <hr />
+                  <div className="row">
+                       <div className="col-md-4"></div>
+                        <div className="col-md-4"> 
+                            <button className={this.state.active ? "btn btn-primary accountOptions" : "btn btn-primary accountOptions disabled"} onClick={this.handleViewAccount}> View</button> 
+                            {this.state.editing ? ( 
+                                  <button className={this.state.active ? "btn btn-success accountOptions" : "btn btn-success accountOptions disabled"} onClick={this.confirmEdit}> Confirm Changes</button> 
+                            ) : (
+                                  <button className={this.state.active ? "btn btn-warning accountOptions" : "btn btn-warning accountOptions disabled"} onClick={this.handleEdit}> Edit</button> 
+                             )}
+                            {this.state.active ? ( 
+                                  <button className="btn btn-danger accountOptions" onClick={this.handleDeactivate}> Deactivate</button> 
+                             ) : ( 
+                                  <button className="btn btn-success accountOptions" onClick={this.handleActivate}> Activate</button> 
+                            )} 
+                        </div>
+                         <div className="col-md-4"> </div>
+                    </div>
+                </div>
+              </div>
+        </div>
+        );
+    }
+});
+
+var AccountsTable = React.createClass({
+    propTypes: {
+            accounts: React.PropTypes.array.isRequired
+    },
+    render: function() {
+        var self = this;
+        var rows = [];
+        this.props.accounts.forEach(function(account) {
+            rows.push(<AccountRow account={account} key={account.name} loadAccountsFromServer={self.props.loadAccountsFromServer}/>);
+        });
+        return (
+            <div className="container">
+                {rows}
+            </div>
+        );
+    }
+});
+
+
 var AllAccounts = React.createClass({
 
     getInitialState: function() {
             return {ChartOfAccounts: [],
-                    id: 0,
+                    accounts: [],
+                    id: 1, //defaulting to 1 so that if the 1st combobox is left blank the default one is chosen
                     code: 0,
                     name: '',
                     type: '',
@@ -571,7 +747,16 @@ var AllAccounts = React.createClass({
     },
    componentDidMount: function () {
         this.loadChartOfAccountsFromServer();
+        this.loadAccountsFromServer();
     },
+    loadAccountsFromServer: function() {
+            var self = this;
+            $.ajax({
+                url: "http://localhost:8080/api/accounts"
+            }).then(function (data) {
+                self.setState({accounts: data._embedded.accounts});
+            });
+        },
     loadChartOfAccountsFromServer: function() {
         var self = this;
         $.ajax({
@@ -639,6 +824,7 @@ var AllAccounts = React.createClass({
                     "extendedTimeOut": 1000
                 }
                 toastr.success("Successfully Added Account!");
+                self.loadAccountsFromServer();
             },
             error: function(xhr, ajaxOptions, thrownError) {
                 toastr.options = {
@@ -700,6 +886,7 @@ var AllAccounts = React.createClass({
                         </div>
                     </div>
                     <hr />
+                    <AccountsTable accounts={this.state.accounts} loadAccountsFromServer={this.loadAccountsFromServer} />
                 </div>
             </div>
         );

@@ -11,5 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AccountDao extends CrudRepository<Account, Long> {
     Account findById(Long l);
+    Account findByName(String s);
     void delete(Long l);
 }

@@ -13,7 +13,10 @@ public class ChartOfAccounts {
     private Long id;
 
     private Double code;
+
+    @Column(unique = true)
     private String name;
+
     private String type;
     private Boolean isLeftNormalSide;
     private Long priority;

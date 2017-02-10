@@ -16,6 +16,7 @@ public class Account {
 
     private Double code;
 
+    @Column(unique = true)
     private String name;
 
     private String type;
@@ -29,6 +30,8 @@ public class Account {
     @ManyToOne //todo: this may need to be OneToMany
     @JoinColumn(name = "user_id")
     private User addedBy;
+
+    private String addedByUsername;
 
     private Date addedOn;
 
@@ -114,6 +117,14 @@ public class Account {
 
     public void setAddedBy(User addedBy) {
         this.addedBy = addedBy;
+    }
+
+    public String getAddedByUsername() {
+        return addedByUsername;
+    }
+
+    public void setAddedByUsername(String addedByUsername) {
+        this.addedByUsername = addedByUsername;
     }
 
     public Date getAddedOn() {

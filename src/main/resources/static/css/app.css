@@ -81,3 +81,14 @@ a:hover {
   background-color: #ffffff;
   padding-top: 10px;
   padding-bottom: 10px; }
+
+.accountOptions {
+  margin-left: 2px;
+  margin-right: 2px; }
+
+.nonactive div h3 {
+  opacity: 0.2; }
+
+.nonactive div div h4 {
+  opacity: 0.2;
+  text-decoration: line-through; }
