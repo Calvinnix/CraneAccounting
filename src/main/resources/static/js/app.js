@@ -558,7 +558,55 @@ var AccountRow = React.createClass({
 
     getInitialState: function() {
         return { active: this.props.account.active,
+                 initialBalance: this.props.account.initialBalance,
+                 comment: this.props.account.comment,
                  editing: false};
+    },
+    handleEditConfirm: function() {
+        this.setState({
+            editing: false
+        });
+        var self = this;
+        $.ajax({
+            url: "http://localhost:8080/editAccount",
+            type: "POST",
+            data: {
+               name: this.props.account.name,
+               code: this.props.account.code,
+               type: this.props.account.type,
+               mGroup: this.props.account.mGroup,
+               leftNormalSide: this.props.account.leftNormalSide,
+               initialBalance: this.state.initialBalance,
+               comment: this.state.comment,
+               priority: this.props.account.priority,
+               active: this.state.active
+            },
+            success: function() {
+                self.props.loadAccountsFromServer();
+                toastr.options = {
+                    "debug": false,
+                    "positionClass": "toast-top-center",
+                    "onclick": null,
+                    "fadeIn": 300,
+                    "fadeOut": 1000,
+                    "timeOut": 5000,
+                    "extendedTimeOut": 1000
+                }
+                toastr.success("Successfully deactivated account");
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                toastr.options = {
+                    "debug": false,
+                    "positionClass": "toast-top-center",
+                    "onclick": null,
+                    "fadeIn": 300,
+                    "fadeOut": 1000,
+                    "timeOut": 5000,
+                    "extendedTimeOut": 1000
+                }
+                toastr.error("Not Authorized");
+            }
+        });
     },
     handleDeactivate: function() {
         var self = this;
@@ -653,24 +701,27 @@ var AccountRow = React.createClass({
         });
     },
     handleEdit: function() {
-        alert("editing");
         this.setState({
             editing: true
         });
     },
-    confirmEdit: function() {
-        alert("finished edit");
+    updateAccountAmount: function(evt) {
         this.setState({
-            editing: false
+            initialBalance: evt.target.value
+        });
+    },
+    updateAccountComment: function(evt) {
+        this.setState({
+            comment: evt.target.value
         });
     },
     render: function() {
         return (
         <div className="row">
              <div className={this.state.active ? "thumbnail" : "thumbnail nonactive"}>
-                <div className="caption">
-                  <h3>{this.props.account.code} - {this.props.account.name}</h3>
-                  <hr />
+                <h3>{this.props.account.code} - {this.props.account.name}</h3>
+                <hr />
+                <div className="caption collapse">
                   <div className="row">
                       <div className="col-md-4"><h4>Type: <b>{this.props.account.type}</b></h4></div> 
                       <div className="col-md-4"><h4>Sub-Group: <b>{this.props.account.mGroup}</b></h4></div> 
@@ -683,23 +734,31 @@ var AccountRow = React.createClass({
                    </div>
                    <div className="row">
                       <div className="col-md-4"><h4>Added by: <b>{this.props.account.addedByUsername}</b></h4></div> 
-                      <div className="col-md-4"><h4>Initial Balance: <b>{this.props.account.initialBalance}</b></h4></div>
-                       <div className="col-md-4"><h4>Comments: <b>{this.props.account.comment}</b></h4></div> 
+                      {this.state.editing ? ( 
+                        <div className="col-md-4"><input type="text" className="form-control" onChange={this.updateAccountAmount} placeholder="Initial Balance" value={this.state.initialBalance} /></div> 
+                      ) : (
+                        <div className="col-md-4"><h4>Initial Balance: <b>{this.props.account.initialBalance}</b></h4></div>
+                      )}
+                      {this.state.editing ? ( 
+                          <div className="col-md-4"><textarea type="text" className="form-control" onChange={this.updateAccountComment} placeholder="Comments" value={this.state.comment} /></div>
+                        ) : (
+                           <div className="col-md-4"><h4>Comments: <b>{this.props.account.comment}</b></h4></div> 
+                        )}
                     </div>
                   <hr />
                   <div className="row">
                        <div className="col-md-4"></div>
                         <div className="col-md-4"> 
-                            <button className={this.state.active ? "btn btn-primary accountOptions" : "btn btn-primary accountOptions disabled"} onClick={this.handleViewAccount}> View</button> 
+                            <button className={this.state.active && !this.state.editing ? "btn btn-primary accountOptions" : "btn btn-primary accountOptions disabled"} onClick={this.handleViewAccount}> View</button> 
                             {this.state.editing ? ( 
-                                  <button className={this.state.active ? "btn btn-success accountOptions" : "btn btn-success accountOptions disabled"} onClick={this.confirmEdit}> Confirm Changes</button> 
+                                  <button className={this.state.active ? "btn btn-success accountOptions" : "btn btn-success accountOptions disabled"} onClick={this.handleEditConfirm}> Confirm Changes</button> 
                             ) : (
                                   <button className={this.state.active ? "btn btn-warning accountOptions" : "btn btn-warning accountOptions disabled"} onClick={this.handleEdit}> Edit</button> 
                              )}
                             {this.state.active ? ( 
-                                  <button className="btn btn-danger accountOptions" onClick={this.handleDeactivate}> Deactivate</button> 
+                                  <button className={this.state.editing ? "btn btn-danger accountOptions disabled" : "btn btn-danger accountOptions"} onClick={this.handleDeactivate}> Deactivate</button> 
                              ) : ( 
-                                  <button className="btn btn-success accountOptions" onClick={this.handleActivate}> Activate</button> 
+                                  <button className={this.state.editing ? "btn btn-success accountOptions disabled" : "btn btn-success accountOptions"} onClick={this.handleActivate}> Activate</button> 
                             )} 
                         </div>
                          <div className="col-md-4"> </div>

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -117,7 +118,9 @@ public class AppController {
         String username = request.getParameter("username");
 
         User user = userDao.findByUsername(username);
-        Date date = new Date();
+        Date now = new Date();
+        String date = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(now);
+
         Double code = Double.parseDouble(strCode);
         Boolean leftNormalSide = Boolean.parseBoolean(strLeftNormalSide);
         Long initialBalance = Long.parseLong(strInitialBalance);

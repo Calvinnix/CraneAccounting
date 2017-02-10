@@ -33,13 +33,13 @@ public class Account {
 
     private String addedByUsername;
 
-    private Date addedOn;
+    private String addedOn;
 
     private Boolean active;
 
     private String mGroup;
 
-    public Account(Double code, String name, String type, Boolean isLeftNormalSide, Long initialBalance, Long priority, User addedBy, Date addedOn, Boolean active, String mGroup, String comment) {
+    public Account(Double code, String name, String type, Boolean isLeftNormalSide, Long initialBalance, Long priority, User addedBy, String addedOn, Boolean active, String mGroup, String comment) {
         this.code = code;
         this.name = name;
         this.type = type;
@@ -127,11 +127,11 @@ public class Account {
         this.addedByUsername = addedByUsername;
     }
 
-    public Date getAddedOn() {
+    public String getAddedOn() {
         return addedOn;
     }
 
-    public void setAddedOn(Date addedOn) {
+    public void setAddedOn(String addedOn) {
         this.addedOn = addedOn;
     }
 
@@ -162,7 +162,7 @@ public class Account {
     public Account() {
     }
 
-    public Account(String name, Double code, Long initialBalance, User addedBy, Date addedOn, String comment) {
+    public Account(String name, Double code, Long initialBalance, User addedBy, String addedOn, String comment) {
         this.name = name;
         this.code = code;
         this.initialBalance = initialBalance;
