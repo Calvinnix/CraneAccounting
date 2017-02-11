@@ -67,9 +67,9 @@ var User = React.createClass({
                     "positionClass": "toast-top-center",
                     "onclick": null,
                     "fadeIn": 300,
-                    "fadeOut": 1000,
-                    "timeOut": 5000,
-                    "extendedTimeOut": 1000
+                    "fadeOut": 100,
+                    "timeOut": 500,
+                    "extendedTimeOut": 500
                 }
                 toastr.error("Not Authorized");
             }
@@ -100,9 +100,9 @@ var User = React.createClass({
                     "positionClass": "toast-top-center",
                     "onclick": null,
                     "fadeIn": 300,
-                    "fadeOut": 1000,
-                    "timeOut": 5000,
-                    "extendedTimeOut": 1000
+                    "fadeOut": 100,
+                    "timeOut": 500,
+                    "extendedTimeOut": 500
                 }
                 toastr.success("Successfully Edited User!");
             },
@@ -112,9 +112,9 @@ var User = React.createClass({
                     "positionClass": "toast-top-center",
                     "onclick": null,
                     "fadeIn": 300,
-                    "fadeOut": 1000,
-                    "timeOut": 5000,
-                    "extendedTimeOut": 1000
+                    "fadeOut": 100,
+                    "timeOut": 500,
+                    "extendedTimeOut": 500
                 }
                 toastr.error("Not Authorized");
             }
@@ -416,9 +416,9 @@ var AllUsers = React.createClass({
                     "positionClass": "toast-top-center",
                     "onclick": null,
                     "fadeIn": 300,
-                    "fadeOut": 1000,
-                    "timeOut": 5000,
-                    "extendedTimeOut": 1000
+                    "fadeOut": 100,
+                    "timeOut": 500,
+                    "extendedTimeOut": 100
                 }
                 toastr.success("Successfully Added User!");
             },
@@ -428,9 +428,9 @@ var AllUsers = React.createClass({
                     "positionClass": "toast-top-center",
                     "onclick": null,
                     "fadeIn": 300,
-                    "fadeOut": 1000,
-                    "timeOut": 5000,
-                    "extendedTimeOut": 1000
+                    "fadeOut": 100,
+                    "timeOut": 500,
+                    "extendedTimeOut": 500
                 }
                 toastr.error("Not Authorized");
             }
@@ -588,9 +588,9 @@ var AccountRow = React.createClass({
                     "positionClass": "toast-top-center",
                     "onclick": null,
                     "fadeIn": 300,
-                    "fadeOut": 1000,
-                    "timeOut": 5000,
-                    "extendedTimeOut": 1000
+                    "fadeOut": 100,
+                    "timeOut": 500,
+                    "extendedTimeOut": 500
                 }
                 toastr.success("Successfully deactivated account");
             },
@@ -600,9 +600,9 @@ var AccountRow = React.createClass({
                     "positionClass": "toast-top-center",
                     "onclick": null,
                     "fadeIn": 300,
-                    "fadeOut": 1000,
-                    "timeOut": 5000,
-                    "extendedTimeOut": 1000
+                    "fadeOut": 100,
+                    "timeOut": 500,
+                    "extendedTimeOut": 500
                 }
                 toastr.error("Not Authorized");
             }
@@ -634,9 +634,9 @@ var AccountRow = React.createClass({
                     "positionClass": "toast-top-center",
                     "onclick": null,
                     "fadeIn": 300,
-                    "fadeOut": 1000,
-                    "timeOut": 5000,
-                    "extendedTimeOut": 1000
+                    "fadeOut": 100,
+                    "timeOut": 500,
+                    "extendedTimeOut": 500
                 }
                 toastr.success("Successfully deactivated account");
             },
@@ -646,9 +646,9 @@ var AccountRow = React.createClass({
                     "positionClass": "toast-top-center",
                     "onclick": null,
                     "fadeIn": 300,
-                    "fadeOut": 1000,
-                    "timeOut": 5000,
-                    "extendedTimeOut": 1000
+                    "fadeOut": 100,
+                    "timeOut": 500,
+                    "extendedTimeOut": 500
                 }
                 toastr.error("Not Authorized");
             }
@@ -680,9 +680,9 @@ var AccountRow = React.createClass({
                     "positionClass": "toast-top-center",
                     "onclick": null,
                     "fadeIn": 300,
-                    "fadeOut": 1000,
-                    "timeOut": 5000,
-                    "extendedTimeOut": 1000
+                    "fadeOut": 100,
+                    "timeOut": 500,
+                    "extendedTimeOut": 500
                 }
                 toastr.success("Successfully activated account");
             },
@@ -692,9 +692,9 @@ var AccountRow = React.createClass({
                     "positionClass": "toast-top-center",
                     "onclick": null,
                     "fadeIn": 300,
-                    "fadeOut": 1000,
-                    "timeOut": 5000,
-                    "extendedTimeOut": 1000
+                    "fadeOut": 100,
+                    "timeOut": 500,
+                    "extendedTimeOut": 500
                 }
                 toastr.error("Not Authorized");
             }
@@ -721,7 +721,7 @@ var AccountRow = React.createClass({
              <div className={this.state.active ? "thumbnail" : "thumbnail nonactive"}>
                 <h3>{this.props.account.code} - {this.props.account.name}</h3>
                 <hr />
-                <div className="caption collapse">
+                <div className="caption">
                   <div className="row">
                       <div className="col-md-4"><h4>Type: <b>{this.props.account.type}</b></h4></div> 
                       <div className="col-md-4"><h4>Sub-Group: <b>{this.props.account.mGroup}</b></h4></div> 
@@ -878,9 +878,9 @@ var AllAccounts = React.createClass({
                     "positionClass": "toast-top-center",
                     "onclick": null,
                     "fadeIn": 300,
-                    "fadeOut": 1000,
-                    "timeOut": 5000,
-                    "extendedTimeOut": 1000
+                    "fadeOut": 100,
+                    "timeOut": 500,
+                    "extendedTimeOut": 500
                 }
                 toastr.success("Successfully Added Account!");
                 self.loadAccountsFromServer();
@@ -891,9 +891,9 @@ var AllAccounts = React.createClass({
                     "positionClass": "toast-top-center",
                     "onclick": null,
                     "fadeIn": 300,
-                    "fadeOut": 1000,
-                    "timeOut": 5000,
-                    "extendedTimeOut": 1000
+                    "fadeOut": 100,
+                    "timeOut": 500,
+                    "extendedTimeOut": 500
                 }
                 toastr.error("Not Authorized");
             }
@@ -954,6 +954,78 @@ var AllAccounts = React.createClass({
 
 if (document.getElementById('AllAccounts') != null) {
     ReactDOM.render(<AllAccounts />, document.getElementById('AllAccounts'));
+}
+
+var EventRow = React.createClass({
+        render: function() {
+            return (
+                <div className="row">
+                      <div className="row row-striped">
+                          <div className="col-md-2">{this.props.event.timestamp}</div> 
+                          <div className="col-md-10">{this.props.event.description}</div>
+                      </div>
+                </div>
+            );
+        }
+
+});
+
+var EventsTable = React.createClass({
+    propTypes: {
+            events: React.PropTypes.array.isRequired
+    },
+    render: function() {
+        var self = this;
+        var rows = [];
+        this.props.events.forEach(function(event) {
+            rows.push(<EventRow event={event} key={event.timestamp}/>);
+        });
+        return (
+            <div className="container">
+                {rows}
+            </div>
+        );
+    }
+});
+
+var AllEvents = React.createClass({
+
+    getInitialState: function() {
+        return {
+                events: []
+                };
+    },
+    componentDidMount: function () {
+        this.loadEventsFromServer();
+    },
+    loadEventsFromServer: function() {
+        var self = this;
+        $.ajax({
+            url: "http://localhost:8080/api/eventLogs"
+        }).then(function (data) {
+            self.setState({events: data._embedded.eventLogs});
+        });
+    },
+    render: function() {
+        var self = this;
+        return (
+            <div>
+                <div className="container">
+                    <h1>Event Log</h1>
+                    <div className="row header-row">
+                          <div className="col-md-2"><h5>Timestamp</h5></div>
+                          <div className="col-md-10"><h5>Description</h5></div>
+                     </div>
+                     <EventsTable events={this.state.events} />
+                </div>
+            </div>
+        );
+    }
+
+});
+
+if (document.getElementById('AllEvents') != null) {
+    ReactDOM.render(<AllEvents />, document.getElementById('AllEvents'));
 }
 
 /*TODO:ctn Eventually will want to convert this code (as well as the login/signup page) to utilize REACT */

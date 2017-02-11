@@ -1,6 +1,8 @@
 package com.crane.web.controller;
 
+import com.crane.model.EventLog;
 import com.crane.model.User;
+import com.crane.service.EventLogService;
 import com.crane.service.UserService;
 import com.crane.service.SecurityService;
 import com.crane.web.UserValidator;
@@ -17,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.DateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by Calvin on 1/11/17.
@@ -33,6 +38,9 @@ public class SignupController {
 
     @Autowired
     private UserValidator userValidator;
+
+    @Autowired
+    private EventLogService eventLogService;
 
     private static final Logger logger = LoggerFactory.getLogger(SignupController.class);
 
@@ -70,14 +78,26 @@ public class SignupController {
         logger.info(" --- Saving user");
         userService.save(userForm);
 
+        Calendar now = Calendar.getInstance();
+        int year = now.get(Calendar.YEAR);
+        int month = now.get(Calendar.MONTH) + 1; // Note: zero based!
+        int day = now.get(Calendar.DAY_OF_MONTH);
+        int hour = now.get(Calendar.HOUR_OF_DAY);
+        int minute = now.get(Calendar.MINUTE);
+        int second = now.get(Calendar.SECOND);
+        int millis = now.get(Calendar.MILLISECOND);
+
+        String currentTime = String.format("%02d-%02d-%d %02d:%02d:%02d.%03d", month, day, year, hour, minute, second, millis);
+
+
+        EventLog log = new EventLog(currentTime, String.format(" --- Created new user: %s", userForm.getUsername()));
+        eventLogService.save(log);
+
         logger.info(" --- Automatically logging in user");
         securityService.autoLogin(userForm.getUsername(), userForm.getPasswordConfirm());
 
         logger.info(" --- Redirecting to /");
         return "redirect:/";
     }
-
-
-
 
 }

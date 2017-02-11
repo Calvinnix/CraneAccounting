@@ -2,11 +2,9 @@ package com.crane.web.controller;
 
 import com.crane.dao.AccountDao;
 import com.crane.dao.UserDao;
-import com.crane.model.Account;
-import com.crane.model.ChartOfAccounts;
-import com.crane.model.Role;
-import com.crane.model.User;
+import com.crane.model.*;
 import com.crane.service.AccountService;
+import com.crane.service.EventLogService;
 import com.crane.service.UserService;
 import com.crane.web.UserValidator;
 import org.slf4j.Logger;
@@ -18,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -38,6 +37,9 @@ public class AppController {
     private AccountService accountService;
 
     @Autowired
+    private EventLogService eventLogService;
+
+    @Autowired
     private UserDao userDao;
 
     private static final Logger logger = LoggerFactory.getLogger(AppController.class);
@@ -54,6 +56,13 @@ public class AppController {
         logger.info(" --- RequestMapping from /admin");
         logger.info(" --- Mapping to /admin");
         return "admin";
+    }
+
+    @RequestMapping(value = "/events")
+    public String events() {
+        logger.info(" --- RequestMapping from /events");
+        logger.info(" --- Mapping to /events");
+        return "events";
     }
 
     @RequestMapping(value = "/admin/addUser", method = RequestMethod.POST)
@@ -78,6 +87,20 @@ public class AppController {
         logger.info(" --- Saving user");
         userService.save(user);
 
+        Calendar now = Calendar.getInstance();
+        int year = now.get(Calendar.YEAR);
+        int month = now.get(Calendar.MONTH) + 1; // Note: zero based!
+        int day = now.get(Calendar.DAY_OF_MONTH);
+        int hour = now.get(Calendar.HOUR_OF_DAY);
+        int minute = now.get(Calendar.MINUTE);
+        int second = now.get(Calendar.SECOND);
+        int millis = now.get(Calendar.MILLISECOND);
+
+        String currentTime = String.format("%02d-%02d-%d %02d:%02d:%02d.%03d", month, day, year, hour, minute, second, millis);
+
+        EventLog log = new EventLog(currentTime, String.format(" --- Added new user: %s", username));
+        eventLogService.save(log);
+
         logger.info(" --- Redirecting to /admin");
         return "redirect:/admin";
     }
@@ -98,6 +121,21 @@ public class AppController {
 
         logger.info(" --- edit user");
         userService.update(user);
+
+        Calendar now = Calendar.getInstance();
+        int year = now.get(Calendar.YEAR);
+        int month = now.get(Calendar.MONTH) + 1; // Note: zero based!
+        int day = now.get(Calendar.DAY_OF_MONTH);
+        int hour = now.get(Calendar.HOUR_OF_DAY);
+        int minute = now.get(Calendar.MINUTE);
+        int second = now.get(Calendar.SECOND);
+        int millis = now.get(Calendar.MILLISECOND);
+
+        String currentTime = String.format("%02d-%02d-%d %02d:%02d:%02d.%03d", month, day, year, hour, minute, second, millis);
+
+
+        EventLog log = new EventLog(currentTime, String.format(" --- Edited user: %s", username));
+        eventLogService.save(log);
 
         logger.info(" --- Redirecting to /admin");
         return "redirect:/admin";
@@ -142,6 +180,21 @@ public class AppController {
 
         accountService.save(account);
 
+        Calendar cal = Calendar.getInstance();
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH) + 1; // Note: zero based!
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        int hour = cal.get(Calendar.HOUR_OF_DAY);
+        int minute = cal.get(Calendar.MINUTE);
+        int second = cal.get(Calendar.SECOND);
+        int millis = cal.get(Calendar.MILLISECOND);
+
+        String currentTime = String.format("%02d-%02d-%d %02d:%02d:%02d.%03d", month, day, year, hour, minute, second, millis);
+
+
+        EventLog log = new EventLog(currentTime, String.format(" --- Added new account: %s --- Initial Balance: %s --- Comments: %s", name, initialBalance, comment));
+        eventLogService.save(log);
+
         logger.info(" --- Redirecting to /");
         return "redirect:/";
     }
@@ -178,6 +231,22 @@ public class AppController {
         account.setActive(active);
 
         accountService.update(account);
+
+        Calendar now = Calendar.getInstance();
+        int year = now.get(Calendar.YEAR);
+        int month = now.get(Calendar.MONTH) + 1; // Note: zero based!
+        int day = now.get(Calendar.DAY_OF_MONTH);
+        int hour = now.get(Calendar.HOUR_OF_DAY);
+        int minute = now.get(Calendar.MINUTE);
+        int second = now.get(Calendar.SECOND);
+        int millis = now.get(Calendar.MILLISECOND);
+
+        String currentTime = String.format("%02d-%02d-%d %02d:%02d:%02d.%03d", month, day, year, hour, minute, second, millis);
+
+
+        EventLog log = new EventLog(currentTime, String.format(" --- Edited account: %s --- Initial Balance: %s --- Comments: %s --- Active: %s", name, initialBalance, comment, active));
+        eventLogService.save(log);
+
 
         logger.info(" --- Redirecting to /");
         return "redirect:/";
