@@ -1045,6 +1045,191 @@ if (document.getElementById('AllEvents') != null) {
     ReactDOM.render(<AllEvents />, document.getElementById('AllEvents'));
 }
 
+var JournalDebitRow = React.createClass({
+        render: function() {
+            return (
+                <div className="row">
+                      <div className="row">
+                          <div className="col-md-4 text-right">{this.props.JournalDebit.accountName}</div> 
+                          <div className="col-md-4 text-right">{this.props.JournalDebit.amount}</div> 
+                          <div className="col-md-2"></div> 
+                          <div className="col-md-2">
+                                    <span className="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+                          </div> 
+                      </div>
+                </div>
+            );
+        }
+
+});
+
+var JournalCreditRow = React.createClass({
+        render: function() {
+            return (
+                <div className="row">
+                      <div className="row">
+                          <div className="col-md-2"></div> 
+                          <div className="col-md-4 text-right">{this.props.JournalCredit.accountName}</div> 
+                          <div className="col-md-4 text-right">{this.props.JournalCredit.amount}</div> 
+                          <div className="col-md-2">
+                                    <span className="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+                          </div> 
+                      </div>
+                </div>
+            );
+        }
+
+});
+
+var JournalsDebitTable = React.createClass({
+    propTypes: {
+            JournalsDebit: React.PropTypes.array.isRequired
+    },
+    render: function() {
+        var self = this;
+        var rows = [];
+        var index = 0;
+        this.props.JournalsDebit.forEach(function(JournalDebit) {
+            rows.push(<JournalDebitRow JournalDebit={JournalDebit} key={index++}/>);
+        });
+        return (
+            <div className="container">
+                {rows}
+            </div>
+        );
+    }
+});
+
+var JournalsCreditTable = React.createClass({
+    propTypes: {
+            JournalsCredit: React.PropTypes.array.isRequired
+    },
+    render: function() {
+        var self = this;
+        var rows = [];
+        var index = 0;
+        this.props.JournalsCredit.forEach(function(JournalCredit) {
+            rows.push(<JournalCreditRow JournalCredit={JournalCredit} key={index++}/>);
+        });
+        return (
+            <div className="container">
+                {rows}
+            </div>
+        );
+    }
+});
+
+var AllJournals = React.createClass({
+
+    getInitialState: function() {
+        return {JournalsDebit: [],
+                JournalsCredit: [],
+                accounts: [],
+                debitAmount: 0,
+                creditAmount: 0,
+                debitAccountID: 1,
+                creditAccountID: 1
+        };
+    },
+    componentDidMount: function () {
+        this.loadAccountsFromServer();
+    },
+    loadAccountsFromServer: function() {
+        var self = this;
+        $.ajax({
+            url: "http://localhost:8080/api/accounts"
+        }).then(function (data) {
+            self.setState({accounts: data._embedded.accounts});
+        });
+    },
+    updateDebitAmount: function(evt) {
+        this.setState({
+            debitAmount: evt.target.value
+        });
+    },
+    updateCreditAmount: function(evt) {
+        this.setState({
+            creditAmount: evt.target.value
+        });
+    },
+    updateDebitAccountID: function(evt) {
+        this.setState({
+            debitAccountID: evt.target.value
+        });
+    },
+    updateCreditAccountID: function(evt) {
+        this.setState({
+            creditAccountID: evt.target.value
+        });
+    },
+    addDebit: function() {
+        var newDebit = {accountName: this.state.accounts[this.state.debitAccountID-1].name,
+                       amount:     this.state.debitAmount};
+        var self = this;
+        this.setState({
+            JournalsDebit: self.state.JournalsDebit.concat([newDebit])
+        });
+    },
+    addCredit: function() {
+        var newCredit = {accountName: this.state.accounts[this.state.creditAccountID-1].name,
+                               amount:     this.state.creditAmount};
+        var self = this;
+        this.setState({
+            JournalsCredit: self.state.JournalsCredit.concat([newCredit])
+        });
+    },
+    render: function() {
+        var self = this;
+        return (
+            <div>
+                <div className="container">
+                    <h1>Journal Entries</h1>
+                     <hr />
+                    <div className="row">
+                        <div className="col-md-5">
+                            <AccountSelect accounts={this.state.accounts} onChange={this.updateDebitAccountID} id={this.state.debitAccountID}/>
+                        </div>
+                        <div className="col-md-3">
+                            <div className="input-group">
+                              <span className="input-group-addon">$</span>
+                              <input type="text" className="form-control" onChange={this.updateDebitAmount} aria-label="Amount"/>
+                            </div>
+                        </div>
+                        <div className="col-md-2">
+                            <button className="btn btn-success" onClick={this.addDebit}>Add Debit</button>
+                        </div>
+                        <div className="col-md-2"></div>
+                    </div>
+                    <hr />
+                    <div className="row">
+                        <div className="col-md-2"></div>
+                        <div className="col-md-5">
+                            <AccountSelect accounts={this.state.accounts} onChange={this.updateCreditAccountID} id={this.state.creditAccountID}/>
+                        </div>
+                        <div className="col-md-3">
+                            <div className="input-group">
+                              <span className="input-group-addon">$</span>
+                              <input type="text" className="form-control" onChange={this.updateCreditAmount} aria-label="Amount"/>
+                            </div>
+                        </div>
+                        <div className="col-md-2">
+                            <button className="btn btn-success" onClick={this.addCredit}>Add Credit</button>
+                        </div>
+                    </div>
+                    <hr />
+                    <JournalsDebitTable JournalsDebit={this.state.JournalsDebit} />
+                    <JournalsCreditTable JournalsCredit={this.state.JournalsCredit} />
+                </div>
+            </div>
+        );
+    }
+});
+
+
+if (document.getElementById('AllJournals') != null) {
+    ReactDOM.render(<AllJournals />, document.getElementById('AllJournals'));
+}
+
 /*TODO:ctn Eventually will want to convert this code (as well as the login/signup page) to utilize REACT */
 /*TODO:ctn some code is repeated... This should be cleaned up */
 
