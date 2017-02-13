@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="layout :: head(title='React + Spring')"></head>
+<head th:replace="layout :: head(title='Admin')"></head>
 <body>
-<div th:replace="layout :: nav"></div>
+<div th:replace="layout :: nav(selectedTab='admin')"></div>
     <div id="addNewUser"></div>
     <div id="allUsers"></div>
 <block th:replace="layout :: script"></block>

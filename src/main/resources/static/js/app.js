@@ -705,6 +705,9 @@ var AccountRow = React.createClass({
             editing: true
         });
     },
+    handleViewAccount: function() {
+        alert("View functionality will be added later.");
+    },
     updateAccountAmount: function(evt) {
         this.setState({
             initialBalance: evt.target.value

@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head(title='Accounts')"></head>
+<body>
+<div th:replace="layout :: nav(selectedTab='accounts')"></div>
+<div id="AllAccounts"></div>
+<block th:replace="layout :: script"></block>
+</body>
+</html>

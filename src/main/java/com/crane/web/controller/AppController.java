@@ -65,6 +65,13 @@ public class AppController {
         return "events";
     }
 
+    @RequestMapping(value = "/accounts")
+    public String accounts() {
+        logger.info(" --- RequestMapping from /accounts");
+        logger.info(" --- Mapping to /accounts");
+        return "accounts";
+    }
+
     @RequestMapping(value = "/admin/addUser", method = RequestMethod.POST)
     public String addUser(HttpServletRequest request) {
         logger.info(" --- RequestMapping from /admin/addUser");

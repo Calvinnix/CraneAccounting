@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="layout :: head(title='React + Spring')"></head>
+<head th:replace="layout :: head(title='Home')"></head>
 <body>
-    <div th:replace="layout :: nav"></div>
-    <div id="AllAccounts"></div>
+    <div th:replace="layout :: nav(selectedTab='home')"></div>
+    <h1>Main Page</h1>
     <block th:replace="layout :: script"></block>
 </body>
 </html>

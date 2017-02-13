@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="layout :: head(title='View Events')"></head>
+<head th:replace="layout :: head(title='Events')"></head>
 <body>
-<div th:replace="layout :: nav"></div>
+<div th:replace="layout :: nav(selectedTab='events')"></div>
 <div id="AllEvents"></div>
 <block th:replace="layout :: script"></block>
 </body>
