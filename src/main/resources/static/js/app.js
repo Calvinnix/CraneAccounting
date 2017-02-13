@@ -560,6 +560,8 @@ var AccountRow = React.createClass({
         return { active: this.props.account.active,
                  initialBalance: this.props.account.initialBalance,
                  comment: this.props.account.comment,
+                 beforeEditInitialBalance: '',
+                 beforeEditComment: '',
                  editing: false};
     },
     handleEditConfirm: function() {
@@ -701,12 +703,20 @@ var AccountRow = React.createClass({
         });
     },
     handleEdit: function() {
+        var self = this;
         this.setState({
-            editing: true
+            editing: true,
+            beforeEditInitialBalance: self.state.initialBalance,
+            beforeEditComment: self.state.comment
         });
     },
-    handleViewAccount: function() {
-        alert("View functionality will be added later.");
+    handleEditCancel: function() {
+        var self = this;
+        this.setState({
+            editing: false,
+            initialBalance: self.state.beforeEditInitialBalance,
+            comment: self.state.beforeEditComment
+        });
     },
     updateAccountAmount: function(evt) {
         this.setState({
@@ -740,26 +750,28 @@ var AccountRow = React.createClass({
                       {this.state.editing ? ( 
                         <div className="col-md-4"><input type="text" className="form-control" onChange={this.updateAccountAmount} placeholder="Initial Balance" value={this.state.initialBalance} /></div> 
                       ) : (
-                        <div className="col-md-4"><h4>Initial Balance: <b>{this.props.account.initialBalance}</b></h4></div>
+                        <div className="col-md-4"><h4>Initial Balance: $<b>{this.props.account.initialBalance}</b></h4></div>
                       )}
                       {this.state.editing ? ( 
                           <div className="col-md-4"><textarea type="text" className="form-control" onChange={this.updateAccountComment} placeholder="Comments" value={this.state.comment} /></div>
                         ) : (
-                           <div className="col-md-4"><h4>Comments: <b>{this.props.account.comment}</b></h4></div> 
+                           <div className="col-md-4 wrap-words"><h4>Comments: <b>{this.props.account.comment}</b></h4></div> 
                         )}
                     </div>
                   <hr />
                   <div className="row">
                        <div className="col-md-4"></div>
-                        <div className="col-md-4"> 
-                            <button className={this.state.active && !this.state.editing ? "btn btn-primary accountOptions" : "btn btn-primary accountOptions disabled"} onClick={this.handleViewAccount}> View</button> 
+                        <div className="col-md-4">  
                             {this.state.editing ? ( 
-                                  <button className={this.state.active ? "btn btn-success accountOptions" : "btn btn-success accountOptions disabled"} onClick={this.handleEditConfirm}> Confirm Changes</button> 
+                                  <div>
+                                  <button className={this.state.active ? "btn btn-success accountOptions" : "btn btn-success accountOptions disabled"} onClick={this.handleEditConfirm}> Confirm Changes</button>
+                                  <button className="btn btn-danger accountOptions" onClick={this.handleEditCancel}> Discard Changes</button>
+                                  </div> 
                             ) : (
                                   <button className={this.state.active ? "btn btn-warning accountOptions" : "btn btn-warning accountOptions disabled"} onClick={this.handleEdit}> Edit</button> 
                              )}
                             {this.state.active ? ( 
-                                  <button className={this.state.editing ? "btn btn-danger accountOptions disabled" : "btn btn-danger accountOptions"} onClick={this.handleDeactivate}> Deactivate</button> 
+                                  <button className={this.state.editing ? "btn btn-danger accountOptions disabled hidden" : "btn btn-danger accountOptions"} onClick={this.handleDeactivate}> Deactivate</button> 
                              ) : ( 
                                   <button className={this.state.editing ? "btn btn-success accountOptions disabled" : "btn btn-success accountOptions"} onClick={this.handleActivate}> Activate</button> 
                             )} 
@@ -962,10 +974,11 @@ if (document.getElementById('AllAccounts') != null) {
 var EventRow = React.createClass({
         render: function() {
             return (
-                <div className="row">
-                      <div className="row row-striped">
+                <div className="row row-striped">
+                      <div className="row">
                           <div className="col-md-2">{this.props.event.timestamp}</div> 
-                          <div className="col-md-10">{this.props.event.description}</div>
+                          <div className="col-md-2">{this.props.event.user}</div> 
+                          <div className="col-md-8 wrap-words">{this.props.event.description}</div>
                       </div>
                 </div>
             );
@@ -1017,7 +1030,8 @@ var AllEvents = React.createClass({
                     <h1>Event Log</h1>
                     <div className="row header-row">
                           <div className="col-md-2"><h5>Timestamp</h5></div>
-                          <div className="col-md-10"><h5>Description</h5></div>
+                          <div className="col-md-2"><h5>User</h5></div>
+                          <div className="col-md-8"><h5>Description</h5></div>
                      </div>
                      <EventsTable events={this.state.events} />
                 </div>

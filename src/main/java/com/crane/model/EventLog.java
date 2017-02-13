@@ -15,13 +15,16 @@ public class EventLog {
 
     private String timestamp;
 
+    private String user;
+
     private String description;
 
     public EventLog() {
     }
 
-    public EventLog(String timestamp, String description) {
+    public EventLog(String timestamp, String user, String description) {
         this.timestamp = timestamp;
+        this.user = user;
         this.description = description;
     }
 
@@ -39,6 +42,14 @@ public class EventLog {
 
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
     }
 
     public String getDescription() {

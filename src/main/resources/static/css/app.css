@@ -92,3 +92,6 @@ a:hover {
 .nonactive div div h4 {
   opacity: 0.2;
   text-decoration: line-through; }
+
+.wrap-words {
+  word-break: break-all; }

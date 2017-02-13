@@ -90,7 +90,7 @@ public class SignupController {
         String currentTime = String.format("%02d-%02d-%d %02d:%02d:%02d.%03d", month, day, year, hour, minute, second, millis);
 
 
-        EventLog log = new EventLog(currentTime, String.format(" --- Created new user: %s", userForm.getUsername()));
+        EventLog log = new EventLog(currentTime, userForm.getUsername(), String.format(" --- Created new user: %s", userForm.getUsername()));
         eventLogService.save(log);
 
         logger.info(" --- Automatically logging in user");

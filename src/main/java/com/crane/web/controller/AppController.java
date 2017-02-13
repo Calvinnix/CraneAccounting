@@ -10,6 +10,8 @@ import com.crane.web.UserValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -105,7 +107,10 @@ public class AppController {
 
         String currentTime = String.format("%02d-%02d-%d %02d:%02d:%02d.%03d", month, day, year, hour, minute, second, millis);
 
-        EventLog log = new EventLog(currentTime, String.format(" --- Added new user: %s", username));
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentUser = auth.getName();
+
+        EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Added new user: %s", username));
         eventLogService.save(log);
 
         logger.info(" --- Redirecting to /admin");
@@ -140,8 +145,10 @@ public class AppController {
 
         String currentTime = String.format("%02d-%02d-%d %02d:%02d:%02d.%03d", month, day, year, hour, minute, second, millis);
 
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentUser = auth.getName();
 
-        EventLog log = new EventLog(currentTime, String.format(" --- Edited user: %s", username));
+        EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Edited user: %s", username));
         eventLogService.save(log);
 
         logger.info(" --- Redirecting to /admin");
@@ -198,8 +205,10 @@ public class AppController {
 
         String currentTime = String.format("%02d-%02d-%d %02d:%02d:%02d.%03d", month, day, year, hour, minute, second, millis);
 
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentUser = auth.getName();
 
-        EventLog log = new EventLog(currentTime, String.format(" --- Added new account: %s --- Initial Balance: %s --- Comments: %s", name, initialBalance, comment));
+        EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Added new account: %s --- Initial Balance: %s --- Comments: %s", name, initialBalance, comment));
         eventLogService.save(log);
 
         logger.info(" --- Redirecting to /");
@@ -250,8 +259,10 @@ public class AppController {
 
         String currentTime = String.format("%02d-%02d-%d %02d:%02d:%02d.%03d", month, day, year, hour, minute, second, millis);
 
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentUser = auth.getName();
 
-        EventLog log = new EventLog(currentTime, String.format(" --- Edited account: %s --- Initial Balance: %s --- Comments: %s --- Active: %s", name, initialBalance, comment, active));
+        EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Edited account: %s --- Initial Balance: %s --- Comments: %s --- Active: %s", name, initialBalance, comment, active));
         eventLogService.save(log);
 
 

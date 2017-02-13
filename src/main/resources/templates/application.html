@@ -1,9 +1,29 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org">
 <head th:replace="layout :: head(title='Home')"></head>
 <body>
     <div th:replace="layout :: nav(selectedTab='home')"></div>
-    <h1>Main Page</h1>
+    <div class="container">
+        <div class="jumbotron">
+            <h1>Crane Accounting</h1>
+            <p>Application Domain project taught by Dr. Mamo</p>
+            <hr />
+            <p><b>Created by:</b></p>
+            <p>Calvin Nix, Alejandro Estrada, Eric Plascencia, Noor Masood, and Shaun Dirton</p>
+            <hr />
+            <h2>Let's get started</h2>
+            <ul>
+                <li><a href="/accounts">Create an Account</a></li>
+                <li><a href="/accounts">Edit an Account</a></li>
+                <li><a href="/accounts">Deactivate an Account</a></li>
+                <li><a href="#">Add Journal Entry - TBD</a></li>
+                <li sec:authorize="hasRole('ROLE_ADMIN')"><a href="/admin">Manage Users</a></li>
+                <li sec:authorize="hasRole('ROLE_ADMIN')"><a href="/events">View Event Logs</a></li>
+            </ul>
+        </div>
+
+    </div>
     <block th:replace="layout :: script"></block>
 </body>
 </html>
