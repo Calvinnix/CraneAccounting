@@ -13,6 +13,7 @@ public class CraneAccounting {
 	//todo:ctn Add reporting (visualization.... D3.js ??)
 	//todo:ctn Add search ability for the select box
 	//todo:ctn Add search ability for accounts
+	//todo:ctn Write test scripts
 
 	public static void main(String[] args) {
 		SpringApplication.run(CraneAccounting.class, args);
