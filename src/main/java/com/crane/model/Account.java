@@ -28,6 +28,7 @@ public class Account {
 
     private Double initialBalance;
 
+    @Column(unique = true)
     private Long priority;
 
     @ManyToOne //todo: this may need to be OneToMany

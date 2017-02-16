@@ -7,4 +7,5 @@ import com.crane.model.ChartOfAccounts;
  */
 public interface ChartOfAccountsService {
     void save(ChartOfAccounts coa);
+    void update(ChartOfAccounts coa);
 }

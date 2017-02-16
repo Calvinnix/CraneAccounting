@@ -4,6 +4,7 @@ import com.crane.dao.AccountDao;
 import com.crane.dao.UserDao;
 import com.crane.model.*;
 import com.crane.service.AccountService;
+import com.crane.service.ChartOfAccountsService;
 import com.crane.service.EventLogService;
 import com.crane.service.UserService;
 import com.crane.web.UserValidator;
@@ -43,6 +44,9 @@ public class AppController {
     private EventLogService eventLogService;
 
     @Autowired
+    private ChartOfAccountsService chartOfAccountsService;
+
+    @Autowired
     private UserDao userDao;
 
     private static final Logger logger = LoggerFactory.getLogger(AppController.class);
@@ -80,6 +84,13 @@ public class AppController {
         logger.info(" --- RequestMapping from /journals");
         logger.info(" --- Mapping to /journals");
         return "journals";
+    }
+
+    @RequestMapping(value = "/chartOfAccounts")
+    public String chartOfAccounts() {
+        logger.info(" --- RequestMapping from /chartOfAccounts");
+        logger.info(" --- Mapping to /chartOfAccounts");
+        return "chartOfAccounts";
     }
 
     @RequestMapping(value = "/admin/addUser", method = RequestMethod.POST)
@@ -278,4 +289,91 @@ public class AppController {
         return "redirect:/";
     }
 
+    @RequestMapping(value = "/chartOfAccounts/addChartOfAccount", method = RequestMethod.POST)
+    public String addChartOfAccount(HttpServletRequest request) {
+        logger.info(" --- RequestMapping from /chartOfAccounts/addChartOfAccount");
+
+        String name = request.getParameter("name");
+        String strCode = request.getParameter("code");
+        String type = request.getParameter("type");
+        String mGroup = request.getParameter("mGroup");
+        String strPriority = request.getParameter("priority");
+        Double code = Double.parseDouble(strCode);
+        Long priority = Long.parseLong(strPriority);
+
+        Boolean leftNormalSide = false;
+        if (type.equals("Asset") || type.equals("Expense")) {
+            leftNormalSide = true;
+        }
+
+        ChartOfAccounts coa = new ChartOfAccounts(code, name, type, leftNormalSide, priority, mGroup);
+        chartOfAccountsService.save(coa);
+
+        Calendar now = Calendar.getInstance();
+        int year = now.get(Calendar.YEAR);
+        int month = now.get(Calendar.MONTH) + 1; // Note: zero based!
+        int day = now.get(Calendar.DAY_OF_MONTH);
+        int hour = now.get(Calendar.HOUR_OF_DAY);
+        int minute = now.get(Calendar.MINUTE);
+        int second = now.get(Calendar.SECOND);
+        int millis = now.get(Calendar.MILLISECOND);
+
+        String currentTime = String.format("%02d-%02d-%d %02d:%02d:%02d.%03d", month, day, year, hour, minute, second, millis);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentUser = auth.getName();
+
+        EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Added new account to chart of accounts: %s", name));
+        eventLogService.save(log);
+
+        logger.info(" --- Redirecting to /chartOfAccounts");
+        return "redirect:/chartOfAccounts";
+    }
+
+    @RequestMapping(value = "/chartOfAccounts/editChartOfAccount", method = RequestMethod.POST)
+    public String editChartOfAccount(HttpServletRequest request) {
+        logger.info(" --- RequestMapping from /chartOfAccounts/editChartOfAccount");
+
+        String strId = request.getParameter("id");
+        String name = request.getParameter("name");
+        String strCode = request.getParameter("code");
+        String type = request.getParameter("type");
+        String mGroup = request.getParameter("mGroup");
+        String strPriority = request.getParameter("priority");
+
+        Boolean leftNormalSide = false;
+        if (type.equals("Asset") || type.equals("Expense")) {
+            leftNormalSide = true;
+        }
+
+        Double code = Double.parseDouble(strCode);
+        Long priority = Long.parseLong(strPriority);
+        Long id = Long.parseLong(strId);
+
+        ChartOfAccounts coa = new ChartOfAccounts(code, name, type, leftNormalSide, priority, mGroup);
+        coa.setId(id);
+
+        chartOfAccountsService.update(coa);
+
+        Calendar now = Calendar.getInstance();
+        int year = now.get(Calendar.YEAR);
+        int month = now.get(Calendar.MONTH) + 1; // Note: zero based!
+        int day = now.get(Calendar.DAY_OF_MONTH);
+        int hour = now.get(Calendar.HOUR_OF_DAY);
+        int minute = now.get(Calendar.MINUTE);
+        int second = now.get(Calendar.SECOND);
+        int millis = now.get(Calendar.MILLISECOND);
+
+        String currentTime = String.format("%02d-%02d-%d %02d:%02d:%02d.%03d", month, day, year, hour, minute, second, millis);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentUser = auth.getName();
+
+        EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Edited account in chart of account: %s", name));
+        eventLogService.save(log);
+
+
+        logger.info(" --- Redirecting to /chartOfAccounts");
+        return "redirect:/chartOfAccounts";
+    }
 }

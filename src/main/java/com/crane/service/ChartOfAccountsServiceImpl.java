@@ -29,4 +29,21 @@ public class ChartOfAccountsServiceImpl implements ChartOfAccountsService {
 
         logger.info(String.format(" --- Exiting: %s", Thread.currentThread().getStackTrace()[1].getMethodName()));
     }
+
+    @Override
+    public void update(ChartOfAccounts coa) {
+        logger.info(String.format(" --- Entering: %s", Thread.currentThread().getStackTrace()[1].getMethodName()));
+
+        ChartOfAccounts chartOfAccountsFound = chartOfAccountsDao.findByName(coa.getName());
+
+        if (chartOfAccountsFound == null) {
+            logger.error(" --- The chart of account does not exist.");
+        } else {
+            coa.setId(chartOfAccountsFound.getId());
+        }
+
+        chartOfAccountsDao.save(coa);
+
+        logger.info(String.format(" --- Exiting: %s", Thread.currentThread().getStackTrace()[1].getMethodName()));
+    }
 }

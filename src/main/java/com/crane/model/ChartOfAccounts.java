@@ -12,6 +12,9 @@ public class ChartOfAccounts {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Long publicId;
+
+    @Column(unique = true)
     private Double code;
 
     @Column(unique = true)
@@ -19,6 +22,8 @@ public class ChartOfAccounts {
 
     private String type;
     private Boolean isLeftNormalSide;
+
+    @Column(unique = true)
     private Long priority;
     private String mGroup;
 
@@ -26,6 +31,7 @@ public class ChartOfAccounts {
     }
 
     public ChartOfAccounts(Double code, String name, String type, Boolean isLeftNormalSide, Long priority, String mGroup) {
+        this.publicId = id;
         this.code = code;
         this.name = name;
         this.type = type;
@@ -34,7 +40,15 @@ public class ChartOfAccounts {
         this.mGroup = mGroup;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Long getId() {
+        return id;
+    }
+
+    public Long getPublicId() {
         return id;
     }
 

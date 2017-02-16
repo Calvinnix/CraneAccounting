@@ -972,7 +972,7 @@ var AllAccounts = React.createClass({
                               <textarea type="text" className="form-control" onChange={this.updateAccountComment} aria-label="Comment"/>
                         </div>
                         <div className="col-md-2">
-                            <button className="btn btn-success" onClick={this.loadAccountInformationById}>Add Account</button>
+                            <button className="btn btn-primary" onClick={this.loadAccountInformationById}>Add Account</button>
                         </div>
                     </div>
                     <hr />
@@ -985,6 +985,359 @@ var AllAccounts = React.createClass({
 
 if (document.getElementById('AllAccounts') != null) {
     ReactDOM.render(<AllAccounts />, document.getElementById('AllAccounts'));
+}
+
+
+var ChartOfAccountRow = React.createClass({
+
+    getInitialState: function() {
+
+        return { editing: false,
+                 id: this.props.account.publicId,
+                 name: this.props.account.name,
+                 code: this.props.account.code,
+                 type: this.props.account.type,
+                 priority: this.props.account.priority,
+                 mGroup: this.props.account.mGroup,
+                 nameBeforeEdit: '',
+                 codeBeforeEdit: '',
+                 typeBeforeEdit: '',
+                 priorityBeforeEdit: '',
+                 mGroupBeforeEdit: ''};
+    },
+    handleEditConfirm: function() {
+        this.setState({
+            editing: false
+        });
+        var self = this;
+        $.ajax({
+            url: "http://localhost:8080/chartOfAccounts/editChartOfAccount",
+            type: "POST",
+            data: {
+               id: this.state.id,
+               name: this.state.name,
+               code: this.state.code,
+               type: this.state.type,
+               mGroup: this.state.mGroup,
+               priority: this.state.priority
+            },
+            success: function() {
+                self.props.loadChartOfAccountsFromServer();
+                toastr.options = {
+                    "debug": false,
+                    "positionClass": "toast-top-center",
+                    "onclick": null,
+                    "fadeIn": 300,
+                    "fadeOut": 100,
+                    "timeOut": 500,
+                    "extendedTimeOut": 500
+                }
+                toastr.success("Successfully Edited account");
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                toastr.options = {
+                    "debug": false,
+                    "positionClass": "toast-top-center",
+                    "onclick": null,
+                    "fadeIn": 300,
+                    "fadeOut": 100,
+                    "timeOut": 500,
+                    "extendedTimeOut": 500
+                }
+                toastr.error("Not Authorized");
+            }
+        });
+    },
+    handleEdit: function() {
+        var self = this;
+        this.setState({
+            editing: true,
+            nameBeforeEdit: self.state.name,
+            codeBeforeEdit: self.state.code,
+            typeBeforeEdit: self.state.type,
+            priorityBeforeEdit: self.state.priority,
+            mGroupBeforeEdit: self.state.mGroup
+        });
+    },
+    handleEditCancel: function() {
+        var self = this;
+        this.setState({
+            editing: false,
+            name: self.state.nameBeforeEdit,
+            code: self.state.codeBeforeEdit,
+            type: self.state.typeBeforeEdit,
+            priority: self.state.priorityBeforeEdit,
+            mGroup: self.state.mGroupBeforeEdit
+        });
+    },
+    updateName: function(evt) {
+        this.setState({
+            name: evt.target.value
+        });
+    },
+    updateCode: function(evt) {
+        this.setState({
+            code: evt.target.value
+        });
+    },
+    updateType: function(evt) {
+        this.setState({
+            type: evt.target.value
+        });
+    },
+    updateLeftNormalSide: function(evt) {
+        this.setState({
+            leftNormalSide: evt.target.value
+        });
+    },
+    updatePriority: function(evt) {
+        this.setState({
+            priority: evt.target.value
+        });
+    },
+    updateMGroup: function(evt) {
+        this.setState({
+            mGroup: evt.target.value
+        });
+    },
+    render: function() {
+        if (this.state.editing) {
+            return (
+                    <div className="row row-striped">
+                        <div className="col-md-3">
+                            <div className="input-group">
+                              <label>Account Name:</label>
+                              <input type="text" className="form-control" value={this.state.name} onChange={this.updateName} placeholder="Account Name"/>
+                            </div>
+                        </div>
+                        <div className="col-md-2">
+                            <div className="input-group">
+                              <label>Account Code:</label>
+                              <input type="number" className="form-control" value={this.state.code} onChange={this.updateCode} placeholder="Account Code"/>
+                            </div>
+                        </div>
+                        <div className="col-md-2">
+                            <div className="input-group">
+                              <label>Account Type:</label>
+                              <select className="form-control" name="selectAccountType" value={this.state.type} onChange={this.updateType}>
+                                  <option value="Asset">Asset</option>
+                                  <option value="Liabilities">Liabilities</option>
+                                  <option value="Owner's Equity">Owner's Equity</option>
+                                  <option value="Revenues">Revenues</option>
+                                  <option value="Operating Expenses">Operating Expenses</option>
+                              </select>
+                            </div>
+                        </div>
+                        <div className="col-md-2">
+                            <div className="input-group">
+                              <label>Priority:</label>
+                              <input type="number" className="form-control" value={this.state.priority} onChange={this.updatePriority}/>
+                            </div>
+                        </div>
+                        <div className="col-md-3">
+                            <div className="input-group">
+                              <label>Group:</label>
+                              <input type="text" className="form-control" value={this.state.mGroup} onChange={this.updateMGroup}/>
+                            </div>
+                        </div>
+                        <hr />
+                        <hr />
+                         <div className="col-md-6">  
+                             <button className="btn btn-success pull-right" onClick={this.handleEditConfirm}> Confirm Changes</button> 
+                         </div>
+                         <div className="col-md-6">  
+                              <button className="btn btn-danger" onClick={this.handleEditCancel}> Discard Changes</button> 
+                          </div>
+                    </div>
+            );
+        } else {
+            return (
+                    <div className="row row-striped">
+                      <div className="col-md-3"><h6>Name: <b>{this.props.account.name}</b></h6></div> 
+                      <div className="col-md-2"><h6>Code: <b>{this.props.account.code}</b></h6></div> 
+                      <div className="col-md-2"><h6>Type: <b>{this.props.account.type}</b></h6></div> 
+                      <div className="col-md-2"><h6>Priority: <b>{this.props.account.priority}</b></h6></div> 
+                      <div className="col-md-2"><h6>Sub-Group: <b>{this.props.account.mGroup}</b></h6></div> 
+                       <div className="col-md-1">  
+                         <button className="btn btn-warning accountOptions" onClick={this.handleEdit}> Edit</button> 
+                      </div>
+                    </div>
+            );
+        }
+    }
+});
+
+
+
+var ChartOfAccountsTable = React.createClass({
+    propTypes: {
+            chartOfAccounts: React.PropTypes.array.isRequired
+    },
+    render: function() {
+        var self = this;
+        var rows = [];
+        this.props.chartOfAccounts.forEach(function(account) {
+            rows.push(<ChartOfAccountRow account={account} key={account.name} loadChartOfAccountsFromServer={self.props.loadChartOfAccountsFromServer}/>);
+        });
+        return (
+            <div className="container">
+                {rows}
+            </div>
+        );
+    }
+});
+
+var AllChartOfAccounts = React.createClass({
+
+    getInitialState: function() {
+            return {ChartOfAccounts: [],
+                    code: '',
+                    name: '',
+                    type: 'Asset',
+                    priority: '',
+                    mGroup: ''
+                    };
+    },
+   componentDidMount: function () {
+        this.loadChartOfAccountsFromServer();
+    },
+    loadChartOfAccountsFromServer: function() {
+        var self = this;
+        $.ajax({
+            url: "http://localhost:8080/api/chartOfAccountses"
+        }).then(function (data) {
+            self.setState({ChartOfAccounts: data._embedded.chartOfAccountses});
+        });
+    },
+    handleAddAccount: function() {
+        var self = this;
+
+        $.ajax({
+            url: "http://localhost:8080/chartOfAccounts/addChartOfAccount",
+            type: "POST",
+            data: {
+                   name: this.state.name,
+                   code: this.state.code,
+                   type: this.state.type,
+                   mGroup: this.state.mGroup,
+                   priority: this.state.priority
+                   },
+            success: function() {
+                toastr.options = {
+                    "debug": false,
+                    "positionClass": "toast-top-center",
+                    "onclick": null,
+                    "fadeIn": 300,
+                    "fadeOut": 100,
+                    "timeOut": 500,
+                    "extendedTimeOut": 500
+                }
+                toastr.success("Successfully Added Account!");
+                self.loadChartOfAccountsFromServer();
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                toastr.options = {
+                    "debug": false,
+                    "positionClass": "toast-top-center",
+                    "onclick": null,
+                    "fadeIn": 300,
+                    "fadeOut": 100,
+                    "timeOut": 500,
+                    "extendedTimeOut": 500
+                }
+                toastr.error("Not Authorized");
+            }
+        });
+    },
+    updateName: function(evt) {
+        this.setState({
+            name: evt.target.value
+        });
+    },
+    updateCode: function(evt) {
+        this.setState({
+            code: evt.target.value
+        });
+    },
+    updateType: function(evt) {
+        this.setState({
+            type: evt.target.value
+        });
+    },
+    updateLeftNormalSide: function(evt) {
+        this.setState({
+            leftNormalSide: evt.target.value
+        });
+    },
+    updatePriority: function(evt) {
+        this.setState({
+            priority: evt.target.value
+        });
+    },
+    updateMGroup: function(evt) {
+        this.setState({
+            mGroup: evt.target.value
+        });
+    },
+    render: function() {
+        var self = this;
+        return (
+            <div>
+                <div className="container">
+                    <div className="well well-lg">
+                        <div className="row">
+                            <div className="col-md-3">
+                                <div className="input-group">
+                                  <label>Account Name:</label>
+                                  <input type="text" className="form-control" value={this.state.name} onChange={this.updateName} placeholder="Account Name"/>
+                                </div>
+                            </div>
+                            <div className="col-md-2">
+                                <div className="input-group">
+                                  <label>Account Code:</label>
+                                  <input type="number" className="form-control" value={this.state.code} onChange={this.updateCode} placeholder="Account Code"/>
+                                </div>
+                            </div>
+                            <div className="col-md-2">
+                                <div className="input-group">
+                                  <label>Account Type:</label>
+                                  <select className="form-control" name="selectAccountType" value={this.state.type} onChange={this.updateType}>
+                                      <option value="Asset">Asset</option>
+                                      <option value="Liabilities">Liabilities</option>
+                                      <option value="Owner's Equity">Owner's Equity</option>
+                                      <option value="Revenues">Revenues</option>
+                                      <option value="Operating Expenses">Operating Expenses</option>
+                                  </select>
+                                </div>
+                            </div>
+                            <div className="col-md-2">
+                                <div className="input-group">
+                                  <label>Priority:</label>
+                                  <input type="number" className="form-control" value={this.state.priority} onChange={this.updatePriority}/>
+                                </div>
+                            </div>
+                            <div className="col-md-3">
+                                <div className="input-group">
+                                  <label>Group:</label>
+                                  <input type="text" className="form-control" value={this.state.mGroup} onChange={this.updateMGroup}/>
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <div className="row">
+                            <button className="btn btn-primary pull-right" onClick={this.handleAddAccount}>Add Account</button>
+                        </div>
+                    </div>
+                    <hr />
+                    <ChartOfAccountsTable chartOfAccounts={this.state.ChartOfAccounts} loadChartOfAccountsFromServer={this.loadChartOfAccountsFromServer} />
+                </div>
+            </div>
+        );
+    }
+});
+
+if (document.getElementById('AllChartOfAccounts') != null) {
+    ReactDOM.render(<AllChartOfAccounts />, document.getElementById('AllChartOfAccounts'));
 }
 
 var EventRow = React.createClass({

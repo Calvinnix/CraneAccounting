@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ChartOfAccountsDao extends CrudRepository<ChartOfAccounts, Long> {
+    ChartOfAccounts findByName(String name);
 }

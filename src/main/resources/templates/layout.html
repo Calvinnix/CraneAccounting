@@ -32,7 +32,9 @@
                     <li sec:authorize="hasRole('ROLE_ADMIN')"><a href="/console">Console</a></li>
                     <li th:class="${selectedTab} == 'events' ? 'active' : ''" sec:authorize="hasRole('ROLE_ADMIN')"><a href="/events">Event Log</a></li>
                     <li th:class="${selectedTab} == 'accounts' ? 'active' : ''"><a href="/accounts">Accounts</a></li>
+                    <li sec:authorize="hasRole('ROLE_ADMIN')" th:class="${selectedTab} == 'chartOfAccounts' ? 'active' : ''"><a href="/chartOfAccounts">Chart of Accounts</a></li>
                     <li th:class="${selectedTab} == 'journals' ? 'active' : ''"><a href="/journals">Journals</a></li>
+
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
