@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -182,7 +183,7 @@ public class AppController {
 
         Double code = Double.parseDouble(strCode);
         Boolean leftNormalSide = Boolean.parseBoolean(strLeftNormalSide);
-        Long initialBalance = Long.parseLong(strInitialBalance);
+        Double initialBalance = Double.parseDouble(strInitialBalance);
         Long priority = Long.parseLong(strPriority);
 
         Account account = new Account();
@@ -238,7 +239,7 @@ public class AppController {
 
         Double code = Double.parseDouble(strCode);
         Boolean leftNormalSide = Boolean.parseBoolean(strLeftNormalSide);
-        Long initialBalance = Long.parseLong(strInitialBalance);
+        Double initialBalance = Double.parseDouble(strInitialBalance);
         Long priority = Long.parseLong(strPriority);
         Boolean active = Boolean.parseBoolean(strActive);
 

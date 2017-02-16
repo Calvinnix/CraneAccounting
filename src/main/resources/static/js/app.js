@@ -557,12 +557,28 @@ var AccountSelect = React.createClass({
 var AccountRow = React.createClass({
 
     getInitialState: function() {
+
         return { active: this.props.account.active,
                  initialBalance: this.props.account.initialBalance,
                  comment: this.props.account.comment,
                  beforeEditInitialBalance: '',
                  beforeEditComment: '',
                  editing: false};
+    },
+    componentDidMount: function () {
+        this.formatBalance();
+    },
+    formatBalance: function(number) {
+        //This is used to format the initial balance as a number
+
+        var formattedInitialBalance = this.state.initialBalance;
+        if (!(/^(\d+\.\d\d)$/.test(formattedInitialBalance))) {
+            //number needs formatting
+            formattedInitialBalance = formattedInitialBalance.toFixed(2);
+            this.setState({
+                initialBalance: formattedInitialBalance
+            });
+        }
     },
     handleEditConfirm: function() {
         this.setState({
@@ -624,7 +640,7 @@ var AccountRow = React.createClass({
                type: this.props.account.type,
                mGroup: this.props.account.mGroup,
                leftNormalSide: this.props.account.leftNormalSide,
-               initialBalance: this.props.account.initialBalance,
+               initialBalance: this.state.initialBalance,
                comment: this.props.account.comment,
                priority: this.props.account.priority,
                active: false
@@ -670,7 +686,7 @@ var AccountRow = React.createClass({
                type: this.props.account.type,
                mGroup: this.props.account.mGroup,
                leftNormalSide: this.props.account.leftNormalSide,
-               initialBalance: this.props.account.initialBalance,
+               initialBalance: this.state.initialBalance,
                comment: this.props.account.comment,
                priority: this.props.account.priority,
                active: true
@@ -748,9 +764,9 @@ var AccountRow = React.createClass({
                    <div className="row">
                       <div className="col-md-4"><h4>Added by: <b>{this.props.account.addedByUsername}</b></h4></div> 
                       {this.state.editing ? ( 
-                        <div className="col-md-4"><input type="text" className="form-control" onChange={this.updateAccountAmount} placeholder="Initial Balance" value={this.state.initialBalance} /></div> 
+                        <div className="col-md-4"><input type="number" min="0" step="any" className="form-control" onChange={this.updateAccountAmount} placeholder="Initial Balance" value={this.state.initialBalance} /></div> 
                       ) : (
-                        <div className="col-md-4"><h4>Initial Balance: $<b>{this.props.account.initialBalance}</b></h4></div>
+                        <div className="col-md-4"><h4>Initial Balance: $<b>{this.state.initialBalance}</b></h4></div>
                       )}
                       {this.state.editing ? ( 
                           <div className="col-md-4"><textarea type="text" className="form-control" onChange={this.updateAccountComment} placeholder="Comments" value={this.state.comment} /></div>
@@ -949,7 +965,7 @@ var AllAccounts = React.createClass({
                         <div className="col-md-2">
                             <div className="input-group">
                               <span className="input-group-addon">$</span>
-                              <input type="text" className="form-control" onChange={this.updateAccountAmount} aria-label="Amount"/>
+                              <input type="number" min="0" step="any" className="form-control" onChange={this.updateAccountAmount} aria-label="Amount"/>
                             </div>
                         </div>
                         <div className="col-md-3">
@@ -1192,7 +1208,7 @@ var AllJournals = React.createClass({
                         <div className="col-md-3">
                             <div className="input-group">
                               <span className="input-group-addon">$</span>
-                              <input type="text" className="form-control" onChange={this.updateDebitAmount} aria-label="Amount"/>
+                              <input type="number" min="0" step="any" className="form-control" onChange={this.updateDebitAmount} aria-label="Amount"/>
                             </div>
                         </div>
                         <div className="col-md-2">
@@ -1209,7 +1225,7 @@ var AllJournals = React.createClass({
                         <div className="col-md-3">
                             <div className="input-group">
                               <span className="input-group-addon">$</span>
-                              <input type="text" className="form-control" onChange={this.updateCreditAmount} aria-label="Amount"/>
+                              <input type="number" min="0" step="any" className="form-control" onChange={this.updateCreditAmount} aria-label="Amount"/>
                             </div>
                         </div>
                         <div className="col-md-2">

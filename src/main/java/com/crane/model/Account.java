@@ -1,6 +1,8 @@
 package com.crane.model;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.*;
 
 /**
@@ -14,6 +16,7 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private Double code;
 
     @Column(unique = true)
@@ -23,7 +26,7 @@ public class Account {
 
     private Boolean isLeftNormalSide;
 
-    private Long initialBalance;
+    private Double initialBalance;
 
     private Long priority;
 
@@ -39,7 +42,7 @@ public class Account {
 
     private String mGroup;
 
-    public Account(Double code, String name, String type, Boolean isLeftNormalSide, Long initialBalance, Long priority, User addedBy, String addedOn, Boolean active, String mGroup, String comment) {
+    public Account(Double code, String name, String type, Boolean isLeftNormalSide, Double initialBalance, Long priority, User addedBy, String addedOn, Boolean active, String mGroup, String comment) {
         this.code = code;
         this.name = name;
         this.type = type;
@@ -95,11 +98,11 @@ public class Account {
         isLeftNormalSide = leftNormalSide;
     }
 
-    public Long getInitialBalance() {
+    public Double getInitialBalance() {
         return initialBalance;
     }
 
-    public void setInitialBalance(Long initialBalance) {
+    public void setInitialBalance(Double initialBalance) {
         this.initialBalance = initialBalance;
     }
 
@@ -162,7 +165,7 @@ public class Account {
     public Account() {
     }
 
-    public Account(String name, Double code, Long initialBalance, User addedBy, String addedOn, String comment) {
+    public Account(String name, Double code, Double initialBalance, User addedBy, String addedOn, String comment) {
         this.name = name;
         this.code = code;
         this.initialBalance = initialBalance;
