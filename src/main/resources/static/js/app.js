@@ -869,7 +869,7 @@ var AllAccounts = React.createClass({
                  type: data.type,
                  mGroup: data.mGroup,
                  leftNormalSide: data.leftNormalSide,
-                 priority: id,
+                 priority: data.priority,
                  username: username
                  },
                 function () {
