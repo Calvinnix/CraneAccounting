@@ -16,6 +16,8 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Long publicId;
+
     @Column(unique = true)
     private Double code;
 
@@ -65,6 +67,10 @@ public class Account {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getPublicId() {
+        return id;
     }
 
     public Double getCode() {

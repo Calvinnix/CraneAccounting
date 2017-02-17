@@ -537,7 +537,16 @@ var AccountSelect = React.createClass({
     render: function() {
         var accounts = [];
         this.props.accounts.forEach(function(account) {
-            accounts.push(<Account account={account} key={account.name}/>);
+            if (account.active != null) {
+                //called from journalizing
+                if (account.active) {
+                    accounts.push(<Account account={account} key={account.name}/>);
+                }
+            } else {
+                //called from chart of account NOTE: this may change if we ever make
+                //chart of accounts with the ability to be disabled
+                accounts.push(<Account account={account} key={account.name}/>);
+            }
         });
         return (
             <select className="form-control" name="selectAccountName" value={this.props.id} onChange={this.props.onChange}>
@@ -1412,17 +1421,16 @@ var JournalDebitRow = React.createClass({
             return (
                 <div className="row">
                       <div className="row">
-                          <div className="col-md-4 text-right">{this.props.JournalDebit.accountName}</div> 
-                          <div className="col-md-4 text-right">{this.props.JournalDebit.amount}</div> 
+                          <div className="col-md-4 text-left"><h4>{this.props.JournalDebit.accountCode} - {this.props.JournalDebit.accountName}</h4></div> 
+                          <div className="col-md-4 text-right"><h4>$ {this.props.JournalDebit.amount}</h4></div> 
                           <div className="col-md-2"></div> 
                           <div className="col-md-2">
-                                    <span className="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+                               <button className="btn btn-danger" onClick={this.props.removeDebitJournalEntry}><span className="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
                           </div> 
                       </div>
                 </div>
             );
         }
-
 });
 
 var JournalCreditRow = React.createClass({
@@ -1431,16 +1439,15 @@ var JournalCreditRow = React.createClass({
                 <div className="row">
                       <div className="row">
                           <div className="col-md-2"></div> 
-                          <div className="col-md-4 text-right">{this.props.JournalCredit.accountName}</div> 
-                          <div className="col-md-4 text-right">{this.props.JournalCredit.amount}</div> 
+                          <div className="col-md-4 text-left"><h4>{this.props.JournalCredit.accountCode} - {this.props.JournalCredit.accountName}</h4></div> 
+                          <div className="col-md-4 text-right"><h4>$ {this.props.JournalCredit.amount}</h4></div> 
                           <div className="col-md-2">
-                                    <span className="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+                                <button className="btn btn-danger" onClick={this.props.removeCreditJournalEntry}><span className="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
                           </div> 
                       </div>
                 </div>
             );
         }
-
 });
 
 var JournalsDebitTable = React.createClass({
@@ -1452,7 +1459,7 @@ var JournalsDebitTable = React.createClass({
         var rows = [];
         var index = 0;
         this.props.JournalsDebit.forEach(function(JournalDebit) {
-            rows.push(<JournalDebitRow JournalDebit={JournalDebit} key={index++}/>);
+                rows.push(<JournalDebitRow removeDebitJournalEntry={self.props.removeDebitJournalEntry} JournalDebit={JournalDebit} key={index++}/>);
         });
         return (
             <div className="container">
@@ -1471,7 +1478,7 @@ var JournalsCreditTable = React.createClass({
         var rows = [];
         var index = 0;
         this.props.JournalsCredit.forEach(function(JournalCredit) {
-            rows.push(<JournalCreditRow JournalCredit={JournalCredit} key={index++}/>);
+            rows.push(<JournalCreditRow removeCreditJournalEntry={self.props.removeCreditJournalEntry} JournalCredit={JournalCredit} key={index++}/>);
         });
         return (
             <div className="container">
@@ -1526,7 +1533,8 @@ var AllJournals = React.createClass({
     },
     addDebit: function() {
         var newDebit = {accountName: this.state.accounts[this.state.debitAccountID-1].name,
-                       amount:     this.state.debitAmount};
+                        accountCode: this.state.accounts[this.state.debitAccountID-1].code,
+                        amount:      this.state.debitAmount};
         var self = this;
         this.setState({
             JournalsDebit: self.state.JournalsDebit.concat([newDebit])
@@ -1534,11 +1542,23 @@ var AllJournals = React.createClass({
     },
     addCredit: function() {
         var newCredit = {accountName: this.state.accounts[this.state.creditAccountID-1].name,
-                               amount:     this.state.creditAmount};
+                         accountCode: this.state.accounts[this.state.creditAccountID-1].code,
+                         amount:      this.state.creditAmount};
         var self = this;
         this.setState({
             JournalsCredit: self.state.JournalsCredit.concat([newCredit])
         });
+    },
+    removeDebitJournalEntry: function() {
+        alert(this.state.JournalsDebit);
+        alert("remove debit");
+    },
+    removeCreditJournalEntry: function() {
+        alert(this.state.JournalsCredit);
+        alert("remove credit");
+    },
+    addJournalEntry: function() {
+        alert("Adding journal entry");
     },
     render: function() {
         var self = this;
@@ -1546,41 +1566,62 @@ var AllJournals = React.createClass({
             <div>
                 <div className="container">
                     <h1>Journal Entries</h1>
-                     <hr />
-                    <div className="row">
-                        <div className="col-md-5">
-                            <AccountSelect accounts={this.state.accounts} onChange={this.updateDebitAccountID} id={this.state.debitAccountID}/>
-                        </div>
-                        <div className="col-md-3">
-                            <div className="input-group">
-                              <span className="input-group-addon">$</span>
-                              <input type="number" min="0" step="any" className="form-control" onChange={this.updateDebitAmount} aria-label="Amount"/>
+                    <div className="well well-lg">
+                        <div className="row">
+                            <div className="col-md-5">
+                                <AccountSelect accounts={this.state.accounts} onChange={this.updateDebitAccountID} id={this.state.debitAccountID}/>
+                            </div>
+                            <div className="col-md-3">
+                                <div className="input-group">
+                                  <span className="input-group-addon">$</span>
+                                  <input type="number" min="0" step="any" className="form-control" onChange={this.updateDebitAmount} aria-label="Amount"/>
+                                </div>
+                            </div>
+                            <div className="col-md-2"></div>
+                            <div className="col-md-2">
+                                <button className="btn btn-success" onClick={this.addDebit}>Add Debit</button>
                             </div>
                         </div>
-                        <div className="col-md-2">
-                            <button className="btn btn-success" onClick={this.addDebit}>Add Debit</button>
-                        </div>
-                        <div className="col-md-2"></div>
-                    </div>
-                    <hr />
-                    <div className="row">
-                        <div className="col-md-2"></div>
-                        <div className="col-md-5">
-                            <AccountSelect accounts={this.state.accounts} onChange={this.updateCreditAccountID} id={this.state.creditAccountID}/>
-                        </div>
-                        <div className="col-md-3">
-                            <div className="input-group">
-                              <span className="input-group-addon">$</span>
-                              <input type="number" min="0" step="any" className="form-control" onChange={this.updateCreditAmount} aria-label="Amount"/>
+                        <hr />
+                        <div className="row">
+                            <div className="col-md-2"></div>
+                            <div className="col-md-5">
+                                <AccountSelect accounts={this.state.accounts} onChange={this.updateCreditAccountID} id={this.state.creditAccountID}/>
+                            </div>
+                            <div className="col-md-3">
+                                <div className="input-group">
+                                  <span className="input-group-addon">$</span>
+                                  <input type="number" min="0" step="any" className="form-control" onChange={this.updateCreditAmount} aria-label="Amount"/>
+                                </div>
+                            </div>
+                            <div className="col-md-2">
+                                <button className="btn btn-success" onClick={this.addCredit}>Add Credit</button>
                             </div>
                         </div>
-                        <div className="col-md-2">
-                            <button className="btn btn-success" onClick={this.addCredit}>Add Credit</button>
-                        </div>
                     </div>
                     <hr />
-                    <JournalsDebitTable JournalsDebit={this.state.JournalsDebit} />
-                    <JournalsCreditTable JournalsCredit={this.state.JournalsCredit} />
+                    <div className="well well-lg">
+                        <JournalsDebitTable removeDebitJournalEntry={this.removeDebitJournalEntry} JournalsDebit={this.state.JournalsDebit} />
+                        <JournalsCreditTable removeCreditJournalEntry={this.removeCreditJournalEntry} JournalsCredit={this.state.JournalsCredit} />
+                        <hr />
+                        <div className="row">
+                            <div className="col-md-10">
+                                <label className="btn btn-default" for="my-file-selector">
+                                    <input id="my-file-selector" className="hidden" type="file" multiple="multiple" />
+                                    Upload Supporting Documents
+                                </label>
+                                <h4 id="upload-file-info"></h4>
+                            </div>
+                            <div className="col-md-2">
+                                { (this.state.JournalsDebit.length > 0 || this.state.JournalsCredit.length > 0) ? (
+                                    <button className="btn btn-primary" onClick={this.addJournalEntry}>Submit Journal Entry</button>
+                                    ) : (
+                                    <button className="btn btn-primary disabled" onClick={this.addJournalEntry}>Submit Journal Entry</button>
+                                    )
+                                }
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         );
@@ -1601,6 +1642,11 @@ $("#btnLogin").click(function(e) {
 
 $("#btnSignup").click(function(e) {
   validateSignupForm($(this), e);
+});
+
+$("#my-file-selector").change(function() {
+    alert($(this).html());
+    $('#upload-file-info').html($(this).val());
 });
 
 function validateLoginForm(element, e) {
