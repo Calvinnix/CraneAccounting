@@ -1417,6 +1417,14 @@ if (document.getElementById('AllEvents') != null) {
 }
 
 var JournalDebitRow = React.createClass({
+        getInitialState: function() {
+            return {
+                    index: this.props.index
+                    };
+        },
+        redirectToRemove: function(evt) {
+            this.props.removeDebitJournalEntry(this.state.index);
+        },
         render: function() {
             return (
                 <div className="row">
@@ -1425,7 +1433,7 @@ var JournalDebitRow = React.createClass({
                           <div className="col-md-4 text-right"><h4>$ {this.props.JournalDebit.amount}</h4></div> 
                           <div className="col-md-2"></div> 
                           <div className="col-md-2">
-                               <button className="btn btn-danger" onClick={this.props.removeDebitJournalEntry}><span className="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                               <button className="btn btn-danger" onClick={this.redirectToRemove} value={this.state.index}><span className="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
                           </div> 
                       </div>
                 </div>
@@ -1434,6 +1442,14 @@ var JournalDebitRow = React.createClass({
 });
 
 var JournalCreditRow = React.createClass({
+        getInitialState: function() {
+            return {
+                    index: this.props.index
+                    };
+        },
+        redirectToRemove: function(evt) {
+            this.props.removeCreditJournalEntry(this.state.index);
+        },
         render: function() {
             return (
                 <div className="row">
@@ -1442,7 +1458,7 @@ var JournalCreditRow = React.createClass({
                           <div className="col-md-4 text-left"><h4>{this.props.JournalCredit.accountCode} - {this.props.JournalCredit.accountName}</h4></div> 
                           <div className="col-md-4 text-right"><h4>$ {this.props.JournalCredit.amount}</h4></div> 
                           <div className="col-md-2">
-                                <button className="btn btn-danger" onClick={this.props.removeCreditJournalEntry}><span className="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                                <button className="btn btn-danger" onClick={this.redirectToRemove} value={this.state.index}><span className="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
                           </div> 
                       </div>
                 </div>
@@ -1457,9 +1473,10 @@ var JournalsDebitTable = React.createClass({
     render: function() {
         var self = this;
         var rows = [];
-        var index = 0;
+        var index = 1;
         this.props.JournalsDebit.forEach(function(JournalDebit) {
-                rows.push(<JournalDebitRow removeDebitJournalEntry={self.props.removeDebitJournalEntry} JournalDebit={JournalDebit} key={index++}/>);
+                rows.push(<JournalDebitRow removeDebitJournalEntry={self.props.removeDebitJournalEntry} JournalDebit={JournalDebit} key={index} index={index}/>);
+                index++;
         });
         return (
             <div className="container">
@@ -1476,9 +1493,10 @@ var JournalsCreditTable = React.createClass({
     render: function() {
         var self = this;
         var rows = [];
-        var index = 0;
+        var index = 1;
         this.props.JournalsCredit.forEach(function(JournalCredit) {
-            rows.push(<JournalCreditRow removeCreditJournalEntry={self.props.removeCreditJournalEntry} JournalCredit={JournalCredit} key={index++}/>);
+            rows.push(<JournalCreditRow removeCreditJournalEntry={self.props.removeCreditJournalEntry} JournalCredit={JournalCredit} key={index} index={index}/>);
+            index++;
         });
         return (
             <div className="container">
@@ -1549,13 +1567,21 @@ var AllJournals = React.createClass({
             JournalsCredit: self.state.JournalsCredit.concat([newCredit])
         });
     },
-    removeDebitJournalEntry: function() {
-        alert(this.state.JournalsDebit);
-        alert("remove debit");
+    removeDebitJournalEntry: function(index) {
+        var self = this;
+        index--; //index is based in as 1 based. Need to adjust
+        this.state.JournalsDebit.splice(index, 1);
+        this.setState({
+            JournalsDebit: self.state.JournalsDebit
+        });
     },
-    removeCreditJournalEntry: function() {
-        alert(this.state.JournalsCredit);
-        alert("remove credit");
+    removeCreditJournalEntry: function(index) {
+        var self = this;
+        index--; //index is based in as 1 based. Need to adjust
+        this.state.JournalsCredit.splice(index, 1);
+        this.setState({
+            JournalsCredit: self.state.JournalsCredit
+        });
     },
     addJournalEntry: function() {
         alert("Adding journal entry");
