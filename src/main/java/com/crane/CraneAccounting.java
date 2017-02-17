@@ -13,7 +13,6 @@ public class CraneAccounting {
 	//todo:ctn Add search ability for accounts
 	//todo:ctn Write test scripts
 	//todo:ctn Add ability to upload documents in journalizing step
-	//todo:ctn Add check during editing account for make sure type and code are valid
 
 	public static void main(String[] args) {
 		SpringApplication.run(CraneAccounting.class, args);

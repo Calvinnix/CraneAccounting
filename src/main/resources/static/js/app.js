@@ -1584,7 +1584,82 @@ var AllJournals = React.createClass({
         });
     },
     addJournalEntry: function() {
-        alert("Adding journal entry");
+        var self = this;
+        var username = document.getElementById("username").innerText;
+
+        this.state.JournalsDebit.forEach(function(journalDebit) {
+            $.ajax({
+                url: "http://localhost:8080/journals/addTransaction",
+                type: "POST",
+                data: {
+                   accountName: journalDebit.accountName,
+                   amount: journalDebit.amount,
+                   username: username,
+                   isDebit: true
+                },
+                success: function() {
+                    toastr.options = {
+                        "debug": false,
+                        "positionClass": "toast-top-center",
+                        "onclick": null,
+                        "fadeIn": 300,
+                        "fadeOut": 100,
+                        "timeOut": 500,
+                        "extendedTimeOut": 500
+                    }
+                    toastr.success("Successfully added Debit Transaction");
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    toastr.options = {
+                        "debug": false,
+                        "positionClass": "toast-top-center",
+                        "onclick": null,
+                        "fadeIn": 300,
+                        "fadeOut": 100,
+                        "timeOut": 500,
+                        "extendedTimeOut": 500
+                    }
+                    toastr.error("Not Authorized");
+                }
+            });
+        });
+        this.state.JournalsCredit.forEach(function(journalCredit) {
+            $.ajax({
+                url: "http://localhost:8080/journals/addTransaction",
+                type: "POST",
+                data: {
+                   accountName: journalCredit.accountName,
+                   amount: journalCredit.amount,
+                   username: username,
+                   isDebit: false
+                },
+                success: function() {
+                    toastr.options = {
+                        "debug": false,
+                        "positionClass": "toast-top-center",
+                        "onclick": null,
+                        "fadeIn": 300,
+                        "fadeOut": 100,
+                        "timeOut": 500,
+                        "extendedTimeOut": 500
+                    }
+                    toastr.success("Successfully added Credit Transaction");
+                },
+                error: function(xhr, ajaxOptions, thrownError) {
+                    toastr.options = {
+                        "debug": false,
+                        "positionClass": "toast-top-center",
+                        "onclick": null,
+                        "fadeIn": 300,
+                        "fadeOut": 100,
+                        "timeOut": 500,
+                        "extendedTimeOut": 500
+                    }
+                    toastr.error("Not Authorized");
+                }
+            });
+        });
+
     },
     render: function() {
         var self = this;

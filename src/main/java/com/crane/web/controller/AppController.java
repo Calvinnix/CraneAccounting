@@ -3,10 +3,7 @@ package com.crane.web.controller;
 import com.crane.dao.AccountDao;
 import com.crane.dao.UserDao;
 import com.crane.model.*;
-import com.crane.service.AccountService;
-import com.crane.service.ChartOfAccountsService;
-import com.crane.service.EventLogService;
-import com.crane.service.UserService;
+import com.crane.service.*;
 import com.crane.web.UserValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +46,13 @@ public class AppController {
     private ChartOfAccountsService chartOfAccountsService;
 
     @Autowired
+    private TransactionService transactionService;
+
+    @Autowired
     private UserDao userDao;
+
+    @Autowired
+    private AccountDao accountDao;
 
     private static final Logger logger = LoggerFactory.getLogger(AppController.class);
 
@@ -377,5 +380,43 @@ public class AppController {
 
         logger.info(" --- Redirecting to /chartOfAccounts");
         return "redirect:/chartOfAccounts";
+    }
+
+    @RequestMapping(value = "/journals/addTransaction", method = RequestMethod.POST)
+    public String addTransaction(HttpServletRequest request) {
+        logger.info(" --- RequestMapping from /journals/addTransaction");
+
+        String accountName = request.getParameter("accountName");
+        String strAmount = request.getParameter("amount");
+        String username = request.getParameter("username");
+        String strIsDebit = request.getParameter("isDebit");
+
+        User userFound = userDao.findByUsername(username);
+        Double amount = Double.valueOf(strAmount);
+        Account accountFound = accountDao.findByName(accountName);
+        Boolean isDebit = Boolean.valueOf(strIsDebit);
+
+        Transaction transaction = new Transaction(accountFound, amount, userFound, isDebit);
+        transactionService.save(transaction);
+
+        Calendar now = Calendar.getInstance();
+        int year = now.get(Calendar.YEAR);
+        int month = now.get(Calendar.MONTH) + 1; // Note: zero based!
+        int day = now.get(Calendar.DAY_OF_MONTH);
+        int hour = now.get(Calendar.HOUR_OF_DAY);
+        int minute = now.get(Calendar.MINUTE);
+        int second = now.get(Calendar.SECOND);
+        int millis = now.get(Calendar.MILLISECOND);
+
+        String currentTime = String.format("%02d-%02d-%d %02d:%02d:%02d.%03d", month, day, year, hour, minute, second, millis);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentUser = auth.getName();
+
+        EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Added new transaction for account: %s --- amount = %s", accountName, amount));
+        eventLogService.save(log);
+
+        logger.info(" --- Redirecting to /journals");
+        return "redirect:/journals";
     }
 }
