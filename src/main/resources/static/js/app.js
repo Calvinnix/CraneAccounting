@@ -525,7 +525,7 @@ var Account = React.createClass({
     },
     render: function() {
         return (
-            <option value={this.props.id}>{this.props.account.code} - {this.props.account.name}</option>
+            <option value={this.props.account.publicId}>{this.props.account.code} - {this.props.account.name}</option>
         );
     }
 });
@@ -536,15 +536,8 @@ var AccountSelect = React.createClass({
     },
     render: function() {
         var accounts = [];
-        var id = 0;
         this.props.accounts.forEach(function(account) {
-            /**
-                There is no id property on account by default
-                so we will add via this loop. We will just increment
-                by one each time.
-            */
-            id = id + 1;
-            accounts.push(<Account id={id} account={account} key={account.name}/>);
+            accounts.push(<Account account={account} key={account.name}/>);
         });
         return (
             <select className="form-control" name="selectAccountName" value={this.props.id} onChange={this.props.onChange}>
@@ -840,13 +833,13 @@ var AllAccounts = React.createClass({
         this.loadAccountsFromServer();
     },
     loadAccountsFromServer: function() {
-            var self = this;
-            $.ajax({
-                url: "http://localhost:8080/api/accounts"
-            }).then(function (data) {
-                self.setState({accounts: data._embedded.accounts});
-            });
-        },
+        var self = this;
+        $.ajax({
+            url: "http://localhost:8080/api/accounts"
+        }).then(function (data) {
+            self.setState({accounts: data._embedded.accounts});
+        });
+    },
     loadChartOfAccountsFromServer: function() {
         var self = this;
         $.ajax({
