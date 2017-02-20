@@ -27,6 +27,19 @@ public class Transaction {
 
     private Boolean isDebit;
 
+    private String accountName;
+
+    private String addedByUsername;
+
+    public Transaction(Account account, Double amount, User addedBy, Boolean isDebit, String accountName, String addByUsername) {
+        this.account = account;
+        this.amount = amount;
+        this.addedBy = addedBy;
+        this.isDebit = isDebit;
+        this.accountName = accountName;
+        this.addedByUsername = addByUsername;
+    }
+
     public Transaction(Account account, Double amount, User addedBy, Boolean isDebit) {
         this.account = account;
         this.amount = amount;
@@ -75,5 +88,21 @@ public class Transaction {
 
     public void setDebit(Boolean debit) {
         isDebit = debit;
+    }
+
+    public String getAccountName() {
+        return accountName;
+    }
+
+    public void setAccountName(String accountName) {
+        this.accountName = accountName;
+    }
+
+    public String getAddedByUsername() {
+        return addedByUsername;
+    }
+
+    public void setAddedByUsername(String addByUsername) {
+        this.addedByUsername = addByUsername;
     }
 }

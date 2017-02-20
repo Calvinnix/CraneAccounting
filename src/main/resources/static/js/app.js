@@ -1364,8 +1364,9 @@ var EventsTable = React.createClass({
     render: function() {
         var self = this;
         var rows = [];
+        var index = 0;
         this.props.events.forEach(function(event) {
-            rows.push(<EventRow event={event} key={event.timestamp}/>);
+            rows.push(<EventRow event={event} key={index++}/>);
         });
         return (
             <div className="container">
@@ -1506,12 +1507,63 @@ var JournalsCreditTable = React.createClass({
     }
 });
 
+var TransactionRow = React.createClass({
+    render: function() {
+        return (
+            <div className="row row-striped">
+                  <div className="row">
+                      <div className="col-md-2"></div> 
+                      <div className="col-md-2">{this.props.transaction.addedByUsername}</div> 
+                      <div className="col-md-2">{this.props.transaction.accountName}</div> 
+                      {this.props.transaction.debit ? (
+                        <div className="col-md-2"></div> 
+                      ) : (
+                        <div className="col-md-4"></div> 
+                      )}
+                      {this.props.transaction.debit ? (
+                        <div className="col-md-4 wrap-words">{this.props.transaction.amount}</div>
+                      ) : (
+                        <div className="col-md-2 wrap-words">{this.props.transaction.amount}</div>
+                      )}
+                  </div>
+            </div>
+        );
+    }
+});
+
+var TransactionsTable = React.createClass({
+    propTypes: {
+            transactions: React.PropTypes.array.isRequired
+    },
+    render: function() {
+        var self = this;
+        var rows = [];
+        var index = 0;
+        this.props.transactions.forEach(function(transaction) {
+            rows.push(<TransactionRow transaction={transaction} key={index++}/>);
+        });
+        return (
+            <div className="container">
+                <div className="row">
+                    <div className="col-md-2"></div> 
+                    <div className="col-md-2">Added By</div> 
+                    <div className="col-md-2">Account</div> 
+                    <div className="col-md-2"></div> 
+                    <div className="col-md-4 wrap-words">Amount</div>
+                </div>
+                {rows}
+            </div>
+        );
+    }
+});
+
 var AllJournals = React.createClass({
 
     getInitialState: function() {
         return {JournalsDebit: [],
                 JournalsCredit: [],
                 accounts: [],
+                transactions: [],
                 debitAmount: 0,
                 creditAmount: 0,
                 debitAccountID: 1,
@@ -1520,6 +1572,7 @@ var AllJournals = React.createClass({
     },
     componentDidMount: function () {
         this.loadAccountsFromServer();
+        this.loadTransactionsFromServer();
     },
     loadAccountsFromServer: function() {
         var self = this;
@@ -1527,6 +1580,14 @@ var AllJournals = React.createClass({
             url: "http://localhost:8080/api/accounts"
         }).then(function (data) {
             self.setState({accounts: data._embedded.accounts});
+        });
+    },
+    loadTransactionsFromServer: function() {
+        var self = this;
+        $.ajax({
+            url: "http://localhost:8080/api/transactions"
+        }).then(function (data) {
+            self.setState({transactions: data._embedded.transactions});
         });
     },
     updateDebitAmount: function(evt) {
@@ -1608,6 +1669,7 @@ var AllJournals = React.createClass({
                         "extendedTimeOut": 500
                     }
                     toastr.success("Successfully added Debit Transaction");
+                    self.loadTransactionsFromServer();
                 },
                 error: function(xhr, ajaxOptions, thrownError) {
                     toastr.options = {
@@ -1623,6 +1685,7 @@ var AllJournals = React.createClass({
                 }
             });
         });
+
         this.state.JournalsCredit.forEach(function(journalCredit) {
             $.ajax({
                 url: "http://localhost:8080/journals/addTransaction",
@@ -1644,6 +1707,7 @@ var AllJournals = React.createClass({
                         "extendedTimeOut": 500
                     }
                     toastr.success("Successfully added Credit Transaction");
+                    self.loadTransactionsFromServer();
                 },
                 error: function(xhr, ajaxOptions, thrownError) {
                     toastr.options = {
@@ -1660,13 +1724,18 @@ var AllJournals = React.createClass({
             });
         });
 
+        this.setState({
+            JournalsDebit: [],
+            JournalsCredit: []
+        });
+
     },
     render: function() {
         var self = this;
         return (
             <div>
                 <div className="container">
-                    <h1>Journal Entries</h1>
+                    <h1>Add Journal Entries</h1>
                     <div className="well well-lg">
                         <div className="row">
                             <div className="col-md-5">
@@ -1723,6 +1792,10 @@ var AllJournals = React.createClass({
                             </div>
                         </div>
                     </div>
+                    <hr />
+                    <h1>All Journal Entries</h1>
+                    <hr />
+                    <TransactionsTable transactions={this.state.transactions} />
                 </div>
             </div>
         );

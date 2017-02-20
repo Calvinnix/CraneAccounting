@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class CraneAccounting {
 
 	//todo:ctn JavaScript frontend validation
-	//todo:ctn Finish adding journalizing
 	//todo:ctn Add reporting (visualization.... D3.js ??)
 	//todo:ctn Add search ability for the select box
 	//todo:ctn Add search ability for accounts

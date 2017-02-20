@@ -396,7 +396,7 @@ public class AppController {
         Account accountFound = accountDao.findByName(accountName);
         Boolean isDebit = Boolean.valueOf(strIsDebit);
 
-        Transaction transaction = new Transaction(accountFound, amount, userFound, isDebit);
+        Transaction transaction = new Transaction(accountFound, amount, userFound, isDebit, accountName, username);
         transactionService.save(transaction);
 
         Calendar now = Calendar.getInstance();
@@ -413,7 +413,7 @@ public class AppController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String currentUser = auth.getName();
 
-        EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Added new transaction for account: %s --- amount = %s", accountName, amount));
+        EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Added new transaction for account: %s --- amount = %s --- isDebit = %s", accountName, amount, strIsDebit));
         eventLogService.save(log);
 
         logger.info(" --- Redirecting to /journals");
