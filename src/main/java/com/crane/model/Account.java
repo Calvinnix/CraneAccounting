@@ -1,9 +1,6 @@
 package com.crane.model;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.util.*;
 
 /**
  * Created by nixc1 on 2/8/17.
@@ -28,7 +25,7 @@ public class Account {
 
     private Boolean isLeftNormalSide;
 
-    private Double initialBalance;
+    private Double balance;
 
     @Column(unique = true)
     private Long priority;
@@ -45,12 +42,12 @@ public class Account {
 
     private String mGroup;
 
-    public Account(Double code, String name, String type, Boolean isLeftNormalSide, Double initialBalance, Long priority, User addedBy, String addedOn, Boolean active, String mGroup, String comment) {
+    public Account(Double code, String name, String type, Boolean isLeftNormalSide, Double balance, Long priority, User addedBy, String addedOn, Boolean active, String mGroup, String comment) {
         this.code = code;
         this.name = name;
         this.type = type;
         this.isLeftNormalSide = isLeftNormalSide;
-        this.initialBalance = initialBalance;
+        this.balance = balance;
         this.priority = priority;
         this.addedBy = addedBy;
         this.addedOn = addedOn;
@@ -105,12 +102,12 @@ public class Account {
         isLeftNormalSide = leftNormalSide;
     }
 
-    public Double getInitialBalance() {
-        return initialBalance;
+    public Double getBalance() {
+        return balance;
     }
 
-    public void setInitialBalance(Double initialBalance) {
-        this.initialBalance = initialBalance;
+    public void setBalance(Double balance) {
+        this.balance = balance;
     }
 
     public Long getPriority() {
@@ -172,10 +169,10 @@ public class Account {
     public Account() {
     }
 
-    public Account(String name, Double code, Double initialBalance, User addedBy, String addedOn, String comment) {
+    public Account(String name, Double code, Double balance, User addedBy, String addedOn, String comment) {
         this.name = name;
         this.code = code;
-        this.initialBalance = initialBalance;
+        this.balance = balance;
         this.addedBy = addedBy;
         this.addedOn = addedOn;
         this.comment = comment;

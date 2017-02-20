@@ -561,9 +561,8 @@ var AccountRow = React.createClass({
     getInitialState: function() {
 
         return { active: this.props.account.active,
-                 initialBalance: this.props.account.initialBalance,
+                 balance: this.props.account.balance,
                  comment: this.props.account.comment,
-                 beforeEditInitialBalance: '',
                  beforeEditComment: '',
                  editing: false};
     },
@@ -573,12 +572,12 @@ var AccountRow = React.createClass({
     formatBalance: function(number) {
         //This is used to format the initial balance as a number
 
-        var formattedInitialBalance = this.state.initialBalance;
-        if (!(/^(\d+\.\d\d)$/.test(formattedInitialBalance))) {
+        var formattedBalance = this.state.balance;
+        if (!(/^(\d+\.\d\d)$/.test(formattedBalance))) {
             //number needs formatting
-            formattedInitialBalance = formattedInitialBalance.toFixed(2);
+            formattedBalance = formattedBalance.toFixed(2);
             this.setState({
-                initialBalance: formattedInitialBalance
+                balance: formattedBalance
             });
         }
     },
@@ -596,7 +595,7 @@ var AccountRow = React.createClass({
                type: this.props.account.type,
                mGroup: this.props.account.mGroup,
                leftNormalSide: this.props.account.leftNormalSide,
-               initialBalance: this.state.initialBalance,
+               balance: this.state.balance,
                comment: this.state.comment,
                priority: this.props.account.priority,
                active: this.state.active
@@ -642,7 +641,7 @@ var AccountRow = React.createClass({
                type: this.props.account.type,
                mGroup: this.props.account.mGroup,
                leftNormalSide: this.props.account.leftNormalSide,
-               initialBalance: this.state.initialBalance,
+               balance: this.state.balance,
                comment: this.props.account.comment,
                priority: this.props.account.priority,
                active: false
@@ -688,7 +687,7 @@ var AccountRow = React.createClass({
                type: this.props.account.type,
                mGroup: this.props.account.mGroup,
                leftNormalSide: this.props.account.leftNormalSide,
-               initialBalance: this.state.initialBalance,
+               balance: this.state.balance,
                comment: this.props.account.comment,
                priority: this.props.account.priority,
                active: true
@@ -724,7 +723,6 @@ var AccountRow = React.createClass({
         var self = this;
         this.setState({
             editing: true,
-            beforeEditInitialBalance: self.state.initialBalance,
             beforeEditComment: self.state.comment
         });
     },
@@ -732,13 +730,12 @@ var AccountRow = React.createClass({
         var self = this;
         this.setState({
             editing: false,
-            initialBalance: self.state.beforeEditInitialBalance,
             comment: self.state.beforeEditComment
         });
     },
     updateAccountAmount: function(evt) {
         this.setState({
-            initialBalance: evt.target.value
+            balance: evt.target.value
         });
     },
     updateAccountComment: function(evt) {
@@ -765,11 +762,7 @@ var AccountRow = React.createClass({
                    </div>
                    <div className="row">
                       <div className="col-md-4"><h4>Added by: <b>{this.props.account.addedByUsername}</b></h4></div> 
-                      {this.state.editing ? ( 
-                        <div className="col-md-4"><input type="number" min="0" step="any" className="form-control" onChange={this.updateAccountAmount} placeholder="Initial Balance" value={this.state.initialBalance} /></div> 
-                      ) : (
-                        <div className="col-md-4"><h4>Initial Balance: $<b>{this.state.initialBalance}</b></h4></div>
-                      )}
+                      <div className="col-md-4"><h4>Balance: $<b>{this.state.balance}</b></h4></div>
                       {this.state.editing ? ( 
                           <div className="col-md-4"><textarea type="text" className="form-control" onChange={this.updateAccountComment} placeholder="Comments" value={this.state.comment} /></div>
                         ) : (
@@ -786,7 +779,7 @@ var AccountRow = React.createClass({
                                   <button className="btn btn-danger accountOptions" onClick={this.handleEditCancel}> Discard Changes</button>
                                   </div> 
                             ) : (
-                                  <button className={this.state.active ? "btn btn-warning accountOptions" : "btn btn-warning accountOptions disabled"} onClick={this.handleEdit}> Edit</button> 
+                                  <button className={this.state.active ? "btn btn-warning accountOptions" : "btn btn-warning accountOptions disabled"} onClick={this.handleEdit}> Edit Comment</button> 
                              )}
                             {this.state.active ? ( 
                                   <button className={this.state.editing ? "btn btn-danger accountOptions disabled hidden" : "btn btn-danger accountOptions"} onClick={this.handleDeactivate}> Deactivate</button> 
@@ -899,7 +892,7 @@ var AllAccounts = React.createClass({
                    type: this.state.type,
                    mGroup: this.state.mGroup,
                    leftNormalSide: this.state.leftNormalSide,
-                   initialBalance: this.state.initialBalance,
+                   balance: this.state.initialBalance,
                    comment: this.state.comment,
                    priority: this.state.priority,
                    username: this.state.username

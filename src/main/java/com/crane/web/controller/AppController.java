@@ -8,8 +8,6 @@ import com.crane.web.UserValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -18,10 +16,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.DateFormat;
-import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 
 /**
  * Created by Calvin on 1/9/17.
@@ -188,7 +184,7 @@ public class AppController {
         String type = request.getParameter("type");
         String mGroup = request.getParameter("mGroup");
         String strLeftNormalSide = request.getParameter("leftNormalSide");
-        String strInitialBalance = request.getParameter("initialBalance");
+        String strBalance = request.getParameter("balance");
         String comment = request.getParameter("comment");
         String strPriority = request.getParameter("priority");
         String username = request.getParameter("username");
@@ -199,7 +195,7 @@ public class AppController {
 
         Double code = Double.parseDouble(strCode);
         Boolean leftNormalSide = Boolean.parseBoolean(strLeftNormalSide);
-        Double initialBalance = Double.parseDouble(strInitialBalance);
+        Double balance = Double.parseDouble(strBalance);
         Long priority = Long.parseLong(strPriority);
 
         Account account = new Account();
@@ -211,7 +207,7 @@ public class AppController {
         account.setAddedBy(user);
         account.setAddedByUsername(username);
         account.setAddedOn(date);
-        account.setInitialBalance(initialBalance);
+        account.setBalance(balance);
         account.setComment(comment);
         account.setPriority(priority);
         account.setActive(true); //When first saving the account always default to true
@@ -232,7 +228,7 @@ public class AppController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String currentUser = auth.getName();
 
-        EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Added new account: %s --- Initial Balance: %s --- Comments: %s", name, initialBalance, comment));
+        EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Added new account: %s --- Initial Balance: %s --- Comments: %s", name, balance, comment));
         eventLogService.save(log);
 
         logger.info(" --- Redirecting to /");
@@ -248,14 +244,14 @@ public class AppController {
         String type = request.getParameter("type");
         String mGroup = request.getParameter("mGroup");
         String strLeftNormalSide = request.getParameter("leftNormalSide");
-        String strInitialBalance = request.getParameter("initialBalance");
+        String strBalance = request.getParameter("balance");
         String comment = request.getParameter("comment");
         String strPriority = request.getParameter("priority");
         String strActive = request.getParameter("active");
 
         Double code = Double.parseDouble(strCode);
         Boolean leftNormalSide = Boolean.parseBoolean(strLeftNormalSide);
-        Double initialBalance = Double.parseDouble(strInitialBalance);
+        Double balance = Double.parseDouble(strBalance);
         Long priority = Long.parseLong(strPriority);
         Boolean active = Boolean.parseBoolean(strActive);
 
@@ -265,7 +261,7 @@ public class AppController {
         account.setType(type);
         account.setmGroup(mGroup);
         account.setLeftNormalSide(leftNormalSide);
-        account.setInitialBalance(initialBalance);
+        account.setBalance(balance);
         account.setComment(comment);
         account.setPriority(priority);
         account.setActive(active);
@@ -286,7 +282,7 @@ public class AppController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String currentUser = auth.getName();
 
-        EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Edited account: %s --- Initial Balance: %s --- Comments: %s --- Active: %s", name, initialBalance, comment, active));
+        EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Edited account: %s --- Comments: %s --- Active: %s", name, comment, active));
         eventLogService.save(log);
 
 
@@ -396,6 +392,22 @@ public class AppController {
         Account accountFound = accountDao.findByName(accountName);
         Boolean isDebit = Boolean.valueOf(strIsDebit);
 
+        //update account will new balance details
+        if(isDebit) {
+            if (accountFound.getLeftNormalSide()) {
+                accountFound.setBalance(accountFound.getBalance() + amount);
+            } else {
+                accountFound.setBalance(accountFound.getBalance() - amount);
+            }
+        } else {
+            if (accountFound.getLeftNormalSide()) {
+                accountFound.setBalance(accountFound.getBalance() - amount);
+            } else {
+                accountFound.setBalance(accountFound.getBalance() + amount);
+            }
+        }
+        accountService.save(accountFound);
+
         Transaction transaction = new Transaction(accountFound, amount, userFound, isDebit, accountName, username);
         transactionService.save(transaction);
 
@@ -415,6 +427,9 @@ public class AppController {
 
         EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Added new transaction for account: %s --- amount = %s --- isDebit = %s", accountName, amount, strIsDebit));
         eventLogService.save(log);
+
+        EventLog log2 = new EventLog(currentTime, currentUser, String.format(" --- Updated account: %s --- balance = %s", accountName, accountFound.getBalance()));
+        eventLogService.save(log2);
 
         logger.info(" --- Redirecting to /journals");
         return "redirect:/journals";
