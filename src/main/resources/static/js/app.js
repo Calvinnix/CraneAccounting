@@ -1637,7 +1637,60 @@ var AllJournals = React.createClass({
             JournalsCredit: self.state.JournalsCredit
         });
     },
+    confirmDebitsAndCreditsAreValid: function() {
+      var debitTotal = 0;
+      var creditTotal = 0;
+      var accountsUsed = new Array();
+
+
+      var isValid = true;
+      if (this.state.JournalsDebit.length < 1 || this.state.JournalsCredit.length < 1) {
+        alert("Invalid! You need to have at least 1 debit and 1 credit transaction.");
+        isValid = false;
+      }
+
+      this.state.JournalsDebit.forEach( function(journalDebit) {
+        if (journalDebit.amount <= 0) {
+           alert("Invalid! All amounts must be greater than $0.00.");
+           isValid = false;
+        }
+        if ($.inArray(journalDebit.accountName, accountsUsed) > -1) {
+          alert("Invalid! You can only use the account once.");
+          isValid = false;
+        } else {
+          accountsUsed.push(journalDebit.accountName);
+        }
+        debitTotal += Number(journalDebit.amount);
+      });
+
+      this.state.JournalsCredit.forEach(function(journalCredit) {
+        if (journalCredit.amount <= 0) {
+          alert("Invalid! All amounts must be greater than $0.00.");
+          isValid = false;
+        }
+        if ($.inArray(journalCredit.accountName, accountsUsed) > -1) {
+          alert("Invalid! You can only use the account once.");
+          isValid = false;
+        } else {
+          accountsUsed.push(journalCredit.accountName);
+        }
+        creditTotal += Number(journalCredit.amount);
+      });
+
+      if (debitTotal !== creditTotal) {
+        alert("Invalid! Debits and Credits must be equal.");
+        isValid = false;
+      }
+
+      return isValid;
+    },
     addJournalEntry: function() {
+
+        //check to make sure the conditions are valid
+        if (!this.confirmDebitsAndCreditsAreValid()) {
+          return; //don't perform the submission
+        }
+
         var self = this;
         var username = document.getElementById("username").innerText;
 
@@ -1746,6 +1799,7 @@ var AllJournals = React.createClass({
                             </div>
                         </div>
                         <hr />
+                        { (this.state.JournalsDebit.length > 0) &&
                         <div className="row">
                             <div className="col-md-2"></div>
                             <div className="col-md-5">
@@ -1761,6 +1815,7 @@ var AllJournals = React.createClass({
                                 <button className="btn btn-success" onClick={this.addCredit}>Add Credit</button>
                             </div>
                         </div>
+                        }
                     </div>
                     <hr />
                     <div className="well well-lg">
@@ -1769,7 +1824,7 @@ var AllJournals = React.createClass({
                         <hr />
                         <div className="row">
                             <div className="col-md-10">
-                                <label className="btn btn-default" for="my-file-selector">
+                                <label className="btn btn-default pull-right" for="my-file-selector">
                                     <input id="my-file-selector" className="hidden" type="file" multiple="multiple" />
                                     Upload Supporting Documents
                                 </label>
