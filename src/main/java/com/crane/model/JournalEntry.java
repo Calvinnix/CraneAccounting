@@ -1,7 +1,6 @@
 package com.crane.model;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,9 +22,14 @@ public class JournalEntry {
     @JoinColumn(name = "user_id")
     private User addedBy;
 
-    public JournalEntry(List<Transaction> transaction, User addedBy) {
+    private String addedOn;
+
+    private Long publicId;
+
+    public JournalEntry(List<Transaction> transaction, User addedBy, String addedOn) {
         this.transaction = transaction;
         this.addedBy = addedBy;
+        this.addedOn = addedOn;
     }
 
     public JournalEntry() {
@@ -43,7 +47,7 @@ public class JournalEntry {
         return transaction;
     }
 
-    public void setTransaction(ArrayList<Transaction> transaction) {
+    public void setTransaction(List<Transaction> transaction) {
         this.transaction = transaction;
     }
 
@@ -54,4 +58,17 @@ public class JournalEntry {
     public void setAddedBy(User addedBy) {
         this.addedBy = addedBy;
     }
+
+    public String getAddedOn() {
+        return addedOn;
+    }
+
+    public void setAddedOn(String addedOn) {
+        this.addedOn = addedOn;
+    }
+
+    public Long getPublicId() {
+        return id;
+    }
+
 }

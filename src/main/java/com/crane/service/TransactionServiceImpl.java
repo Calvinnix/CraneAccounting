@@ -26,4 +26,14 @@ public class TransactionServiceImpl implements TransactionService {
 
         logger.info(String.format(" --- Exiting: %s", Thread.currentThread().getStackTrace()[1].getMethodName()));
     }
+
+    @Override
+    public Transaction saveAndReturn(Transaction transaction) {
+        logger.info(String.format(" --- Entering: %s", Thread.currentThread().getStackTrace()[1].getMethodName()));
+
+        Transaction addedTransaction = transactionDao.save(transaction);
+
+        logger.info(String.format(" --- Exiting: %s", Thread.currentThread().getStackTrace()[1].getMethodName()));
+        return addedTransaction;
+    }
 }

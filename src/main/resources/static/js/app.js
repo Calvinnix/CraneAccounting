@@ -1500,7 +1500,58 @@ var JournalsCreditTable = React.createClass({
     }
 });
 
+var JournalRow = React.createClass({
+    getInitialState: function() {
+        return {rows: []};
+    },
+   componentDidMount: function () {
+        this.loadTransactions();
+    },
+    loadTransactions: function() {
+        var self = this;
+        var tempRow = [];
+        var index = 0;
+        $.ajax({
+            url: self.props.transactionsUrl
+        }).then(function (data) {
+           data._embedded.transactions.forEach(function(transaction) {
+                tempRow.push(<TransactionRow transaction={transaction} key={index++}/>);
+           });
+           self.setState({
+                rows: tempRow
+           });
+        });
+    },
+    postJournalEntry: function() {
+        alert(this.state.rows.length);
+        alert("posting journal entry");
+    },
+    render: function() {
+        var date = this.props.addedOn.split(" ")[0];
+        return (
+            <div className="well">
+                <h4>Journal Entry #{this.props.journalEntryId} ({date})</h4>
+                {this.state.rows}
+                <hr />
+                <div className="row">
+                    <div className="col-md-7"></div>
+                    <div className="col-md-3">
+                          <button className="btn btn-default" onClick={this.downloadSupportingDocument}>Download Support Documents</button>
+                    </div>
+                    <div className="col-md-2">
+                          <button className="btn btn-success" onClick={this.postJournalEntry}>Post</button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+})
+
 var TransactionRow = React.createClass({
+    getInitialState: function() {
+        return {amount: Number((this.props.transaction.amount).toFixed(2))
+        };
+    },
     render: function() {
         return (
             <div className="row row-striped">
@@ -1509,45 +1560,49 @@ var TransactionRow = React.createClass({
                       <div className="col-md-2">{this.props.transaction.addedByUsername}</div> 
                       <div className="col-md-2">{this.props.transaction.accountName}</div> 
                       {this.props.transaction.debit ? (
-                        <div className="col-md-2"></div> 
+                        <div className="col-md-2 wrap-words text-right">${(this.state.amount).toFixed(2)}</div>
                       ) : (
-                        <div className="col-md-4"></div> 
+                        <div className="col-md-4 wrap-words text-right">${(this.state.amount).toFixed(2)}</div>
                       )}
-                      {this.props.transaction.debit ? (
-                        <div className="col-md-4 wrap-words">{this.props.transaction.amount}</div>
-                      ) : (
-                        <div className="col-md-2 wrap-words">{this.props.transaction.amount}</div>
-                      )}
+                       {this.props.transaction.debit ? (
+                          <div className="col-md-4"></div> 
+                        ) : (
+                          <div className="col-md-2"></div> 
+                        )}
                   </div>
             </div>
         );
     }
 });
 
-var TransactionsTable = React.createClass({
-    propTypes: {
-            transactions: React.PropTypes.array.isRequired
-    },
-    render: function() {
-        var self = this;
-        var rows = [];
-        var index = 0;
-        this.props.transactions.forEach(function(transaction) {
-            rows.push(<TransactionRow transaction={transaction} key={index++}/>);
-        });
-        return (
-            <div className="container">
-                <div className="row">
-                    <div className="col-md-2"></div> 
-                    <div className="col-md-2">Added By</div> 
-                    <div className="col-md-2">Account</div> 
-                    <div className="col-md-2"></div> 
-                    <div className="col-md-4 wrap-words">Amount</div>
+var JournalEntriesTable = React.createClass({
+  propTypes: {
+          journalEntries: React.PropTypes.array.isRequired
+  },
+  render: function() {
+      var self = this;
+      var rows = [];
+      var index = 0;
+      this.props.journalEntries.forEach(function(journalEntry) {
+          var transactionsUrl = journalEntry._links.transaction.href;
+          var id = journalEntry.publicId;
+          var addedOn = journalEntry.addedOn;
+          rows.push(<JournalRow journalEntryId={id} addedOn={addedOn} transactionsUrl={transactionsUrl} key={index++}/>);
+      });
+      return (
+                <div className="container">
+                    <div className="row">
+                        <div className="col-md-2"></div> 
+                        <div className="col-md-2">Added By</div> 
+                        <div className="col-md-2">Account</div> 
+                        <div className="col-md-2 text-right">Debit</div>
+                        <div className="col-md-2 text-right">Credit</div>
+                    </div>
+                    <hr />
+                    {rows}
                 </div>
-                {rows}
-            </div>
-        );
-    }
+            );
+  }
 });
 
 var AllJournals = React.createClass({
@@ -1557,6 +1612,7 @@ var AllJournals = React.createClass({
                 JournalsCredit: [],
                 accounts: [],
                 transactions: [],
+                journalEntries: [],
                 debitAmount: 0,
                 creditAmount: 0,
                 debitAccountID: 1,
@@ -1566,6 +1622,7 @@ var AllJournals = React.createClass({
     componentDidMount: function () {
         this.loadAccountsFromServer();
         this.loadTransactionsFromServer();
+        this.loadJournalEntriesFromServer();
     },
     loadAccountsFromServer: function() {
         var self = this;
@@ -1583,14 +1640,22 @@ var AllJournals = React.createClass({
             self.setState({transactions: data._embedded.transactions});
         });
     },
+    loadJournalEntriesFromServer: function() {
+        var self = this;
+        $.ajax({
+            url: "http://localhost:8080/api/journalEntries"
+        }).then(function (data) {
+            self.setState({journalEntries: data._embedded.journalEntries});
+        });
+    },
     updateDebitAmount: function(evt) {
         this.setState({
-            debitAmount: evt.target.value
+            debitAmount: Number(evt.target.value).toFixed(2)
         });
     },
     updateCreditAmount: function(evt) {
         this.setState({
-            creditAmount: evt.target.value
+            creditAmount: Number(evt.target.value).toFixed(2)
         });
     },
     updateDebitAccountID: function(evt) {
@@ -1606,7 +1671,8 @@ var AllJournals = React.createClass({
     addDebit: function() {
         var newDebit = {accountName: this.state.accounts[this.state.debitAccountID-1].name,
                         accountCode: this.state.accounts[this.state.debitAccountID-1].code,
-                        amount:      this.state.debitAmount};
+                        amount:      this.state.debitAmount,
+                        isDebit:     true};
         var self = this;
         this.setState({
             JournalsDebit: self.state.JournalsDebit.concat([newDebit])
@@ -1615,7 +1681,8 @@ var AllJournals = React.createClass({
     addCredit: function() {
         var newCredit = {accountName: this.state.accounts[this.state.creditAccountID-1].name,
                          accountCode: this.state.accounts[this.state.creditAccountID-1].code,
-                         amount:      this.state.creditAmount};
+                         amount:      this.state.creditAmount,
+                         isDebit:     false};
         var self = this;
         this.setState({
             JournalsCredit: self.state.JournalsCredit.concat([newCredit])
@@ -1693,6 +1760,46 @@ var AllJournals = React.createClass({
 
         var self = this;
         var username = document.getElementById("username").innerText;
+
+        var accounts = this.state.JournalsDebit.concat(this.state.JournalsCredit);
+
+        $.ajax({
+            url: "http://localhost:8080/journals/addJournal",
+            type: "POST",
+            data: {
+               accounts: JSON.stringify(accounts),
+               username: username
+            },
+            success: function() {
+                toastr.options = {
+                    "debug": false,
+                    "positionClass": "toast-top-center",
+                    "onclick": null,
+                    "fadeIn": 300,
+                    "fadeOut": 100,
+                    "timeOut": 500,
+                    "extendedTimeOut": 500
+                }
+                toastr.success("Successfully added Journal Entry");
+                self.loadTransactionsFromServer();
+                self.loadJournalEntriesFromServer();
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                toastr.options = {
+                    "debug": false,
+                    "positionClass": "toast-top-center",
+                    "onclick": null,
+                    "fadeIn": 300,
+                    "fadeOut": 100,
+                    "timeOut": 500,
+                    "extendedTimeOut": 500
+                }
+                toastr.error("Not Authorized");
+            }
+        });
+
+
+        /*
 
         this.state.JournalsDebit.forEach(function(journalDebit) {
             $.ajax({
@@ -1775,6 +1882,7 @@ var AllJournals = React.createClass({
             JournalsCredit: []
         });
 
+        */
     },
     render: function() {
         var self = this;
@@ -1790,7 +1898,7 @@ var AllJournals = React.createClass({
                             <div className="col-md-3">
                                 <div className="input-group">
                                   <span className="input-group-addon">$</span>
-                                  <input type="number" min="0" step="any" className="form-control" onChange={this.updateDebitAmount} aria-label="Amount"/>
+                                  <input type="number" min="0.01" step="0.01" className="form-control" onChange={this.updateDebitAmount} aria-label="Amount"/>
                                 </div>
                             </div>
                             <div className="col-md-2"></div>
@@ -1808,7 +1916,7 @@ var AllJournals = React.createClass({
                             <div className="col-md-3">
                                 <div className="input-group">
                                   <span className="input-group-addon">$</span>
-                                  <input type="number" min="0" step="any" className="form-control" onChange={this.updateCreditAmount} aria-label="Amount"/>
+                                  <input type="number" min="0.01" step="0.01" className="form-control" onChange={this.updateCreditAmount} aria-label="Amount"/>
                                 </div>
                             </div>
                             <div className="col-md-2">
@@ -1843,7 +1951,7 @@ var AllJournals = React.createClass({
                     <hr />
                     <h1>All Journal Entries</h1>
                     <hr />
-                    <TransactionsTable transactions={this.state.transactions} />
+                    <JournalEntriesTable journalEntries={this.state.journalEntries} />
                 </div>
             </div>
         );

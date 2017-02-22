@@ -1,10 +1,13 @@
 package com.crane.web.controller;
 
 import com.crane.dao.AccountDao;
+import com.crane.dao.TransactionDao;
 import com.crane.dao.UserDao;
 import com.crane.model.*;
 import com.crane.service.*;
 import com.crane.web.UserValidator;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +19,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Calvin on 1/9/17.
@@ -45,10 +50,16 @@ public class AppController {
     private TransactionService transactionService;
 
     @Autowired
+    private JournalEntryService journalEntryService;
+
+    @Autowired
     private UserDao userDao;
 
     @Autowired
     private AccountDao accountDao;
+
+    @Autowired
+    private TransactionDao transactionDao;
 
     private static final Logger logger = LoggerFactory.getLogger(AppController.class);
 
@@ -391,7 +402,7 @@ public class AppController {
         Double amount = Double.valueOf(strAmount);
         Account accountFound = accountDao.findByName(accountName);
         Boolean isDebit = Boolean.valueOf(strIsDebit);
-
+        /*
         //update account will new balance details
         if(isDebit) {
             if (accountFound.getLeftNormalSide()) {
@@ -407,7 +418,7 @@ public class AppController {
             }
         }
         accountService.save(accountFound);
-
+        */
         Transaction transaction = new Transaction(accountFound, amount, userFound, isDebit, accountName, username);
         transactionService.save(transaction);
 
@@ -427,9 +438,66 @@ public class AppController {
 
         EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Added new transaction for account: %s --- amount = %s --- isDebit = %s", accountName, amount, strIsDebit));
         eventLogService.save(log);
-
+        /*
         EventLog log2 = new EventLog(currentTime, currentUser, String.format(" --- Updated account: %s --- balance = %s", accountName, accountFound.getBalance()));
         eventLogService.save(log2);
+        */
+
+        logger.info(" --- Redirecting to /journals");
+        return "redirect:/journals";
+    }
+
+    @RequestMapping(value = "/journals/addJournal", method = RequestMethod.POST)
+    public String addJournal(HttpServletRequest request) {
+        logger.info(" --- RequestMapping from /journals/addJournal");
+
+        String accounts = request.getParameter("accounts");
+        String username = request.getParameter("username");
+
+        User userFound = userService.findUserByUsername(username);
+
+        List transactions = new ArrayList<Transaction>();
+
+        JSONArray jsonAccountsArray = new JSONArray(accounts);
+        jsonAccountsArray.length();
+
+        Calendar now = Calendar.getInstance();
+        int year = now.get(Calendar.YEAR);
+        int month = now.get(Calendar.MONTH) + 1; // Note: zero based!
+        int day = now.get(Calendar.DAY_OF_MONTH);
+        int hour = now.get(Calendar.HOUR_OF_DAY);
+        int minute = now.get(Calendar.MINUTE);
+        int second = now.get(Calendar.SECOND);
+        int millis = now.get(Calendar.MILLISECOND);
+
+        String currentTime = String.format("%02d-%02d-%d %02d:%02d:%02d.%03d", month, day, year, hour, minute, second, millis);
+
+
+        for (int i = 0; i < jsonAccountsArray.length(); i++) {
+            JSONObject currentAccount = jsonAccountsArray.getJSONObject(i);
+
+            Double accountCode = currentAccount.getDouble("accountCode");
+            Double amount = currentAccount.getDouble("amount");
+            String accountName = currentAccount.getString("accountName");
+            Boolean isDebit = currentAccount.getBoolean("isDebit");
+
+            Account accountFound = accountService.findAccountByName(accountName);
+
+            Transaction transaction = new Transaction(accountFound, amount, userFound, isDebit, accountName, username);
+            transaction = transactionService.saveAndReturn(transaction);
+
+            transactions.add(transaction); //add to array of transactions that JournalEntry will use
+
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String currentUser = auth.getName();
+
+            EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Added new transaction for account: %s --- amount = %s --- isDebit = %s", accountName, amount, isDebit));
+            eventLogService.save(log);
+        }
+
+        JournalEntry journalEntry = new JournalEntry(transactions, userFound, currentTime);
+
+        journalEntryService.save(journalEntry);
 
         logger.info(" --- Redirecting to /journals");
         return "redirect:/journals";

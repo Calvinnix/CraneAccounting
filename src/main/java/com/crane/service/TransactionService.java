@@ -7,4 +7,5 @@ import com.crane.model.Transaction;
  */
 public interface TransactionService {
     void save(Transaction transaction);
+    Transaction saveAndReturn(Transaction transaction);
 }
