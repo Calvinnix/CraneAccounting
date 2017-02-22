@@ -7,4 +7,5 @@ import com.crane.model.JournalEntry;
  */
 public interface JournalEntryService {
     void save(JournalEntry journalEntry);
+    JournalEntry findById(Long l);
 }

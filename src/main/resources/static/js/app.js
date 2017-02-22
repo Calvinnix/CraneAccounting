@@ -1502,7 +1502,8 @@ var JournalsCreditTable = React.createClass({
 
 var JournalRow = React.createClass({
     getInitialState: function() {
-        return {rows: []};
+        return {rows: [],
+                posted: this.props.posted};
     },
    componentDidMount: function () {
         this.loadTransactions();
@@ -1523,14 +1524,55 @@ var JournalRow = React.createClass({
         });
     },
     postJournalEntry: function() {
-        alert(this.state.rows.length);
-        alert("posting journal entry");
+        var username = document.getElementById("username").innerText;
+        var self = this;
+        $.ajax({
+            url: "http://localhost:8080/journals/postJournalEntry",
+            type: "POST",
+            data: {
+                   rows: JSON.stringify(this.state.rows),
+                   journalId: this.props.journalEntryId,
+                   username: username
+                   },
+            success: function() {
+                toastr.options = {
+                    "debug": false,
+                    "positionClass": "toast-top-center",
+                    "onclick": null,
+                    "fadeIn": 300,
+                    "fadeOut": 100,
+                    "timeOut": 500,
+                    "extendedTimeOut": 500
+                }
+                toastr.success("Successfully Posted Journal Entry!");
+                self.setState({
+                    posted: true
+                });
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                toastr.options = {
+                    "debug": false,
+                    "positionClass": "toast-top-center",
+                    "onclick": null,
+                    "fadeIn": 300,
+                    "fadeOut": 100,
+                    "timeOut": 500,
+                    "extendedTimeOut": 500
+                }
+                toastr.error("Not Authorized");
+            }
+        });
     },
     render: function() {
         var date = this.props.addedOn.split(" ")[0];
         return (
             <div className="well">
-                <h4>Journal Entry #{this.props.journalEntryId} ({date})</h4>
+                <h4>
+                    {this.state.posted &&
+                        <span className="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                    }
+                    Journal Entry #{this.props.journalEntryId} ({date})
+                </h4>
                 {this.state.rows}
                 <hr />
                 <div className="row">
@@ -1539,7 +1581,11 @@ var JournalRow = React.createClass({
                           <button className="btn btn-default" onClick={this.downloadSupportingDocument}>Download Support Documents</button>
                     </div>
                     <div className="col-md-2">
-                          <button className="btn btn-success" onClick={this.postJournalEntry}>Post</button>
+                        {this.state.posted ? (
+                            <button className="btn btn-default disabled">Posted</button>
+                        ) : (
+                            <button className="btn btn-success" onClick={this.postJournalEntry}>Post</button>
+                        )}
                     </div>
                 </div>
             </div>
@@ -1587,7 +1633,8 @@ var JournalEntriesTable = React.createClass({
           var transactionsUrl = journalEntry._links.transaction.href;
           var id = journalEntry.publicId;
           var addedOn = journalEntry.addedOn;
-          rows.push(<JournalRow journalEntryId={id} addedOn={addedOn} transactionsUrl={transactionsUrl} key={index++}/>);
+          var posted = journalEntry.posted;
+          rows.push(<JournalRow journalEntryId={id} addedOn={addedOn} transactionsUrl={transactionsUrl} posted={posted} key={index++}/>);
       });
       return (
                 <div className="container">
@@ -1797,92 +1844,11 @@ var AllJournals = React.createClass({
                 toastr.error("Not Authorized");
             }
         });
-
-
-        /*
-
-        this.state.JournalsDebit.forEach(function(journalDebit) {
-            $.ajax({
-                url: "http://localhost:8080/journals/addTransaction",
-                type: "POST",
-                data: {
-                   accountName: journalDebit.accountName,
-                   amount: journalDebit.amount,
-                   username: username,
-                   isDebit: true
-                },
-                success: function() {
-                    toastr.options = {
-                        "debug": false,
-                        "positionClass": "toast-top-center",
-                        "onclick": null,
-                        "fadeIn": 300,
-                        "fadeOut": 100,
-                        "timeOut": 500,
-                        "extendedTimeOut": 500
-                    }
-                    toastr.success("Successfully added Debit Transaction");
-                    self.loadTransactionsFromServer();
-                },
-                error: function(xhr, ajaxOptions, thrownError) {
-                    toastr.options = {
-                        "debug": false,
-                        "positionClass": "toast-top-center",
-                        "onclick": null,
-                        "fadeIn": 300,
-                        "fadeOut": 100,
-                        "timeOut": 500,
-                        "extendedTimeOut": 500
-                    }
-                    toastr.error("Not Authorized");
-                }
-            });
-        });
-
-        this.state.JournalsCredit.forEach(function(journalCredit) {
-            $.ajax({
-                url: "http://localhost:8080/journals/addTransaction",
-                type: "POST",
-                data: {
-                   accountName: journalCredit.accountName,
-                   amount: journalCredit.amount,
-                   username: username,
-                   isDebit: false
-                },
-                success: function() {
-                    toastr.options = {
-                        "debug": false,
-                        "positionClass": "toast-top-center",
-                        "onclick": null,
-                        "fadeIn": 300,
-                        "fadeOut": 100,
-                        "timeOut": 500,
-                        "extendedTimeOut": 500
-                    }
-                    toastr.success("Successfully added Credit Transaction");
-                    self.loadTransactionsFromServer();
-                },
-                error: function(xhr, ajaxOptions, thrownError) {
-                    toastr.options = {
-                        "debug": false,
-                        "positionClass": "toast-top-center",
-                        "onclick": null,
-                        "fadeIn": 300,
-                        "fadeOut": 100,
-                        "timeOut": 500,
-                        "extendedTimeOut": 500
-                    }
-                    toastr.error("Not Authorized");
-                }
-            });
-        });
-
         this.setState({
             JournalsDebit: [],
             JournalsCredit: []
         });
 
-        */
     },
     render: function() {
         var self = this;

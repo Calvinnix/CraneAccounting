@@ -27,4 +27,9 @@ public class JournalEntryServiceImpl implements JournalEntryService {
 
         logger.info(String.format(" --- Exiting: %s", Thread.currentThread().getStackTrace()[1].getMethodName()));
     }
+
+    @Override
+    public JournalEntry findById(Long l) {
+        return journalEntryDao.findById(l);
+    }
 }

@@ -26,10 +26,13 @@ public class JournalEntry {
 
     private Long publicId;
 
-    public JournalEntry(List<Transaction> transaction, User addedBy, String addedOn) {
+    private Boolean posted;
+
+    public JournalEntry(List<Transaction> transaction, User addedBy, String addedOn, Boolean posted) {
         this.transaction = transaction;
         this.addedBy = addedBy;
         this.addedOn = addedOn;
+        this.posted = posted;
     }
 
     public JournalEntry() {
@@ -69,6 +72,14 @@ public class JournalEntry {
 
     public Long getPublicId() {
         return id;
+    }
+
+    public Boolean getPosted() {
+        return posted;
+    }
+
+    public void setPosted(Boolean posted) {
+        this.posted = posted;
     }
 
 }

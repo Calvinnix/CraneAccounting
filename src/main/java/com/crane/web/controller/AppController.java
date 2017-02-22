@@ -389,64 +389,6 @@ public class AppController {
         return "redirect:/chartOfAccounts";
     }
 
-    @RequestMapping(value = "/journals/addTransaction", method = RequestMethod.POST)
-    public String addTransaction(HttpServletRequest request) {
-        logger.info(" --- RequestMapping from /journals/addTransaction");
-
-        String accountName = request.getParameter("accountName");
-        String strAmount = request.getParameter("amount");
-        String username = request.getParameter("username");
-        String strIsDebit = request.getParameter("isDebit");
-
-        User userFound = userDao.findByUsername(username);
-        Double amount = Double.valueOf(strAmount);
-        Account accountFound = accountDao.findByName(accountName);
-        Boolean isDebit = Boolean.valueOf(strIsDebit);
-        /*
-        //update account will new balance details
-        if(isDebit) {
-            if (accountFound.getLeftNormalSide()) {
-                accountFound.setBalance(accountFound.getBalance() + amount);
-            } else {
-                accountFound.setBalance(accountFound.getBalance() - amount);
-            }
-        } else {
-            if (accountFound.getLeftNormalSide()) {
-                accountFound.setBalance(accountFound.getBalance() - amount);
-            } else {
-                accountFound.setBalance(accountFound.getBalance() + amount);
-            }
-        }
-        accountService.save(accountFound);
-        */
-        Transaction transaction = new Transaction(accountFound, amount, userFound, isDebit, accountName, username);
-        transactionService.save(transaction);
-
-        Calendar now = Calendar.getInstance();
-        int year = now.get(Calendar.YEAR);
-        int month = now.get(Calendar.MONTH) + 1; // Note: zero based!
-        int day = now.get(Calendar.DAY_OF_MONTH);
-        int hour = now.get(Calendar.HOUR_OF_DAY);
-        int minute = now.get(Calendar.MINUTE);
-        int second = now.get(Calendar.SECOND);
-        int millis = now.get(Calendar.MILLISECOND);
-
-        String currentTime = String.format("%02d-%02d-%d %02d:%02d:%02d.%03d", month, day, year, hour, minute, second, millis);
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String currentUser = auth.getName();
-
-        EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Added new transaction for account: %s --- amount = %s --- isDebit = %s", accountName, amount, strIsDebit));
-        eventLogService.save(log);
-        /*
-        EventLog log2 = new EventLog(currentTime, currentUser, String.format(" --- Updated account: %s --- balance = %s", accountName, accountFound.getBalance()));
-        eventLogService.save(log2);
-        */
-
-        logger.info(" --- Redirecting to /journals");
-        return "redirect:/journals";
-    }
-
     @RequestMapping(value = "/journals/addJournal", method = RequestMethod.POST)
     public String addJournal(HttpServletRequest request) {
         logger.info(" --- RequestMapping from /journals/addJournal");
@@ -495,11 +437,100 @@ public class AppController {
             eventLogService.save(log);
         }
 
-        JournalEntry journalEntry = new JournalEntry(transactions, userFound, currentTime);
+        JournalEntry journalEntry = new JournalEntry(transactions, userFound, currentTime, false);
 
         journalEntryService.save(journalEntry);
 
         logger.info(" --- Redirecting to /journals");
         return "redirect:/journals";
     }
+
+    @RequestMapping(value = "/journals/postJournalEntry", method = RequestMethod.POST)
+    public String postJournal(HttpServletRequest request) {
+        logger.info(" --- RequestMapping from /journals/postJournalEntry");
+
+        String rows = request.getParameter("rows");
+        String strJournalId = request.getParameter("journalId");
+        String username = request.getParameter("username");
+
+        Long journalId = Long.parseLong(strJournalId);
+
+        JournalEntry journalEntryFound = journalEntryService.findById(journalId);
+        User userFound = userService.findUserByUsername(username);
+
+        JSONArray jsonTransactions = new JSONArray(rows);
+
+        System.out.println("***********" + jsonTransactions.length());
+
+        for (int i = 0; i < jsonTransactions.length(); i++) {
+            JSONObject currentAccount = jsonTransactions.getJSONObject(i);
+            JSONObject props = currentAccount.getJSONObject("props");
+            JSONObject transaction = props.getJSONObject("transaction");
+
+            String accountName = transaction.getString("accountName");
+            Double amount = transaction.getDouble("amount");
+            Boolean isDebit = transaction.getBoolean("debit");
+
+            Account accountFound = accountService.findAccountByName(accountName);
+            Double beginningBalance = accountFound.getBalance();
+
+            //update account will new balance details
+            if(isDebit) {
+                if (accountFound.getLeftNormalSide()) {
+                    accountFound.setBalance(accountFound.getBalance() + amount);
+                } else {
+                    accountFound.setBalance(accountFound.getBalance() - amount);
+                }
+            } else {
+                if (accountFound.getLeftNormalSide()) {
+                    accountFound.setBalance(accountFound.getBalance() - amount);
+                } else {
+                    accountFound.setBalance(accountFound.getBalance() + amount);
+                }
+            }
+            accountService.save(accountFound);
+
+            Calendar now = Calendar.getInstance();
+            int year = now.get(Calendar.YEAR);
+            int month = now.get(Calendar.MONTH) + 1; // Note: zero based!
+            int day = now.get(Calendar.DAY_OF_MONTH);
+            int hour = now.get(Calendar.HOUR_OF_DAY);
+            int minute = now.get(Calendar.MINUTE);
+            int second = now.get(Calendar.SECOND);
+            int millis = now.get(Calendar.MILLISECOND);
+
+            String currentTime = String.format("%02d-%02d-%d %02d:%02d:%02d.%03d", month, day, year, hour, minute, second, millis);
+
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String currentUser = auth.getName();
+
+            EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Account: %s --- balance updated from %s to %s", accountName, beginningBalance, accountFound.getBalance()));
+            eventLogService.save(log);
+        }
+
+        journalEntryFound.setPosted(true);
+        journalEntryService.save(journalEntryFound);
+
+        Calendar now = Calendar.getInstance();
+        int year = now.get(Calendar.YEAR);
+        int month = now.get(Calendar.MONTH) + 1; // Note: zero based!
+        int day = now.get(Calendar.DAY_OF_MONTH);
+        int hour = now.get(Calendar.HOUR_OF_DAY);
+        int minute = now.get(Calendar.MINUTE);
+        int second = now.get(Calendar.SECOND);
+        int millis = now.get(Calendar.MILLISECOND);
+
+        String currentTime = String.format("%02d-%02d-%d %02d:%02d:%02d.%03d", month, day, year, hour, minute, second, millis);
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentUser = auth.getName();
+
+        EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Posted Journal Entry: %s", journalId));
+        eventLogService.save(log);
+
+
+        logger.info(" --- Redirecting to /journals");
+        return "redirect:/journals";
+    }
+
 }
