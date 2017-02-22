@@ -1604,17 +1604,15 @@ var TransactionRow = React.createClass({
                   <div className="row">
                       <div className="col-md-2"></div> 
                       <div className="col-md-2">{this.props.transaction.addedByUsername}</div> 
+                      {!this.props.transaction.debit && <div className="col-md-1"></div> }
                       <div className="col-md-2">{this.props.transaction.accountName}</div> 
+                      {!this.props.transaction.debit && <div className="col-md-1"></div>  }
+                      <div className="col-md-2 wrap-words text-right">${(this.state.amount).toFixed(2)}</div>
                       {this.props.transaction.debit ? (
-                        <div className="col-md-2 wrap-words text-right">${(this.state.amount).toFixed(2)}</div>
+                        <div className="col-md-4"></div> 
                       ) : (
-                        <div className="col-md-4 wrap-words text-right">${(this.state.amount).toFixed(2)}</div>
+                        <div className="col-md-2"></div> 
                       )}
-                       {this.props.transaction.debit ? (
-                          <div className="col-md-4"></div> 
-                        ) : (
-                          <div className="col-md-2"></div> 
-                        )}
                   </div>
             </div>
         );
