@@ -1897,7 +1897,7 @@ var AllJournals = React.createClass({
                         <div className="row">
                             <div className="col-md-10">
                                 <label className="btn btn-default pull-right" for="my-file-selector">
-                                    <input id="my-file-selector" className="hidden" type="file" multiple="multiple" />
+                                    <input id="my-file-selector" className="hidden" type="file" multiple="multiple"/>
                                     Upload Supporting Documents
                                 </label>
                                 <h4 id="upload-file-info"></h4>
@@ -1938,9 +1938,37 @@ $("#btnSignup").click(function(e) {
   validateSignupForm($(this), e);
 });
 
-$("#my-file-selector").change(function() {
-    alert($(this).html());
-    $('#upload-file-info').html($(this).val());
+$("#my-file-selector").on("change", function(e) {
+//Note: I was not able to figure out what some of the code did so I just commented it out in case it is needed later
+    var file = e.target.files[0];
+    var filename = name.length > 1 ? name + ".pdf" : file.name;
+    var filetype = file.type;
+    var filesize = file.size;
+    var data = {
+        "filename":filename,
+        "filetype":filetype,
+        "filesize":filesize
+    };
+    console.log("data object: ");
+    console.log(data);
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        data.file_base64 = e.target.result.split(/,/)[1];
+        //$.post("/journals", {json:JSON.stringify(data)}, "json")
+        //.then(function(data) {
+        console.log(data);
+        var results = $("<a />", {
+            "href": "data:" + data.filetype + ";base64," + data.file_base64,
+                "download": data.filename,
+                "target": "_blank",
+                "text": data.filename
+            });
+            $("#upload-file-info").append("<br>download: ", results[0]);
+    }, function(jqxhr, textStatus, errorThrown) {
+        console.log(textStatus, errorThrown)
+        //})
+    };
+    reader.readAsDataURL(file)
 });
 
 function validateLoginForm(element, e) {
