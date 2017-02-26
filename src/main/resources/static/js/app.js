@@ -1916,7 +1916,7 @@ var AllJournals = React.createClass({
                     <h1>All Journal Entries</h1>
                     <hr />
                     <div className="faq">
-                        <input type="search" placeholder="search"/>
+                        <input type="search" placeholder="search" id="searchBar"/>
                         <div className="faq_not_found is-hidden">
                             <p>No Matches were found</p>
                         </div>
@@ -2090,8 +2090,8 @@ function returnConfirmPasswordErrorMessage(password, confirmPassword) {
   return errorMessage;
 }
 
-$(document).ready(function(){
-    'use strict';
+$('#searchBar').click(function(e){
+    //'use strict';
 
       ;( function ( document, window, index )
       {
@@ -2109,7 +2109,7 @@ $(document).ready(function(){
 
           var input     = container.querySelector( 'input' ),
             notfound    = container.querySelector( '.faq_not_found' ),
-            items     = document.querySelectorAll( '.faq > div ' ),
+            items     = document.querySelectorAll( '.faq > div > div' ),
             item      = {},
             itemsIndexed  = [];
 
@@ -2218,5 +2218,4 @@ $(document).ready(function(){
         }( document, window, 0 ));
 
       }( document, window, 0 ));
-
-  });
+   });
