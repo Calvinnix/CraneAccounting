@@ -971,7 +971,13 @@ var AllAccounts = React.createClass({
                         </div>
                     </div>
                     <hr />
-                    <AccountsTable accounts={this.state.accounts} loadAccountsFromServer={this.loadAccountsFromServer} />
+                    <div className="faq">
+                        <input type="search" placeholder="search" id="searchBar"/>
+                        <div className="faq_not_found">
+                            <p>No Matches were found</p>
+                        </div>
+                        <AccountsTable accounts={this.state.accounts} loadAccountsFromServer={this.loadAccountsFromServer} />
+                    </div>
                 </div>
             </div>
         );
@@ -1324,7 +1330,13 @@ var AllChartOfAccounts = React.createClass({
                         </div>
                     </div>
                     <hr />
-                    <ChartOfAccountsTable chartOfAccounts={this.state.ChartOfAccounts} loadChartOfAccountsFromServer={this.loadChartOfAccountsFromServer} />
+                    <div className="faq">
+                        <input type="search" placeholder="search" id="searchBar"/>
+                        <div className="faq_not_found">
+                            <p>No Matches were found</p>
+                        </div>
+                        <ChartOfAccountsTable chartOfAccounts={this.state.ChartOfAccounts} loadChartOfAccountsFromServer={this.loadChartOfAccountsFromServer} />
+                    </div>
                 </div>
             </div>
         );
@@ -1917,7 +1929,7 @@ var AllJournals = React.createClass({
                     <hr />
                     <div className="faq">
                         <input type="search" placeholder="search" id="searchBar"/>
-                        <div className="faq_not_found is-hidden">
+                        <div className="faq_not_found">
                             <p>No Matches were found</p>
                         </div>
                         <JournalEntriesTable className="Journals" journalEntries={this.state.journalEntries} />
@@ -1969,7 +1981,7 @@ $("#my-file-selector").on("change", function(e) {
                 "target": "_blank",
                 "text": data.filename
             });
-            $("#upload-file-info").append("<br>download: ", results[0]);
+            $("#upload-file-info").append("<br> Download: ", results[0]);
     }, function(jqxhr, textStatus, errorThrown) {
         console.log(textStatus, errorThrown)
         //})
@@ -2157,7 +2169,6 @@ $('#searchBar').click(function(e){
 
 
         // toggling items on title press
-
         ;( function ( document, window, index )
         {
           [].forEach.call( document.querySelectorAll( '.faq div ' ), function( entry )
@@ -2193,7 +2204,7 @@ $('#searchBar').click(function(e){
           if( !container ) return true;
 
           var input = container.querySelector( 'input' ),
-            items = document.querySelectorAll( '.faq > div > div > div' ),
+            items = document.querySelectorAll( '.faq > div > div ' ),
             item  = {};
 
           input.addEventListener( 'keyup', function( e )
