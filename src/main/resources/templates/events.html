@@ -3,7 +3,9 @@
 <head th:replace="layout :: head(title='Events')"></head>
 <body>
 <div th:replace="layout :: nav(selectedTab='events')"></div>
-<div id="AllEvents"></div>
+<div id="AllEvents">
+  <block th:replace="layout :: loading"></block>
+</div>
 <block th:replace="layout :: script"></block>
 </body>
 </html>

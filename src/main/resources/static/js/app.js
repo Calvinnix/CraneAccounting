@@ -587,6 +587,12 @@ var AccountRow = React.createClass({
       parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       formattedBalance = parts.join(".");
 
+      if (formattedBalance.charAt(0) === '-') {
+        formattedBalance = "($" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
+      } else {
+        formattedBalance = "$" + formattedBalance;
+      }
+
       this.setState({
           balance: formattedBalance
       });
@@ -772,7 +778,7 @@ var AccountRow = React.createClass({
                    </div>
                    <div className="row">
                       <div className="col-md-4"><h4>Added by: <b>{this.props.account.addedByUsername}</b></h4></div> 
-                      <div className="col-md-4"><h4>Balance: $<b>{this.state.balance}</b></h4></div>
+                      <div className="col-md-4"><h4>Balance: <b>{this.state.balance}</b></h4></div>
                       {this.state.editing ? ( 
                           <div className="col-md-4"><textarea type="text" className="form-control" onChange={this.updateAccountComment} placeholder="Comments" value={this.state.comment} /></div>
                         ) : (
@@ -1637,6 +1643,7 @@ var TransactionRow = React.createClass({
     var parts = formattedAmount.toString().split(".");
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     formattedAmount = parts.join(".");
+
     return {
       amount: formattedAmount
     };

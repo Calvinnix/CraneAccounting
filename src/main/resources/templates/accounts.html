@@ -3,7 +3,9 @@
 <head th:replace="layout :: head(title='Accounts')"></head>
 <body>
 <div th:replace="layout :: nav(selectedTab='accounts')"></div>
-<div id="AllAccounts"></div>
+<div id="AllAccounts">
+  <block th:replace="layout :: loading"></block>
+</div>
 <block th:replace="layout :: script"></block>
 </body>
 </html>

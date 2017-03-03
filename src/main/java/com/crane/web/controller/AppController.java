@@ -141,7 +141,7 @@ public class AppController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String currentUser = auth.getName();
 
-        EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Added new user: %s", username));
+        EventLog log = new EventLog(currentTime, currentUser, String.format("Add new user: %s", username));
         eventLogService.save(log);
 
         logger.info(" --- Redirecting to /admin");
@@ -179,7 +179,7 @@ public class AppController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String currentUser = auth.getName();
 
-        EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Edited user: %s", username));
+        EventLog log = new EventLog(currentTime, currentUser, String.format("Edit user: %s", username));
         eventLogService.save(log);
 
         logger.info(" --- Redirecting to /admin");
@@ -245,7 +245,7 @@ public class AppController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String currentUser = auth.getName();
 
-        EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Added new account: %s --- Initial Balance: %s --- Comments: %s", name, balance, comment));
+        EventLog log = new EventLog(currentTime, currentUser, String.format("Add new account: %s | Balance: %s | Comments: %s", name, balance, comment));
         eventLogService.save(log);
 
         logger.info(" --- Redirecting to /");
@@ -300,7 +300,7 @@ public class AppController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String currentUser = auth.getName();
 
-        EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Edited account: %s --- Comments: %s --- Active: %s", name, comment, active));
+        EventLog log = new EventLog(currentTime, currentUser, String.format("Edit account: %s | Comments: %s | Active: %s", name, comment, active));
         eventLogService.save(log);
 
 
@@ -342,7 +342,7 @@ public class AppController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String currentUser = auth.getName();
 
-        EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Added new account to chart of accounts: %s", name));
+        EventLog log = new EventLog(currentTime, currentUser, String.format("Add new account to chart of accounts: %s", name));
         eventLogService.save(log);
 
         logger.info(" --- Redirecting to /chartOfAccounts");
@@ -388,7 +388,7 @@ public class AppController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String currentUser = auth.getName();
 
-        EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Edited account in chart of account: %s", name));
+        EventLog log = new EventLog(currentTime, currentUser, String.format("Edit account in chart of account: %s", name));
         eventLogService.save(log);
 
 
@@ -441,7 +441,7 @@ public class AppController {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String currentUser = auth.getName();
 
-            EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Added new transaction for account: %s --- amount = %s --- isDebit = %s", accountName, amount, isDebit));
+            EventLog log = new EventLog(currentTime, currentUser, String.format("Add transaction | account: %s | amount: %s | isDebit: %s", accountName, amount, isDebit));
             eventLogService.save(log);
         }
 
@@ -512,7 +512,7 @@ public class AppController {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String currentUser = auth.getName();
 
-            EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Account: %s --- balance updated from %s to %s", accountName, beginningBalance, accountFound.getBalance()));
+            EventLog log = new EventLog(currentTime, currentUser, String.format("Post Journal Entry: %s | Before: %s | After: %s", accountName, beginningBalance, accountFound.getBalance()));
             eventLogService.save(log);
         }
 
@@ -533,7 +533,7 @@ public class AppController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String currentUser = auth.getName();
 
-        EventLog log = new EventLog(currentTime, currentUser, String.format(" --- Posted Journal Entry: %s", journalId));
+        EventLog log = new EventLog(currentTime, currentUser, String.format("Approve Journal Entry: %s", journalId));
         eventLogService.save(log);
 
 
