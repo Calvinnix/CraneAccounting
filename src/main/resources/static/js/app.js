@@ -501,12 +501,17 @@ var AllUsers = React.createClass({
                         </div>
                     </div>
                     <hr />
-                    <div className="row">
-                      <input id="inputSearch" type="text" className="form-control" placeholder="Search" />
-                    </div>
-                    <hr />
                 </div>
-                <UserTable users={this.state.users} roles={this.state.roles} />
+                <div className="faq">
+                  <div className="container">
+                    <input id="searchBar" type="search" className="form-control" placeholder="Search" />
+                    <div className="faq_not_found">
+                      <p>No Matches were found</p>
+                    </div>
+                  </div>
+                  <UserTable users={this.state.users} roles={this.state.roles} />
+                </div>
+
             </div>
         );
     }
@@ -1344,22 +1349,21 @@ var AllChartOfAccounts = React.createClass({
 });
 
 if (document.getElementById('AllChartOfAccounts') != null) {
-    ReactDOM.render(<AllChartOfAccounts />, document.getElementById('AllChartOfAccounts'));
+  ReactDOM.render(<AllChartOfAccounts />, document.getElementById('AllChartOfAccounts'));
 }
 
 var EventRow = React.createClass({
-        render: function() {
-            return (
-                <div className="row row-striped">
-                      <div className="row">
-                          <div className="col-md-2">{this.props.event.timestamp}</div> 
-                          <div className="col-md-2">{this.props.event.user}</div> 
-                          <div className="col-md-8 wrap-words">{this.props.event.description}</div>
-                      </div>
-                </div>
-            );
-        }
-
+  render: function() {
+    return (
+      <div className="row row-striped">
+        <div className="row">
+          <div className="col-md-2 text-center">{this.props.event.timestamp}</div> 
+          <div className="col-md-2">{this.props.event.user}</div> 
+          <div className="col-md-8 wrap-words">{this.props.event.description}</div>
+        </div>
+      </div>
+    );
+  }
 });
 
 var EventsTable = React.createClass({
@@ -1400,20 +1404,28 @@ var AllEvents = React.createClass({
         });
     },
     render: function() {
-        var self = this;
-        return (
-            <div>
-                <div className="container">
-                    <h1>Event Log</h1>
-                    <div className="row header-row">
-                          <div className="col-md-2"><h5>Timestamp</h5></div>
-                          <div className="col-md-2"><h5>User</h5></div>
-                          <div className="col-md-8"><h5>Description</h5></div>
-                     </div>
-                     <EventsTable events={this.state.events} />
+      var self = this;
+      return (
+        <div>
+          <div className="container">
+            <h1>Event Log</h1>
+            <div className="faq">
+              <div className="container">
+                <input id="searchBar" type="search" className="form-control" placeholder="Search" />
+                <div className="faq_not_found">
+                  <p>No Matches were found</p>
                 </div>
+              </div>
+              <div className="row header-row">
+                <div className="col-md-2 text-center"><h5>Timestamp</h5></div>
+                <div className="col-md-2"><h5>User</h5></div>
+                <div className="col-md-8"><h5>Description</h5></div>
+              </div>
+              <EventsTable events={this.state.events} />
             </div>
-        );
+          </div>
+        </div>
+      );
     }
 
 });
@@ -1614,7 +1626,7 @@ var TransactionRow = React.createClass({
         return (
             <div className="row row-striped">
                   <div className="row">
-                      <div className="col-md-2"></div> 
+                      <div className="col-md-2 text-center">{this.props.transaction.publicId}</div> 
                       <div className="col-md-2">{this.props.transaction.addedByUsername}</div> 
                       {!this.props.transaction.debit && <div className="col-md-1"></div> }
                       <div className="col-md-2">{this.props.transaction.accountName}</div> 
@@ -2140,7 +2152,8 @@ $('#searchBar').click(function(e){
 
             [].forEach.call( items, function( entry )
             {
-              entry.innerHTML = entry.innerHTML.replace( /<span class="highlight">([^<]+)<\/span>/gi, '$1' );
+              //Fixes bug where we can't edit/delete after searching
+              //entry.innerHTML = entry.innerHTML.replace( /<span class="highlight">([^<]+)<\/span>/gi, '$1' );
             });
 
             var searchVal = input.value.trim().toLowerCase();
@@ -2150,8 +2163,9 @@ $('#searchBar').click(function(e){
               {
                 if( itemsIndexed[ i ].indexOf( searchVal ) != -1 )
                 {
-                  removeElementClass( items[ i ], 'is-hidden' );
-                  items[ i ].innerHTML = items[ i ].innerHTML.replace( new RegExp( searchVal+'(?!([^<]+)?>)', 'gi' ), '<span class="highlight">$&</span>' );
+                  //Fixes bug where we can't edit/delete after searching
+                  //removeElementClass( items[ i ], 'is-hidden' );
+                  //items[ i ].innerHTML = items[ i ].innerHTML.replace( new RegExp( searchVal+'(?!([^<]+)?>)', 'gi' ), '<span class="highlight">$&</span>' );
                 }
                 else
                   addElementClass( items[ i ], 'is-hidden' );
