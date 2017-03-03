@@ -568,6 +568,7 @@ var AccountRow = React.createClass({
         return { active: this.props.account.active,
                  balance: this.props.account.balance,
                  comment: this.props.account.comment,
+                 canDeactivate: this.props.account.canDeactivate,
                  beforeEditComment: '',
                  editing: false};
     },
@@ -791,7 +792,11 @@ var AccountRow = React.createClass({
                                   <button className={this.state.active ? "btn btn-warning accountOptions" : "btn btn-warning accountOptions disabled"} onClick={this.handleEdit}> Edit Comment</button> 
                              )}
                             {this.state.active ? ( 
-                                  <button className={this.state.editing ? "btn btn-danger accountOptions disabled hidden" : "btn btn-danger accountOptions"} onClick={this.handleDeactivate}> Deactivate</button> 
+                              this.state.canDeactivate ? (
+                                <button className={this.state.editing ? "btn btn-danger accountOptions disabled hidden" : "btn btn-danger accountOptions"} onClick={this.handleDeactivate}> Deactivate</button> 
+                              ) : (
+                                <button className={this.state.editing ? "btn btn-danger accountOptions disabled hidden" : "btn btn-danger accountOptions disabled"} onClick={this.handleDeactivate}> Deactivate</button> 
+                              )
                              ) : ( 
                                   <button className={this.state.editing ? "btn btn-success accountOptions disabled" : "btn btn-success accountOptions"} onClick={this.handleActivate}> Activate</button> 
                             )} 

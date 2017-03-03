@@ -27,6 +27,8 @@ public class Account {
 
     private Double balance;
 
+    private Boolean canDeactivate;
+
     @Column(unique = true)
     private Long priority;
 
@@ -110,9 +112,17 @@ public class Account {
         this.balance = balance;
     }
 
-    public Long getPriority() {
-        return priority;
+    public Boolean getCanDeactivate() {
+      return canDeactivate;
     }
+
+    public void setCanDeactivate(Boolean canDeactivate) {
+      this.canDeactivate = canDeactivate;
+    }
+
+    public Long getPriority() {
+          return priority;
+      }
 
     public void setPriority(Long priority) {
         this.priority = priority;

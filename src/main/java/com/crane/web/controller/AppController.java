@@ -223,6 +223,12 @@ public class AppController {
         account.setPriority(priority);
         account.setActive(true); //When first saving the account always default to true
 
+        if (balance == 0.0) {
+            account.setCanDeactivate(true);
+        } else {
+            account.setCanDeactivate(false);
+        }
+
         accountService.save(account);
 
         Calendar cal = Calendar.getInstance();
@@ -248,7 +254,7 @@ public class AppController {
 
     @RequestMapping(value = "/editAccount", method = RequestMethod.POST)
     public String editAccount(HttpServletRequest request) {
-        logger.info(" --- RequestMapping from /deactivateAccount");
+        logger.info(" --- RequestMapping from /editAccount");
 
         String name = request.getParameter("name");
         String strCode = request.getParameter("code");
@@ -276,6 +282,7 @@ public class AppController {
         account.setComment(comment);
         account.setPriority(priority);
         account.setActive(active);
+        account.setCanDeactivate(true);
 
         accountService.update(account);
 
@@ -424,6 +431,7 @@ public class AppController {
             Boolean isDebit = currentAccount.getBoolean("isDebit");
 
             Account accountFound = accountService.findAccountByName(accountName);
+            accountFound.setCanDeactivate(false);
 
             Transaction transaction = new Transaction(accountFound, amount, userFound, isDebit, accountName, username);
             transaction = transactionService.saveAndReturn(transaction);
