@@ -1450,53 +1450,89 @@ if (document.getElementById('AllEvents') != null) {
 }
 
 var JournalDebitRow = React.createClass({
-        getInitialState: function() {
-            return {
-                    index: this.props.index
-                    };
-        },
-        redirectToRemove: function(evt) {
-            this.props.removeDebitJournalEntry(this.state.index);
-        },
-        render: function() {
-            return (
-                <div className="row">
-                      <div className="row">
-                          <div className="col-md-4 text-left"><h4>{this.props.JournalDebit.accountCode} - {this.props.JournalDebit.accountName}</h4></div> 
-                          <div className="col-md-4 text-right"><h4>$ {this.props.JournalDebit.amount}</h4></div> 
-                          <div className="col-md-2"></div> 
-                          <div className="col-md-2">
-                               <button className="btn btn-danger" onClick={this.redirectToRemove} value={this.state.index}><span className="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
-                          </div> 
-                      </div>
-                </div>
-            );
-        }
+  getInitialState: function() {
+    return {
+      index: this.props.index,
+      amount: this.props.JournalDebit.amount
+    };
+  },
+  componentDidMount: function() {
+    //This is used to format the initial balance as a number
+    var formattedAmount = this.state.amount;
+
+    if (!(/^(\d+\.\d\d)$/.test(formattedAmount))) {
+      //number needs formatting
+      formattedAmount = formattedAmount.toFixed(2);
+    }
+    //Add commas to thousands place i.e. 1000000.00 = 1,000,000.00
+    var parts = formattedAmount.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    formattedAmount = parts.join(".");
+
+    this.setState({
+        amount: formattedAmount
+    });
+  },
+  redirectToRemove: function(evt) {
+    this.props.removeDebitJournalEntry(this.state.index);
+  },
+  render: function() {
+    return (
+      <div className="row">
+          <div className="row">
+            <div className="col-md-4 text-left"><h4>{this.props.JournalDebit.accountCode} - {this.props.JournalDebit.accountName}</h4></div> 
+            <div className="col-md-4 text-right"><h4>$ {this.state.amount}</h4></div> 
+            <div className="col-md-2"></div> 
+            <div className="col-md-2">
+               <button className="btn btn-danger" onClick={this.redirectToRemove} value={this.state.index}><span className="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+            </div> 
+          </div>
+      </div>
+    );
+  }
 });
 
 var JournalCreditRow = React.createClass({
-        getInitialState: function() {
-            return {
-                    index: this.props.index
-                    };
-        },
-        redirectToRemove: function(evt) {
-            this.props.removeCreditJournalEntry(this.state.index);
-        },
-        render: function() {
-            return (
-                <div className="row">
-                      <div className="row">
-                          <div className="col-md-2"></div> 
-                          <div className="col-md-4 text-left"><h4>{this.props.JournalCredit.accountCode} - {this.props.JournalCredit.accountName}</h4></div> 
-                          <div className="col-md-4 text-right"><h4>$ {this.props.JournalCredit.amount}</h4></div> 
-                          <div className="col-md-2">
-                                <button className="btn btn-danger" onClick={this.redirectToRemove} value={this.state.index}><span className="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
-                          </div> 
-                      </div>
-                </div>
-            );
-        }
+  getInitialState: function() {
+    return {
+      index: this.props.index,
+      amount: this.props.JournalCredit.amount
+    };
+  },
+  componentDidMount: function() {
+    //This is used to format the initial balance as a number
+    var formattedAmount = this.state.amount;
+
+    if (!(/^(\d+\.\d\d)$/.test(formattedAmount))) {
+      //number needs formatting
+      formattedAmount = formattedAmount.toFixed(2);
+    }
+    //Add commas to thousands place i.e. 1000000.00 = 1,000,000.00
+    var parts = formattedAmount.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    formattedAmount = parts.join(".");
+
+    this.setState({
+        amount: formattedAmount
+    });
+  },
+  redirectToRemove: function(evt) {
+    this.props.removeCreditJournalEntry(this.state.index);
+  },
+  render: function() {
+    return (
+      <div className="row">
+          <div className="row">
+            <div className="col-md-2"></div> 
+            <div className="col-md-4 text-left"><h4>{this.props.JournalCredit.accountCode} - {this.props.JournalCredit.accountName}</h4></div> 
+            <div className="col-md-4 text-right"><h4>$ {this.state.amount}</h4></div> 
+            <div className="col-md-2">
+              <button className="btn btn-danger" onClick={this.redirectToRemove} value={this.state.index}><span className="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+            </div> 
+          </div>
+      </div>
+    );
+  }
 });
 
 var JournalsDebitTable = React.createClass({
@@ -2036,6 +2072,98 @@ var AllJournals = React.createClass({
 if (document.getElementById('AllJournals') != null) {
     ReactDOM.render(<AllJournals />, document.getElementById('AllJournals'));
 }
+
+var LedgerTable = React.createClass({
+  render: function() {
+    var self = this;
+    var rows = [];
+    var index = 1;
+    this.props.transactions.forEach(function(transaction) {
+      if (Number(self.props.accountId) === transaction.accountId) {
+        rows.push(<TransactionRow transaction={transaction} key={transaction.publicId}/>);
+      }
+    });
+    return (
+      <div className="container">
+        <div className="row">
+          <div className="col-md-2"></div> 
+          <div className="col-md-2">Added By</div> 
+          <div className="col-md-2">Account</div> 
+          <div className="col-md-2 text-right">Debit</div>
+          <div className="col-md-2 text-right">Credit</div>
+        </div>
+        <hr />
+        {rows}
+      </div>
+    );
+  }
+});
+
+
+var Ledger = React.createClass({
+
+  getInitialState: function() {
+    return {
+      transactions: [],
+      accounts: [],
+      accountId: 1
+    };
+  },
+  componentDidMount: function () {
+    this.loadTransactionsFromServer();
+    this.loadAccountsFromServer();
+  },
+  loadTransactionsFromServer: function() {
+    var self = this;
+    $.ajax({
+      url: "http://localhost:8080/api/transactions"
+    }).then(function (data) {
+      self.setState({transactions: data._embedded.transactions});
+    });
+  },
+  loadAccountsFromServer: function() {
+    var self = this;
+    $.ajax({
+      url: "http://localhost:8080/api/accounts"
+    }).then(function (data) {
+      self.setState({accounts: data._embedded.accounts});
+    });
+  },
+  updateAccountId: function(evt) {
+    this.setState({
+      accountId: evt.target.value
+    });
+  },
+  render: function() {
+    var self = this;
+    return (
+      <div>
+        <div className="container">
+          <h1>Ledger</h1>
+          <hr />
+          <AccountSelect onChange={this.updateAccountId} accounts={this.state.accounts} id={this.state.accountId}/>
+          <hr />
+          <div className="faq">
+            <input type="search" placeholder="search" id="searchBar"/>
+            <div className="faq_not_found">
+              <p>No Matches were found</p>
+            </div>
+            <LedgerTable className="Ledger" accountId={this.state.accountId} transactions={this.state.transactions} />
+          </div>
+        </div>
+      </div>
+    );
+  }
+});
+
+
+if (document.getElementById('AllApprovedJournals') != null) {
+    ReactDOM.render(<Ledger />, document.getElementById('AllApprovedJournals'));
+}
+
+
+
+
 
 /*TODO:ctn Eventually will want to convert this code (as well as the login/signup page) to utilize REACT */
 /*TODO:ctn some code is repeated... This should be cleaned up */
