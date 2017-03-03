@@ -1781,17 +1781,44 @@ var AllJournals = React.createClass({
 
       var isValid = true;
       if (this.state.JournalsDebit.length < 1 || this.state.JournalsCredit.length < 1) {
-        alert("Invalid! You need to have at least 1 debit and 1 credit transaction.");
+        toastr.options = {
+          "debug": false,
+          "positionClass": "toast-top-center",
+          "onclick": null,
+          "fadeIn": 3000,
+          "fadeOut": 1000,
+          "timeOut": 5000,
+          "extendedTimeOut": 500
+        }
+        toastr.error("Invalid! You need to have at least 1 debit and 1 credit transaction.");
         isValid = false;
       }
 
       this.state.JournalsDebit.forEach( function(journalDebit) {
         if (journalDebit.amount <= 0) {
-           alert("Invalid! All amounts must be greater than $0.00.");
+           toastr.options = {
+             "debug": false,
+             "positionClass": "toast-top-center",
+             "onclick": null,
+             "fadeIn": 3000,
+             "fadeOut": 1000,
+             "timeOut": 5000,
+             "extendedTimeOut": 500
+           }
+           toastr.error("Invalid! All amounts must be greater than $0.00.");
            isValid = false;
         }
         if ($.inArray(journalDebit.accountName, accountsUsed) > -1) {
-          alert("Invalid! You can only use the account once.");
+          toastr.options = {
+            "debug": false,
+            "positionClass": "toast-top-center",
+            "onclick": null,
+            "fadeIn": 3000,
+            "fadeOut": 1000,
+            "timeOut": 5000,
+            "extendedTimeOut": 500
+          }
+          toastr.error("Invalid! You can only use the account once.");
           isValid = false;
         } else {
           accountsUsed.push(journalDebit.accountName);
@@ -1801,11 +1828,29 @@ var AllJournals = React.createClass({
 
       this.state.JournalsCredit.forEach(function(journalCredit) {
         if (journalCredit.amount <= 0) {
-          alert("Invalid! All amounts must be greater than $0.00.");
+          toastr.options = {
+            "debug": false,
+            "positionClass": "toast-top-center",
+            "onclick": null,
+            "fadeIn": 3000,
+            "fadeOut": 1000,
+            "timeOut": 5000,
+            "extendedTimeOut": 500
+          }
+          toastr.error("Invalid! All amounts must be greater than $0.00.");
           isValid = false;
         }
         if ($.inArray(journalCredit.accountName, accountsUsed) > -1) {
-          alert("Invalid! You can only use the account once.");
+          toastr.options = {
+            "debug": false,
+            "positionClass": "toast-top-center",
+            "onclick": null,
+            "fadeIn": 3000,
+            "fadeOut": 1000,
+            "timeOut": 5000,
+            "extendedTimeOut": 500
+          }
+          toastr.error("Invalid! You can only use the account once.");
           isValid = false;
         } else {
           accountsUsed.push(journalCredit.accountName);
@@ -1814,7 +1859,16 @@ var AllJournals = React.createClass({
       });
 
       if (debitTotal !== creditTotal) {
-        alert("Invalid! Debits and Credits must be equal.");
+        toastr.options = {
+          "debug": false,
+          "positionClass": "toast-top-center",
+          "onclick": null,
+          "fadeIn": 3000,
+          "fadeOut": 1000,
+          "timeOut": 5000,
+          "extendedTimeOut": 500
+        }
+        toastr.error("Invalid! Debits and Credits must be equal.");
         isValid = false;
       }
 
