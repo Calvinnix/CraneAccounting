@@ -105,6 +105,13 @@ public class AppController {
         return "chartOfAccounts";
     }
 
+    @RequestMapping(value = "/ledger")
+    public String ledger() {
+        logger.info(" --- RequestMapping from /ledger");
+        logger.info(" --- Mapping to /ledger");
+        return "ledger";
+    }
+
     @RequestMapping(value = "/admin/addUser", method = RequestMethod.POST)
     public String addUser(HttpServletRequest request) {
         logger.info(" --- RequestMapping from /admin/addUser");
@@ -266,6 +273,23 @@ public class AppController {
         String strPriority = request.getParameter("priority");
         String strActive = request.getParameter("active");
 
+        //Need to strip $ and () from the number
+        //i.e. $5.00 = 5.00
+        //i.e. ($5.00) = -5.00
+        if (strBalance.charAt(0) == '$') {
+            //assuming positive
+            strBalance = strBalance.substring(1);
+        } else if (strBalance.charAt(0) == '(') {
+            //assuming negative
+            strBalance = "-" + strBalance.substring(2, strBalance.length() - 1);
+        } else {
+            logger.error("Unexpected format of balance: " + strBalance);
+        }
+
+        //remove commas
+        //i.e. 1,000,000.00 = 1000000.00
+        strBalance = strBalance.replace(",", "");
+
         Double code = Double.parseDouble(strCode);
         Boolean leftNormalSide = Boolean.parseBoolean(strLeftNormalSide);
         Double balance = Double.parseDouble(strBalance);
@@ -282,7 +306,6 @@ public class AppController {
         account.setComment(comment);
         account.setPriority(priority);
         account.setActive(active);
-        account.setCanDeactivate(true);
 
         accountService.update(account);
 

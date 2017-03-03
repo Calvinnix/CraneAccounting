@@ -35,6 +35,8 @@ public class DatabaseLoader implements CommandLineRunner {
 
         Role ROLE_USER = new Role("ROLE_USER");
         this.roleDao.save(ROLE_USER);
+        Role ROLE_MANAGER = new Role("ROLE_MANAGER");
+        this.roleDao.save(ROLE_MANAGER);
         Role ROLE_ADMIN = new Role("ROLE_ADMIN");
         this.roleDao.save(ROLE_ADMIN);
 
@@ -42,6 +44,8 @@ public class DatabaseLoader implements CommandLineRunner {
         final String username = "cnix";
 
         this.userDao.save(new User(username, password, true, ROLE_ADMIN));
+        this.userDao.save(new User("admin", password, true, ROLE_ADMIN));
+        this.userDao.save(new User("manager", password, true, ROLE_MANAGER));
         this.userDao.save(new User("TEST1", password, true, ROLE_USER));
         this.userDao.save(new User("TEST2", password, true, ROLE_USER));
 

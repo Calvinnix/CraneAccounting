@@ -34,7 +34,7 @@
                     <li th:class="${selectedTab} == 'accounts' ? 'active' : ''"><a href="/accounts">Accounts</a></li>
                     <li sec:authorize="hasRole('ROLE_ADMIN')" th:class="${selectedTab} == 'chartOfAccounts' ? 'active' : ''"><a href="/chartOfAccounts">Chart of Accounts</a></li>
                     <li th:class="${selectedTab} == 'journals' ? 'active' : ''"><a href="/journals">Journals</a></li>
-
+                    <li th:class="${selectedTab} == 'ledger' ? 'active' : ''"><a href="/ledger">Ledger</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
