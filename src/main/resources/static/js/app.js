@@ -575,16 +575,20 @@ var AccountRow = React.createClass({
         this.formatBalance();
     },
     formatBalance: function(number) {
-        //This is used to format the initial balance as a number
+      //This is used to format the initial balance as a number
+      var formattedBalance = this.state.balance;
+      if (!(/^(\d+\.\d\d)$/.test(formattedBalance))) {
+        //number needs formatting
+        formattedBalance = formattedBalance.toFixed(2);
+      }
+      //Add commas to thousands place i.e. 1000000.00 = 1,000,000.00
+      var parts = formattedBalance.toString().split(".");
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      formattedBalance = parts.join(".");
 
-        var formattedBalance = this.state.balance;
-        if (!(/^(\d+\.\d\d)$/.test(formattedBalance))) {
-            //number needs formatting
-            formattedBalance = formattedBalance.toFixed(2);
-            this.setState({
-                balance: formattedBalance
-            });
-        }
+      this.setState({
+          balance: formattedBalance
+      });
     },
     handleEditConfirm: function() {
         this.setState({
@@ -1618,29 +1622,39 @@ var JournalRow = React.createClass({
 })
 
 var TransactionRow = React.createClass({
-    getInitialState: function() {
-        return {amount: Number((this.props.transaction.amount).toFixed(2))
-        };
-    },
-    render: function() {
-        return (
-            <div className="row row-striped">
-                  <div className="row">
-                      <div className="col-md-2 text-center">{this.props.transaction.publicId}</div> 
-                      <div className="col-md-2">{this.props.transaction.addedByUsername}</div> 
-                      {!this.props.transaction.debit && <div className="col-md-1"></div> }
-                      <div className="col-md-2">{this.props.transaction.accountName}</div> 
-                      {!this.props.transaction.debit && <div className="col-md-1"></div>  }
-                      <div className="col-md-2 wrap-words text-right">${(this.state.amount).toFixed(2)}</div>
-                      {this.props.transaction.debit ? (
-                        <div className="col-md-4"></div> 
-                      ) : (
-                        <div className="col-md-2"></div> 
-                      )}
-                  </div>
-            </div>
-        );
+  getInitialState: function() {
+    var formattedAmount = this.props.transaction.amount;
+    if (!(/^(\d+\.\d\d)$/.test(formattedAmount))) {
+      //number needs formatting
+      formattedAmount = formattedAmount.toFixed(2);
     }
+    //Add commas to thousands place i.e. 1000000.00 = 1,000,000.00
+    var parts = formattedAmount.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    formattedAmount = parts.join(".");
+    return {
+      amount: formattedAmount
+    };
+  },
+  render: function() {
+    return (
+      <div className="row row-striped">
+        <div className="row">
+          <div className="col-md-2 text-center">{this.props.transaction.publicId}</div> 
+          <div className="col-md-2">{this.props.transaction.addedByUsername}</div> 
+          {!this.props.transaction.debit && <div className="col-md-1"></div> }
+          <div className="col-md-2">{this.props.transaction.accountName}</div> 
+          {!this.props.transaction.debit && <div className="col-md-1"></div>  }
+          <div className="col-md-2 wrap-words text-right">${this.state.amount}</div>
+          {this.props.transaction.debit ? (
+            <div className="col-md-4"></div> 
+          ) : (
+            <div className="col-md-2"></div> 
+          )}
+        </div>
+      </div>
+    );
+  }
 });
 
 var JournalEntriesTable = React.createClass({
