@@ -1693,7 +1693,7 @@ var TransactionRow = React.createClass({
           <div className="row">
             <div className="col-md-1 text-center">{this.props.journalEntry.publicId}</div> 
             <div className="col-md-1 text-center">{addedOnDate}</div> 
-            <div className="col-md-2 text-center">{this.props.transaction.publicId}</div> 
+            <div className="col-md-1 text-center">{this.props.transaction.publicId}</div> 
             <div className="col-md-2">{this.props.transaction.addedByUsername}</div> 
             {!this.props.transaction.debit && <div className="col-md-1"></div> }
             <div className="col-md-2">{this.props.transaction.accountName}</div> 
@@ -2127,11 +2127,13 @@ var LedgerTable = React.createClass({
     return (
       <div className="container">
         <div className="row">
-          <div className="col-md-2"></div> 
+          <div className="col-md-1">Journal ID</div> 
+          <div className="col-md-1">Added On</div> 
+          <div className="col-md-1">Transaction ID</div> 
           <div className="col-md-2">Added By</div> 
-          <div className="col-md-2">Account</div> 
-          <div className="col-md-2 text-right">Debit</div>
-          <div className="col-md-2 text-right">Credit</div>
+          <div className="col-md-3">Account</div> 
+          <div className="col-md-2">Debit</div>
+          <div className="col-md-2">Credit</div>
         </div>
         <hr />
         {rows}
