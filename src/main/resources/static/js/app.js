@@ -1685,23 +1685,48 @@ var TransactionRow = React.createClass({
     };
   },
   render: function() {
-    return (
-      <div className="row row-striped">
-        <div className="row">
-          <div className="col-md-2 text-center">{this.props.transaction.publicId}</div> 
-          <div className="col-md-2">{this.props.transaction.addedByUsername}</div> 
-          {!this.props.transaction.debit && <div className="col-md-1"></div> }
-          <div className="col-md-2">{this.props.transaction.accountName}</div> 
-          {!this.props.transaction.debit && <div className="col-md-1"></div>  }
-          <div className="col-md-2 wrap-words text-right">${this.state.amount}</div>
-          {this.props.transaction.debit ? (
-            <div className="col-md-4"></div> 
-          ) : (
-            <div className="col-md-2"></div> 
-          )}
+    if (this.props.ledger) {
+      var addedOnDate = (this.props.journalEntry.addedOn);
+      addedOnDate = addedOnDate.split(' ')[0];
+      return (
+        <div className="row row-striped">
+          <div className="row">
+            <div className="col-md-1 text-center">{this.props.journalEntry.publicId}</div> 
+            <div className="col-md-1 text-center">{addedOnDate}</div> 
+            <div className="col-md-2 text-center">{this.props.transaction.publicId}</div> 
+            <div className="col-md-2">{this.props.transaction.addedByUsername}</div> 
+            {!this.props.transaction.debit && <div className="col-md-1"></div> }
+            <div className="col-md-2">{this.props.transaction.accountName}</div> 
+            {!this.props.transaction.debit && <div className="col-md-1"></div>  }
+            <div className="col-md-2 wrap-words text-right">${this.state.amount}</div>
+            {this.props.transaction.debit ? (
+              <div className="col-md-4"></div> 
+            ) : (
+              <div className="col-md-2"></div> 
+            )}
+          </div>
         </div>
-      </div>
-    );
+      );
+    } else {
+      return (
+        <div className="row row-striped">
+          <div className="row">
+            <div className="col-md-2 text-center">{this.props.transaction.publicId}</div> 
+            <div className="col-md-2">{this.props.transaction.addedByUsername}</div> 
+            {!this.props.transaction.debit && <div className="col-md-1"></div> }
+            <div className="col-md-2">{this.props.transaction.accountName}</div> 
+            {!this.props.transaction.debit && <div className="col-md-1"></div>  }
+            <div className="col-md-2 wrap-words text-right">${this.state.amount}</div>
+            {this.props.transaction.debit ? (
+              <div className="col-md-4"></div> 
+            ) : (
+              <div className="col-md-2"></div> 
+            )}
+          </div>
+        </div>
+      );
+    }
+
   }
 });
 
@@ -2074,13 +2099,29 @@ if (document.getElementById('AllJournals') != null) {
 }
 
 var LedgerTable = React.createClass({
+  getInitialState: function() {
+      return {
+        journalEntry: ''
+      };
+  },
+  loadJournalEntry: function(url) {
+    var self = this;
+    $.ajax({
+      url: url
+    }).then(function (data) {
+      self.setState({journalEntry: data});
+    });
+  },
   render: function() {
     var self = this;
     var rows = [];
     var index = 1;
     this.props.transactions.forEach(function(transaction) {
       if (Number(self.props.accountId) === transaction.accountId) {
-        rows.push(<TransactionRow transaction={transaction} key={transaction.publicId}/>);
+        if (self.state.journalEntry === '') {
+          self.loadJournalEntry(transaction._links.journalEntry['href']);
+        }
+        rows.push(<TransactionRow transaction={transaction} key={transaction.publicId} ledger={true} journalEntry={self.state.journalEntry}/>);
       }
     });
     return (

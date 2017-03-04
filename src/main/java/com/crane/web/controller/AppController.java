@@ -491,8 +491,6 @@ public class AppController {
 
         JSONArray jsonTransactions = new JSONArray(rows);
 
-        System.out.println("***********" + jsonTransactions.length());
-
         for (int i = 0; i < jsonTransactions.length(); i++) {
             JSONObject currentAccount = jsonTransactions.getJSONObject(i);
             JSONObject props = currentAccount.getJSONObject("props");
@@ -541,6 +539,13 @@ public class AppController {
 
         journalEntryFound.setPosted(true);
         journalEntryService.save(journalEntryFound);
+
+        List<Transaction> transactions = journalEntryFound.getTransaction();
+
+        for (int i = 0; i < transactions.size(); i++) {
+          Transaction transaction = (Transaction) transactions.get(i);
+          transaction.setJournalEntry(journalEntryFound);
+        }
 
         Calendar now = Calendar.getInstance();
         int year = now.get(Calendar.YEAR);

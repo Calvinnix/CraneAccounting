@@ -21,6 +21,10 @@ public class Transaction {
   @JoinColumn(name = "account_id")
   private Account account;
 
+  @ManyToOne
+  @JoinColumn(name = "journalEntry_id")
+  private JournalEntry journalEntry;
+
   private Double amount;
 
   @ManyToOne //todo: this may need to be OneToMany
@@ -72,6 +76,14 @@ public class Transaction {
 
   public void setAccount(Account account) {
       this.account = account;
+  }
+
+  public JournalEntry getJournalEntry() {
+    return journalEntry;
+  }
+
+  public void setJournalEntry(JournalEntry journalEntry) {
+    this.journalEntry = journalEntry;
   }
 
   public Double getAmount() {

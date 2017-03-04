@@ -29,6 +29,16 @@ public class JournalEntryServiceImpl implements JournalEntryService {
     }
 
     @Override
+    public JournalEntry saveAndReturn(JournalEntry journalEntry) {
+        logger.info(String.format(" --- Entering: %s", Thread.currentThread().getStackTrace()[1].getMethodName()));
+
+        JournalEntry journalEntry1 = journalEntryDao.save(journalEntry);
+
+        logger.info(String.format(" --- Exiting: %s", Thread.currentThread().getStackTrace()[1].getMethodName()));
+        return journalEntry1;
+    }
+
+    @Override
     public JournalEntry findById(Long l) {
         return journalEntryDao.findById(l);
     }
