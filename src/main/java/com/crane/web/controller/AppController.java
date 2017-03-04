@@ -112,6 +112,13 @@ public class AppController {
         return "ledger";
     }
 
+    @RequestMapping(value = "/postJournals")
+    public String postJournals() {
+        logger.info(" --- RequestMapping from /postJournals");
+        logger.info(" --- Mapping to /postJournals");
+        return "postJournals";
+    }
+
     @RequestMapping(value = "/admin/addUser", method = RequestMethod.POST)
     public String addUser(HttpServletRequest request) {
         logger.info(" --- RequestMapping from /admin/addUser");
@@ -568,5 +575,41 @@ public class AppController {
         logger.info(" --- Redirecting to /journals");
         return "redirect:/journals";
     }
+
+  @RequestMapping(value = "/journals/rejectJournalEntry", method = RequestMethod.POST)
+  public String rejectJournalEntry(HttpServletRequest request) {
+    logger.info(" --- RequestMapping from /journals/rejectJournalEntry");
+
+    String strJournalId = request.getParameter("journalId");
+    String rejectionReason = request.getParameter("rejectionReason");
+
+    Long journalId = Long.parseLong(strJournalId);
+
+    JournalEntry journalEntryFound = journalEntryService.findById(journalId);
+
+    journalEntryFound.setRejected(true);
+    journalEntryFound.setRejectionReason(rejectionReason);
+    journalEntryService.save(journalEntryFound);
+
+    Calendar now = Calendar.getInstance();
+    int year = now.get(Calendar.YEAR);
+    int month = now.get(Calendar.MONTH) + 1; // Note: zero based!
+    int day = now.get(Calendar.DAY_OF_MONTH);
+    int hour = now.get(Calendar.HOUR_OF_DAY);
+    int minute = now.get(Calendar.MINUTE);
+    int second = now.get(Calendar.SECOND);
+    int millis = now.get(Calendar.MILLISECOND);
+
+    String currentTime = String.format("%02d-%02d-%d %02d:%02d:%02d.%03d", month, day, year, hour, minute, second, millis);
+
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    String currentUser = auth.getName();
+
+    EventLog log = new EventLog(currentTime, currentUser, String.format("Reject Journal Entry: %s | Reason: %s", journalId, rejectionReason));
+    eventLogService.save(log);
+
+    logger.info(" --- Redirecting to /journals");
+    return "redirect:/journals";
+  }
 
 }

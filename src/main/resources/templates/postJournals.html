@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head(title='Post Journals')"></head>
+<body>
+<div th:replace="layout :: nav(selectedTab='postJournals')"></div>
+<div id="AllJournalsToPost">
+    <block th:replace="layout :: loading"></block>
+</div>
+<block th:replace="layout :: script"></block>
+</body>
+</html>

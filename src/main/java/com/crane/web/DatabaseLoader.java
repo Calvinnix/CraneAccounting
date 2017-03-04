@@ -46,6 +46,7 @@ public class DatabaseLoader implements CommandLineRunner {
         this.userDao.save(new User(username, password, true, ROLE_ADMIN));
         this.userDao.save(new User("admin", password, true, ROLE_ADMIN));
         this.userDao.save(new User("manager", password, true, ROLE_MANAGER));
+        this.userDao.save(new User("user", password, true, ROLE_USER));
         this.userDao.save(new User("TEST1", password, true, ROLE_USER));
         this.userDao.save(new User("TEST2", password, true, ROLE_USER));
 

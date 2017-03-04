@@ -1578,7 +1578,10 @@ var JournalsCreditTable = React.createClass({
 var JournalRow = React.createClass({
     getInitialState: function() {
         return {rows: [],
-                posted: this.props.posted};
+                posted: this.props.posted,
+                rejected: this.props.rejected,
+                rejectionReason: ''
+                };
     },
    componentDidMount: function () {
         this.loadTransactions();
@@ -1638,33 +1641,133 @@ var JournalRow = React.createClass({
             }
         });
     },
+    updateRejectionReason: function(evt) {
+      this.setState({
+        rejectionReason: evt.target.value
+      });
+    },
+    showRejectionPrompt: function() {
+      $("#myRejectionModal").modal("show");
+    },
+    handleReject: function() {
+      //hide modal because submit was clicked
+      $("#myRejectionModal").modal("hide");
+
+      var self = this;
+      $.ajax({
+          url: "http://localhost:8080/journals/rejectJournalEntry",
+          type: "POST",
+          data: {
+            journalId: this.props.journalEntryId,
+            rejectionReason: this.state.rejectionReason
+          },
+          success: function() {
+            toastr.options = {
+                "debug": false,
+                "positionClass": "toast-top-center",
+                "onclick": null,
+                "fadeIn": 300,
+                "fadeOut": 100,
+                "timeOut": 500,
+                "extendedTimeOut": 500
+            }
+            toastr.success("Successfully Rejected Journal Entry!");
+            self.setState({
+                rejected: true
+            });
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+              toastr.options = {
+                  "debug": false,
+                  "positionClass": "toast-top-center",
+                  "onclick": null,
+                  "fadeIn": 300,
+                  "fadeOut": 100,
+                  "timeOut": 500,
+                  "extendedTimeOut": 500
+              }
+              toastr.error("Not Authorized");
+          }
+      });
+    },
     render: function() {
-        var date = this.props.addedOn.split(" ")[0];
+      var date = this.props.addedOn.split(" ")[0];
+      if (this.state.rejected === true) {
         return (
-            <div className="well">
-                <h4>
-                    {this.state.posted &&
-                        <span className="glyphicon glyphicon-ok" aria-hidden="true"></span>
-                    }
-                    Journal Entry #{this.props.journalEntryId} ({date})
-                </h4>
-                {this.state.rows}
-                <hr />
-                <div className="row">
-                    <div className="col-md-7"></div>
-                    <div className="col-md-3">
-                          <button className="btn btn-default" onClick={this.downloadSupportingDocument}>Download Support Documents</button>
-                    </div>
-                    <div className="col-md-2">
-                        {this.state.posted ? (
-                            <button className="btn btn-default disabled">Posted</button>
-                        ) : (
-                            <button className="btn btn-success" onClick={this.postJournalEntry}>Post</button>
-                        )}
-                    </div>
-                </div>
+          <div className="well">
+            <h4>
+              <span className="glyphicon glyphicon-remove" aria-hidden="true"></span>
+              Journal Entry #{this.props.journalEntryId} ({date})
+              (REJECTED)
+            </h4>
+            {this.state.rows}
+            <hr />
+            <div className="row">
+              <div className="col-md-6 text-center">
+                <button className="btn btn-primary" onClick={this.viewReasonForRejection}>View Rejection Comments</button>
+              </div>
+              <div className="col-md-6 text-center">
+                <button className="btn btn-default" onClick={this.downloadSupportingDocument}>Download Support Documents</button>
+              </div>
             </div>
+          </div>
         );
+      } else {
+        return (
+          <div className="well">
+            <div id="myRejectionModal" className="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+              <div className="modal-dialog" role="document">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 className="modal-title" id="myModalLabel">Reason For Rejection</h4>
+                  </div>
+                  <div className="modal-body">
+                    <textarea type="search" className="form-control" onChange={this.updateRejectionReason} value={this.state.rejectionReason}/>
+                  </div>
+                  <div className="modal-footer">
+                    <button type="button" className="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="button" className="btn btn-success" onClick={this.handleReject}>Submit</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h4>
+              {this.state.posted &&
+                <span className="glyphicon glyphicon-ok" aria-hidden="true"></span>
+              }
+              Journal Entry #{this.props.journalEntryId} ({date})
+              {this.state.posted &&
+                <span> (ACCEPTED)</span>
+              }
+            </h4>
+            {this.state.rows}
+            <hr />
+            <div className="row">
+              <div className="col-md-5"></div>
+              <div className="col-md-3">
+                <button className="btn btn-default" onClick={this.downloadSupportingDocument}>Download Support Documents</button>
+              </div>
+
+              {this.props.canPost &&
+                <div className="col-md-2">
+                  {!this.state.posted &&
+                    <button className="btn btn-success" onClick={this.postJournalEntry}>Approve</button>
+                  }
+                </div>
+              }
+              {this.props.canPost &&
+                <div className="col-md-2">
+                  {!this.state.posted &&
+                    <button className="btn btn-danger" onClick={this.showRejectionPrompt}>Reject</button>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        );
+      }
+
     }
 })
 
@@ -1743,7 +1846,8 @@ var JournalEntriesTable = React.createClass({
           var id = journalEntry.publicId;
           var addedOn = journalEntry.addedOn;
           var posted = journalEntry.posted;
-          rows.push(<JournalRow journalEntryId={id} addedOn={addedOn} transactionsUrl={transactionsUrl} posted={posted} key={index++}/>);
+          var rejected = journalEntry.rejected;
+          rows.push(<JournalRow journalEntryId={id} addedOn={addedOn} transactionsUrl={transactionsUrl} posted={posted} rejected={rejected} key={index++} canPost={self.props.canPost}/>);
       });
       return (
                 <div className="container">
@@ -2204,7 +2308,42 @@ if (document.getElementById('AllApprovedJournals') != null) {
     ReactDOM.render(<Ledger />, document.getElementById('AllApprovedJournals'));
 }
 
+var AllJournalsToPost = React.createClass({
+  getInitialState: function() {
+    return {
+      journalEntries: []
+    };
+  },
+  componentDidMount: function () {
+    this.loadJournalEntriesFromServer();
+  },
+  loadJournalEntriesFromServer: function() {
+    var self = this;
+    $.ajax({
+      url: "http://localhost:8080/api/journalEntries"
+    }).then(function (data) {
+      self.setState({journalEntries: data._embedded.journalEntries});
+    });
+  },
+  render: function() {
+    return (
+      <div className="container">
+        <h1>Post Journals</h1>
+        <div className="faq">
+          <input type="search" placeholder="search" id="searchBar"/>
+          <div className="faq_not_found">
+            <p>No Matches were found</p>
+          </div>
+          <JournalEntriesTable className="Journals" journalEntries={this.state.journalEntries} canPost={true} />
+        </div>
+      </div>
+    )
+  }
+});
 
+if (document.getElementById('AllJournalsToPost') != null) {
+    ReactDOM.render(<AllJournalsToPost />, document.getElementById('AllJournalsToPost'));
+}
 
 
 

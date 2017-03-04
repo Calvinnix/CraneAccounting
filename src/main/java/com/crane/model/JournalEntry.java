@@ -28,6 +28,10 @@ public class JournalEntry {
 
     private Boolean posted;
 
+    private Boolean rejected;
+
+    private String rejectionReason;
+
     public JournalEntry(List<Transaction> transaction, User addedBy, String addedOn, Boolean posted) {
         this.transaction = transaction;
         this.addedBy = addedBy;
@@ -82,4 +86,19 @@ public class JournalEntry {
         this.posted = posted;
     }
 
+    public Boolean getRejected() {
+        return rejected;
+    }
+
+    public void setRejected(Boolean rejected) {
+        this.rejected = rejected;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
+    }
+
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
+    }
 }
