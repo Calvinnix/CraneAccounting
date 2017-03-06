@@ -1747,8 +1747,11 @@ var JournalRow = React.createClass({
                 <span className="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
               }
               Journal Entry #{this.props.journalEntryId} ({date})
-              {this.state.posted &&
+              {this.state.posted ? (
                 <span className="text-success"> (ACCEPTED)</span>
+              ) : (
+                <span className="text-primary"> (NEW)</span>
+              )
               }
             </h4>
             {this.state.rows}
@@ -1798,52 +1801,65 @@ var TransactionRow = React.createClass({
       journalEntry: ''
     };
   },
+  loadJournalEntry: function() {
+    var self = this;
+    $.ajax({
+        url: "http://localhost:8080/api/journalEntries/"+this.props.transaction.journalEntryId
+    }).then(function (data) {
+      self.setState({journalEntry: data});
+    });
+  },
+  componentDidMount: function() {
+    this.loadJournalEntry()
+  },
   showJournalEntry: function() {
-    var id = "#journalEntry" + 999;
+    var id = "#journalEntry" + this.state.journalEntry.publicId;
     $(id).modal("show");
   },
   render: function() {
     if (this.props.ledger) {
-
-      var addedOnDate = "blah";
-      addedOnDate = addedOnDate.split(' ')[0];
-
-      var transactionsUrl = "what";
-
-      var id = "journalEntry" + 999;
-
-      return (
-        <div className="row row-striped">
-          <div className="row">
-            <div className="col-md-1 text-center"><a onClick={this.showJournalEntry}>999</a></div> 
-            <div className="col-md-2">{addedOnDate}</div> 
-            <div className="col-md-1 text-center">{this.props.transaction.publicId}</div> 
-            <div className="col-md-1">{this.props.transaction.addedByUsername}</div> 
-            {!this.props.transaction.debit && <div className="col-md-1"></div> }
-            <div className="col-md-2">{this.props.transaction.accountName}</div> 
-            {!this.props.transaction.debit && <div className="col-md-1"></div>  }
-            <div className="col-md-2 wrap-words text-right">${this.state.amount}</div>
-            {this.props.transaction.debit ? (
-              <div className="col-md-4"></div> 
-            ) : (
-              <div className="col-md-2"></div> 
-            )}
-          </div>
-          <div id={id} className="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
-            <div className="modal-dialog modal-lg" role="document">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                  <h4 className="modal-title" id="myModalLabel">Journal #999</h4>
-                </div>
-                <div className="modal-body">
-                  <JournalRow journalEntryId={999} addedOn="Blah" transactionsUrl={transactionsUrl} posted={true} rejected={false} rejectionReason={""} canPost={false}/>
+      if (this.state.journalEntry !== '') {
+        var addedOnDate = this.state.journalEntry.addedOn;
+        addedOnDate = addedOnDate.split(' ')[0];
+        var id = "journalEntry" + this.state.journalEntry.publicId;
+        var transactionsUrl = this.state.journalEntry._links.transaction.href;
+        return (
+          <div className="row row-striped">
+            <div className="row">
+              <div className="col-md-1 text-center"><a onClick={this.showJournalEntry}>{this.state.journalEntry.publicId}</a></div> 
+              <div className="col-md-2 text-center">{addedOnDate}</div> 
+              <div className="col-md-1 text-center">{this.props.transaction.publicId}</div> 
+              <div className="col-md-1">{this.props.transaction.addedByUsername}</div> 
+              {!this.props.transaction.debit && <div className="col-md-1"></div> }
+              <div className="col-md-2">{this.props.transaction.accountName}</div> 
+              {!this.props.transaction.debit && <div className="col-md-1"></div>  }
+              <div className="col-md-2 wrap-words text-right">${this.state.amount}</div>
+              {this.props.transaction.debit ? (
+                <div className="col-md-4"></div> 
+              ) : (
+                <div className="col-md-2"></div> 
+              )}
+            </div>
+            <div id={id} className="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+              <div className="modal-dialog modal-lg" role="document">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 className="modal-title" id="myModalLabel">Journal #{this.state.journalEntry.publicId}</h4>
+                  </div>
+                  <div className="modal-body">
+                    <JournalRow journalEntryId={this.state.journalEntry.publicId} addedOn={this.state.journalEntry.addedOn} transactionsUrl={transactionsUrl} posted={this.state.journalEntry.posted} rejected={this.state.journalEntry.rejected} rejectionReason={this.state.journalEntry.rejectionReason} canPost={false}/>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      );
+        );
+      } else {
+        return (
+          <div></div> //
+        );
+      }
     } else {
       return (
         <div className="row row-striped">
@@ -1863,7 +1879,6 @@ var TransactionRow = React.createClass({
         </div>
       );
     }
-
   }
 });
 
@@ -2298,6 +2313,7 @@ var Ledger = React.createClass({
         }).then(function (data) {
           self.setState({
             transactions: self.state.transactions.concat(data._embedded.transactions)
+
           });
         });
       }
