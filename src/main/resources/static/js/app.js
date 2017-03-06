@@ -1647,11 +1647,16 @@ var JournalRow = React.createClass({
       });
     },
     showRejectionPrompt: function() {
-      $("#myRejectionModal").modal("show");
+      alert("rejecting " + this.props.journalEntryId)
+      var id = "#myRejectionModal" + this.props.journalEntryId;
+      $(id).modal("show");
     },
     handleReject: function() {
       //hide modal because submit was clicked
-      $("#myRejectionModal").modal("hide");
+      var id = "#myRejectionModal" + this.props.journalEntryId;
+      $(id).modal("hide");
+
+      alert(this.props.journalEntryId)
 
       var self = this;
       $.ajax({
@@ -1713,9 +1718,10 @@ var JournalRow = React.createClass({
           </div>
         );
       } else {
+        var id = "myRejectionModal" + this.props.journalEntryId;
         return (
           <div className="well">
-            <div id="myRejectionModal" className="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+            <div id={id} className="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
               <div className="modal-dialog" role="document">
                 <div className="modal-content">
                   <div className="modal-header">

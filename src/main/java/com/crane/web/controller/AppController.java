@@ -547,13 +547,6 @@ public class AppController {
         journalEntryFound.setPosted(true);
         journalEntryService.save(journalEntryFound);
 
-        List<Transaction> transactions = journalEntryFound.getTransaction();
-
-        for (int i = 0; i < transactions.size(); i++) {
-          Transaction transaction = (Transaction) transactions.get(i);
-          transaction.setJournalEntry(journalEntryFound);
-        }
-
         Calendar now = Calendar.getInstance();
         int year = now.get(Calendar.YEAR);
         int month = now.get(Calendar.MONTH) + 1; // Note: zero based!
