@@ -25,6 +25,8 @@ public class Transaction {
   @JoinColumn(name = "journalEntry_id")
   private JournalEntry journalEntry;
 
+  private Long journalEntryId;
+
   private Double amount;
 
   @ManyToOne //todo: this may need to be OneToMany
@@ -133,4 +135,12 @@ public class Transaction {
   public void setAddedByUsername(String addByUsername) {
         this.addedByUsername = addByUsername;
     }
+
+  public Long getJournalEntryId() {
+    Long result = -1L;
+    if (journalEntry != null) {
+      result = journalEntry.getId();
+    }
+    return result;
+  }
 }

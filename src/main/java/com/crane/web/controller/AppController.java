@@ -477,7 +477,13 @@ public class AppController {
 
         JournalEntry journalEntry = new JournalEntry(transactions, userFound, currentTime, false);
 
-        journalEntryService.save(journalEntry);
+        JournalEntry journalEntryFound = journalEntryService.saveAndReturn(journalEntry);
+
+        for (int i = 0; i < transactions.size(); i++) {
+          Transaction transaction = (Transaction) transactions.get(i);
+          transaction.setJournalEntry(journalEntryFound);
+          transactionService.save(transaction);
+        }
 
         logger.info(" --- Redirecting to /journals");
         return "redirect:/journals";
@@ -546,6 +552,8 @@ public class AppController {
 
         journalEntryFound.setPosted(true);
         journalEntryService.save(journalEntryFound);
+
+        List<Transaction> transactions = journalEntryFound.getTransaction();
 
         Calendar now = Calendar.getInstance();
         int year = now.get(Calendar.YEAR);

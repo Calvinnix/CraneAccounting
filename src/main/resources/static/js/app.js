@@ -1577,11 +1577,18 @@ var JournalsCreditTable = React.createClass({
 
 var JournalRow = React.createClass({
     getInitialState: function() {
-        return {rows: [],
-                posted: this.props.posted,
-                rejected: this.props.rejected,
-                rejectionReason: ''
-                };
+
+      //handle error in console for null values
+      var rejectionReason = this.props.rejectionReason;
+      if (rejectionReason === null) {
+        rejectionReason = ""
+      }
+
+      return {rows: [],
+              posted: this.props.posted,
+              rejected: this.props.rejected,
+              rejectionReason: rejectionReason
+              };
     },
    componentDidMount: function () {
         this.loadTransactions();
@@ -1706,7 +1713,7 @@ var JournalRow = React.createClass({
             <hr />
             <div className="row">
               <div className="col-md-6 text-center">
-                <h5 className="pull-left"><b>Reason for rejection:</b> <span className="text-danger">{this.props.rejectionReason}</span></h5>
+                <h5 className="pull-left"><b>Reason for rejection:</b> <span className="text-danger">{this.state.rejectionReason}</span></h5>
               </div>
               <div className="col-md-6 text-center">
                 <button className="btn btn-default" onClick={this.downloadSupportingDocument}>Download Support Documents</button>
@@ -1787,20 +1794,31 @@ var TransactionRow = React.createClass({
     formattedAmount = parts.join(".");
 
     return {
-      amount: formattedAmount
+      amount: formattedAmount,
+      journalEntry: ''
     };
+  },
+  showJournalEntry: function() {
+    var id = "#journalEntry" + 999;
+    $(id).modal("show");
   },
   render: function() {
     if (this.props.ledger) {
-      var addedOnDate = (this.props.journalEntry.addedOn);
+
+      var addedOnDate = "blah";
       addedOnDate = addedOnDate.split(' ')[0];
+
+      var transactionsUrl = "what";
+
+      var id = "journalEntry" + 999;
+
       return (
         <div className="row row-striped">
           <div className="row">
-            <div className="col-md-1 text-center">{this.props.journalEntry.publicId}</div> 
-            <div className="col-md-1 text-center">{addedOnDate}</div> 
+            <div className="col-md-1 text-center"><a onClick={this.showJournalEntry}>999</a></div> 
+            <div className="col-md-2">{addedOnDate}</div> 
             <div className="col-md-1 text-center">{this.props.transaction.publicId}</div> 
-            <div className="col-md-2">{this.props.transaction.addedByUsername}</div> 
+            <div className="col-md-1">{this.props.transaction.addedByUsername}</div> 
             {!this.props.transaction.debit && <div className="col-md-1"></div> }
             <div className="col-md-2">{this.props.transaction.accountName}</div> 
             {!this.props.transaction.debit && <div className="col-md-1"></div>  }
@@ -1810,6 +1828,19 @@ var TransactionRow = React.createClass({
             ) : (
               <div className="col-md-2"></div> 
             )}
+          </div>
+          <div id={id} className="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+            <div className="modal-dialog modal-lg" role="document">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <button type="button" className="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 className="modal-title" id="myModalLabel">Journal #999</h4>
+                </div>
+                <div className="modal-body">
+                  <JournalRow journalEntryId={999} addedOn="Blah" transactionsUrl={transactionsUrl} posted={true} rejected={false} rejectionReason={""} canPost={false}/>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       );
@@ -2207,38 +2238,21 @@ if (document.getElementById('AllJournals') != null) {
 }
 
 var LedgerTable = React.createClass({
-  getInitialState: function() {
-      return {
-        journalEntry: ''
-      };
-  },
-  loadJournalEntry: function(url) {
-    var self = this;
-    $.ajax({
-      url: url
-    }).then(function (data) {
-      self.setState({journalEntry: data});
-    });
-  },
   render: function() {
     var self = this;
     var rows = [];
-    var index = 1;
     this.props.transactions.forEach(function(transaction) {
       if (Number(self.props.accountId) === transaction.accountId) {
-        if (self.state.journalEntry === '') {
-          self.loadJournalEntry(transaction._links.journalEntry['href']);
-        }
-        rows.push(<TransactionRow transaction={transaction} key={transaction.publicId} ledger={true} journalEntry={self.state.journalEntry}/>);
+        rows.push(<TransactionRow transaction={transaction} key={transaction.publicId} ledger={true}/>);
       }
     });
     return (
       <div className="container">
         <div className="row">
           <div className="col-md-1">Journal ID</div> 
-          <div className="col-md-1">Added On</div> 
+          <div className="col-md-2">Added On</div> 
           <div className="col-md-1">Transaction ID</div> 
-          <div className="col-md-2">Added By</div> 
+          <div className="col-md-1">Added By</div> 
           <div className="col-md-3">Account</div> 
           <div className="col-md-2">Debit</div>
           <div className="col-md-2">Credit</div>
@@ -2246,8 +2260,8 @@ var LedgerTable = React.createClass({
         <hr />
         {rows}
       </div>
-    );
-  }
+   );
+ }
 });
 
 
@@ -2255,21 +2269,38 @@ var Ledger = React.createClass({
 
   getInitialState: function() {
     return {
+      journalEntries: [],
       transactions: [],
       accounts: [],
       accountId: 1
     };
   },
   componentDidMount: function () {
-    this.loadTransactionsFromServer();
+    this.loadJournalEntriesFromServer();
     this.loadAccountsFromServer();
   },
-  loadTransactionsFromServer: function() {
+  loadJournalEntriesFromServer: function() {
     var self = this;
     $.ajax({
-      url: "http://localhost:8080/api/transactions"
+      url: "http://localhost:8080/api/journalEntries"
     }).then(function (data) {
-      self.setState({transactions: data._embedded.transactions});
+      self.setState({journalEntries: data._embedded.journalEntries});
+      self.loadApprovedTransactions();
+    });
+  },
+  loadApprovedTransactions: function() {
+    var self = this;
+    this.state.journalEntries.forEach(function(journalEntry) {
+      if ((!(journalEntry.rejected === true)) && journalEntry.posted === true) {
+        var url = journalEntry._links.transaction['href']
+        $.ajax({
+          url: url
+        }).then(function (data) {
+          self.setState({
+            transactions: self.state.transactions.concat(data._embedded.transactions)
+          });
+        });
+      }
     });
   },
   loadAccountsFromServer: function() {
@@ -2299,7 +2330,7 @@ var Ledger = React.createClass({
             <div className="faq_not_found">
               <p>No Matches were found</p>
             </div>
-            <LedgerTable className="Ledger" accountId={this.state.accountId} transactions={this.state.transactions} />
+            <LedgerTable className="Ledger" accountId={this.state.accountId} transactions={this.state.transactions}/>
           </div>
         </div>
       </div>
