@@ -1647,7 +1647,6 @@ var JournalRow = React.createClass({
       });
     },
     showRejectionPrompt: function() {
-      alert("rejecting " + this.props.journalEntryId)
       var id = "#myRejectionModal" + this.props.journalEntryId;
       $(id).modal("show");
     },
@@ -1655,8 +1654,6 @@ var JournalRow = React.createClass({
       //hide modal because submit was clicked
       var id = "#myRejectionModal" + this.props.journalEntryId;
       $(id).modal("hide");
-
-      alert(this.props.journalEntryId)
 
       var self = this;
       $.ajax({
@@ -1701,15 +1698,15 @@ var JournalRow = React.createClass({
         return (
           <div className="well">
             <h4>
-              <span className="glyphicon glyphicon-remove" aria-hidden="true"></span>
+              <span className="glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>
               Journal Entry #{this.props.journalEntryId} ({date})
-              (REJECTED)
+              <span className="text-danger"> (REJECTED)</span>
             </h4>
             {this.state.rows}
             <hr />
             <div className="row">
               <div className="col-md-6 text-center">
-                <button className="btn btn-primary" onClick={this.viewReasonForRejection}>View Rejection Comments</button>
+                <h5 className="pull-left"><b>Reason for rejection:</b> <span className="text-danger">{this.props.rejectionReason}</span></h5>
               </div>
               <div className="col-md-6 text-center">
                 <button className="btn btn-default" onClick={this.downloadSupportingDocument}>Download Support Documents</button>
@@ -1740,11 +1737,11 @@ var JournalRow = React.createClass({
             </div>
             <h4>
               {this.state.posted &&
-                <span className="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                <span className="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
               }
               Journal Entry #{this.props.journalEntryId} ({date})
               {this.state.posted &&
-                <span> (ACCEPTED)</span>
+                <span className="text-success"> (ACCEPTED)</span>
               }
             </h4>
             {this.state.rows}
@@ -1853,7 +1850,8 @@ var JournalEntriesTable = React.createClass({
           var addedOn = journalEntry.addedOn;
           var posted = journalEntry.posted;
           var rejected = journalEntry.rejected;
-          rows.push(<JournalRow journalEntryId={id} addedOn={addedOn} transactionsUrl={transactionsUrl} posted={posted} rejected={rejected} key={index++} canPost={self.props.canPost}/>);
+          var rejectionReason = journalEntry.rejectionReason;
+          rows.push(<JournalRow journalEntryId={id} addedOn={addedOn} transactionsUrl={transactionsUrl} posted={posted} rejected={rejected} rejectionReason={rejectionReason} key={index++} canPost={self.props.canPost}/>);
       });
       return (
                 <div className="container">
