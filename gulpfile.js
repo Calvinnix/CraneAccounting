@@ -23,7 +23,8 @@ gulp.task('concatjs', () => {
             './src/main/resources/static/js/bootstrap.min.js',
             './src/main/resources/static/js/react.js',
             './src/main/resources/static/js/react-dom.js',
-            './src/main/resources/static/js/toastr.min.js'
+            './src/main/resources/static/js/toastr.min.js',
+            './src/main/resources/static/js/bootstrap-select.js'
             ])
         .pipe(concat('bundle.js'))
         .pipe(react())
