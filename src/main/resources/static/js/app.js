@@ -1747,11 +1747,8 @@ var JournalRow = React.createClass({
                 <span className="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
               }
               Journal Entry #{this.props.journalEntryId} ({date})
-              {this.state.posted ? (
+              {this.state.posted &&
                 <span className="text-success"> (ACCEPTED)</span>
-              ) : (
-                <span className="text-primary"> (NEW)</span>
-              )
               }
             </h4>
             {this.state.rows}
