@@ -1061,23 +1061,16 @@ var AllAccounts = React.createClass({
             <div>
                 <div className="container">
                     <div className="row header-row">
-                        <div className="col-md-5"><h5>Account Name</h5></div>
-                          <div className="col-md-2"><h5>Initial Balance</h5></div>
-                          <div className="col-md-3"><h5>Comments</h5></div>
+                        <div className="col-md-6"><h5>Account Name</h5></div>
+                          <div className="col-md-4"><h5>Comments</h5></div>
                           <div className="col-md-2"></div>
                         </div>
                      <hr />
                     <div className="row">
-                        <div className="col-md-5">
+                        <div className="col-md-6">
                             <AccountSelect onChange={this.updateAccountId} accounts={this.state.ChartOfAccounts} id={this.state.id}/>
                         </div>
-                        <div className="col-md-2">
-                            <div className="input-group">
-                              <span className="input-group-addon">$</span>
-                              <input type="number" min="0" step="any" className="form-control" onChange={this.updateAccountAmount} aria-label="Amount"/>
-                            </div>
-                        </div>
-                        <div className="col-md-3">
+                        <div className="col-md-4">
                               <textarea type="text" className="form-control" onChange={this.updateAccountComment} aria-label="Comment"/>
                         </div>
                         <div className="col-md-2">
@@ -2652,6 +2645,11 @@ var TrialBalanceTable = React.createClass({
         rightSideBalanceTotal += account.balance;
       }
 
+      //don't show accounts that don't have a balance
+      if (account.balance === 0) {
+        return;
+      }
+
       if (account.type === "Asset") {
         assets.push(<TrialBalanceAccount account={account} key={account.publicId} />);
       } else if (account.type === "Liabilities")   {
@@ -2671,36 +2669,46 @@ var TrialBalanceTable = React.createClass({
     return (
       <div className="well well-lg">
         {assets.length > 0 &&
-          <div className="row row-striped">
+          <div className="row">
+            <hr/>
             <div className="col-md-12"><b>Assets</b></div>
+            <hr/>
           </div>
         }
         {assets}
 
         {liabilities.length > 0 &&
-        <div className="row row-striped">
+        <div className="row">
+          <hr/>
           <div className="col-md-12"><b>Liabilities</b></div>
+          <hr/>
         </div>
         }
         {liabilities}
 
         {ownersEquity.length > 0 &&
-        <div className="row row-striped">
+        <div className="row">
+          <hr/>
           <div className="col-md-12"><b>Owner's Equity</b></div>
+          <hr/>
         </div>
         }
         {ownersEquity}
 
         {revenues.length > 0 &&
-          <div className="row row-striped">
+          <div className="row">
+            <hr/>
             <div className="col-md-12"><b>Revenues</b></div>
+            <hr/>
           </div>
         }
         {revenues}
 
         {expenses.length > 0 &&
-          <div className="row row-striped">
+          <div className="row">
+            <hr/>
             <div className="col-md-12"><b>Expenses</b></div>
+            <hr/>
           </div>
         }
         {expenses}
