@@ -1748,7 +1748,7 @@ var JournalRow = React.createClass({
               }
               Journal Entry #{this.props.journalEntryId} ({date})
               {this.state.posted &&
-                <span className="text-success"> (ACCEPTED)</span>
+                <span className="text-success"> (APPROVED)</span>
               }
             </h4>
             {this.state.rows}
@@ -1854,7 +1854,7 @@ var TransactionRow = React.createClass({
         );
       } else {
         return (
-          <div></div> //
+          <div></div>
         );
       }
     } else {
@@ -1881,20 +1881,34 @@ var TransactionRow = React.createClass({
 
 var JournalEntriesTable = React.createClass({
   propTypes: {
-          journalEntries: React.PropTypes.array.isRequired
+      journalEntries: React.PropTypes.array.isRequired
   },
   render: function() {
       var self = this;
       var rows = [];
-      var index = 0;
+
       this.props.journalEntries.forEach(function(journalEntry) {
-          var transactionsUrl = journalEntry._links.transaction.href;
-          var id = journalEntry.publicId;
-          var addedOn = journalEntry.addedOn;
-          var posted = journalEntry.posted;
-          var rejected = journalEntry.rejected;
-          var rejectionReason = journalEntry.rejectionReason;
-          rows.push(<JournalRow journalEntryId={id} addedOn={addedOn} transactionsUrl={transactionsUrl} posted={posted} rejected={rejected} rejectionReason={rejectionReason} key={index++} canPost={self.props.canPost}/>);
+          let accountStatus;
+
+          if (journalEntry.posted) {
+              accountStatus = "approved"
+          } else if (journalEntry.rejected) {
+              accountStatus = "rejected"
+          } else {
+              accountStatus = "new"
+          }
+
+          if (self.props.filterJournalStatus === "" || self.props.filterJournalStatus === accountStatus){
+              var transactionsUrl = journalEntry._links.transaction.href;
+              var id = journalEntry.publicId;
+              var addedOn = journalEntry.addedOn;
+              var posted = journalEntry.posted;
+              var rejected = journalEntry.rejected;
+              var rejectionReason = journalEntry.rejectionReason;
+              rows.push(<JournalRow journalEntryId={id} addedOn={addedOn} transactionsUrl={transactionsUrl}
+                                    posted={posted} rejected={rejected} rejectionReason={rejectionReason} key={id}
+                                    canPost={self.props.canPost}/>);
+          }
       });
       return (
                 <div className="container">
@@ -1923,7 +1937,8 @@ var AllJournals = React.createClass({
                 debitAmount: 0,
                 creditAmount: 0,
                 debitAccountID: 1,
-                creditAccountID: 1
+                creditAccountID: 1,
+                filterJournalStatus: ''
         };
     },
     componentDidMount: function () {
@@ -1973,6 +1988,11 @@ var AllJournals = React.createClass({
     updateCreditAccountID: function(evt) {
         this.setState({
             creditAccountID: evt.target.value
+        });
+    },
+    updateFilterJournalStatus: function (evt) {
+        this.setState({
+            filterJournalStatus: evt.target.value
         });
     },
     addDebit: function() {
@@ -2231,12 +2251,19 @@ var AllJournals = React.createClass({
                     <hr />
                     <h1>All Journal Entries</h1>
                     <hr />
+                    <select className="form-control" onChange={this.updateFilterJournalStatus} value={this.state.filterJournalStatus}>
+                        <option value="">All</option>
+                        <option value="new">New</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                    <hr />
                     <div className="faq">
                         <input type="search" placeholder="search" id="searchBar"/>
                         <div className="faq_not_found">
                             <p>No Matches were found</p>
                         </div>
-                        <JournalEntriesTable className="Journals" journalEntries={this.state.journalEntries} />
+                        <JournalEntriesTable className="Journals" journalEntries={this.state.journalEntries} filterJournalStatus={this.state.filterJournalStatus} />
                     </div>
                 </div>
             </div>
@@ -2359,12 +2386,18 @@ if (document.getElementById('AllApprovedJournals') != null) {
 var AllJournalsToPost = React.createClass({
   getInitialState: function() {
     return {
-      journalEntries: []
+      journalEntries: [],
+        filterJournalStatus: ""
     };
   },
   componentDidMount: function () {
     this.loadJournalEntriesFromServer();
   },
+    updateFilterJournalStatus: function (evt) {
+      this.setState({
+          filterJournalStatus: evt.target.value
+      });
+    },
   loadJournalEntriesFromServer: function() {
     var self = this;
     $.ajax({
@@ -2377,12 +2410,20 @@ var AllJournalsToPost = React.createClass({
     return (
       <div className="container">
         <h1>Post Journals</h1>
+          <hr />
+          <select className="form-control" onChange={this.updateFilterJournalStatus} value={this.state.filterJournalStatus}>
+              <option value="">All</option>
+              <option value="new">New</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+          </select>
+          <hr />
         <div className="faq">
           <input type="search" placeholder="search" id="searchBar"/>
           <div className="faq_not_found">
             <p>No Matches were found</p>
           </div>
-          <JournalEntriesTable className="Journals" journalEntries={this.state.journalEntries} canPost={true} />
+          <JournalEntriesTable className="Journals" journalEntries={this.state.journalEntries} canPost={true} filterJournalStatus={this.state.filterJournalStatus} />
         </div>
       </div>
     )
