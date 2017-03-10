@@ -75,6 +75,82 @@ var User = React.createClass({
             }
         });
     },
+    handleDeactivate: function () {
+      var self = this;
+      $.ajax({
+        url: "http://localhost:8080/admin/editUser",
+        type: "POST",
+        data: {username: this.state.username,
+          password: this.state.password,
+          enabled: false,
+          role: this.state.role},
+        success: function() {
+          toastr.options = {
+            "debug": false,
+            "positionClass": "toast-top-center",
+            "onclick": null,
+            "fadeIn": 300,
+            "fadeOut": 100,
+            "timeOut": 500,
+            "extendedTimeOut": 500
+          }
+          toastr.success("Successfully Deactivated User!");
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+          toastr.options = {
+            "debug": false,
+            "positionClass": "toast-top-center",
+            "onclick": null,
+            "fadeIn": 300,
+            "fadeOut": 100,
+            "timeOut": 500,
+            "extendedTimeOut": 500
+          }
+          toastr.error("Not Authorized");
+        }
+      });
+      this.setState({
+        enabled: false
+      });
+    },
+    handleActivate: function () {
+      var self = this;
+      $.ajax({
+        url: "http://localhost:8080/admin/editUser",
+        type: "POST",
+        data: {username: this.state.username,
+          password: this.state.password,
+          enabled: true,
+          role: this.state.role},
+        success: function() {
+          toastr.options = {
+            "debug": false,
+            "positionClass": "toast-top-center",
+            "onclick": null,
+            "fadeIn": 300,
+            "fadeOut": 100,
+            "timeOut": 500,
+            "extendedTimeOut": 500
+          }
+          toastr.success("Successfully Activated User!");
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+          toastr.options = {
+            "debug": false,
+            "positionClass": "toast-top-center",
+            "onclick": null,
+            "fadeIn": 300,
+            "fadeOut": 100,
+            "timeOut": 500,
+            "extendedTimeOut": 500
+          }
+          toastr.error("Not Authorized");
+        }
+      });
+      this.setState({
+          enabled: true
+      });
+    },
     /**
         This flags the form to let it know that it is being edited
     */
@@ -212,20 +288,28 @@ var User = React.createClass({
             */
             return (
                 <div className="row row-striped">
-                      <div className="col-md-2">{this.props.user.username}</div>
-                      <div className="col-md-4">********</div>
-                      <div className="col-md-2">{this.state.role}</div>
-                      <div className="col-md-2">{this.state.enabled ? 'Enabled' : 'Disabled'}</div>
-                      <div className="col-md-1">
-                        <button className="btn btn-warning" onClick={this.handleEdit}>
-                            <span className="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-                        </button>
+                  <div className="col-md-2">{this.props.user.username}</div>
+                  <div className="col-md-3">********</div>
+                  <div className="col-md-2">{this.state.role}</div>
+                  <div className="col-md-2">{this.state.enabled ? 'Enabled' : 'Disabled'}</div>
+                  <div className="col-md-1">
+                    <button className="btn btn-warning" onClick={this.handleEdit}>
+                        <span className="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                    </button>
+                  </div>
+                  {this.state.enabled ? (
+                      <div className="col-md-2">
+                          <button className="btn btn-danger" onClick={this.handleDeactivate}>
+                              Deactivate
+                          </button>
                       </div>
-                      <div className="col-md-1">
-                        <button className="btn btn-danger" onClick={this.handleDelete}>
-                            <span className="glyphicon glyphicon-trash" aria-hidden="true"></span>
-                        </button>
+                    ):(
+                      <div className="col-md-2">
+                          <button className="btn btn-success" onClick={this.handleActivate}>
+                              Activate
+                          </button>
                       </div>
+                    )}
                 </div>
             );
         }
