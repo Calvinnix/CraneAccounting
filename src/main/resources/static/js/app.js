@@ -1560,9 +1560,9 @@ var AllEvents = React.createClass({
               <div className="row header-row">
                 <div className="col-md-2 text-center" onClick={this.sortEvents}><h5>Timestamp&nbsp;
                   {this.state.sortedByDescending ? (
-                      <span className="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>
-                    ) : (
                       <span className="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                    ) : (
+                      <span className="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>
                     )}</h5></div>
                 <div className="col-md-2"><h5>User</h5></div>
                 <div className="col-md-8"><h5>Description</h5></div>
@@ -2566,34 +2566,100 @@ if (document.getElementById('AllJournalsToPost') != null) {
 }
 
 var TrialBalanceAccount = React.createClass({
+  getInitialState: function() {
+    return {
+      balance: -1
+    };
+  },
+  componentDidMount: function () {
+    this.formatBalance();
+  },
+  formatBalance: function() {
+    //This is used to format the initial balance as a number
+    var formattedBalance = this.props.account.balance;
+    if (!(/^(\d+\.\d\d)$/.test(formattedBalance))) {
+      //number needs formatting
+      formattedBalance = formattedBalance.toFixed(2);
+    }
+    //Add commas to thousands place i.e. 1000000.00 = 1,000,000.00
+    var parts = formattedBalance.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    formattedBalance = parts.join(".");
+
+    if (formattedBalance.charAt(0) === '-') {
+      formattedBalance = "($" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
+    } else {
+      formattedBalance = "$" + formattedBalance;
+    }
+
+    this.setState({
+      balance: formattedBalance
+    });
+  },
   render: function () {
     return (
       <div className="row">
-        <div className="col-md-6">{this.props.account.code} - {this.props.account.name}</div>
-        {!this.props.account.leftNormalSide &&
-            <div className="col-md-2"></div>
-        }
+        <div className="col-md-2"></div>
+        <div className="col-md-4">{this.props.account.code} - {this.props.account.name}</div>
         {this.props.account.leftNormalSide ? (
-            <div className="col-md-6">{this.props.account.balance}</div>
+            <div className="col-md-4 text-right">{this.state.balance}</div>
           ) : (
-            <div className="col-md-4">{this.props.account.balance}</div>
+            <div className="col-md-6 text-right">{this.state.balance}</div>
           )
         }
+        {this.props.account.leftNormalSide &&
+          <div className="col-md-2"></div>
+        }
+        <hr />
       </div>
     );
   }
 });
 
 var TrialBalanceTable = React.createClass({
+  formatBalance: function(number) {
+    //This is used to format the initial balance as a number
+    var formattedBalance = number;
+    if (!(/^(\d+\.\d\d)$/.test(formattedBalance))) {
+      //number needs formatting
+      formattedBalance = formattedBalance.toFixed(2);
+    }
+    //Add commas to thousands place i.e. 1000000.00 = 1,000,000.00
+    var parts = formattedBalance.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    formattedBalance = parts.join(".");
+
+    if (formattedBalance.charAt(0) === '-') {
+      formattedBalance = "($" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
+    } else {
+      formattedBalance = "$" + formattedBalance;
+    }
+
+    return formattedBalance;
+  },
   render: function() {
     var self = this;
     var rows = [];
+    var leftSideBalanceTotal = 0;
+    var rightSideBalanceTotal = 0;
     this.props.accounts.forEach(function(account) {
+      if (account.leftNormalSide) {
+        leftSideBalanceTotal += account.balance;
+      } else {
+        rightSideBalanceTotal += account.balance;
+      }
       rows.push(<TrialBalanceAccount account={account} key={account.publicId} />);
     });
     return (
       <div className="well well-lg">
         {rows}
+        <hr className="text-primary"/>
+        <hr className="text-primary"/>
+        <div className="row">
+          <div className="col-md-8"></div>
+          <div className="col-md-2 text-right">{this.formatBalance(leftSideBalanceTotal)}</div>
+          <div className="col-md-2 text-right">{this.formatBalance(rightSideBalanceTotal)}</div>
+        </div>
       </div>
     );
   }
