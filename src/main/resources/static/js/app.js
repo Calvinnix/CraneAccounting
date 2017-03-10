@@ -2714,7 +2714,7 @@ var TrialBalanceTable = React.createClass({
         {expenses}
         <hr/>
         <hr/>
-        <div className="row text-success">
+        <div className="row text-primary">
           <div className="col-md-8"></div>
           <div className="col-md-2 text-right">{this.formatBalance(leftSideBalanceTotal)}</div>
           <div className="col-md-2 text-right">{this.formatBalance(rightSideBalanceTotal)}</div>
