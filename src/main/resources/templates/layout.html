@@ -36,6 +36,7 @@
                     <li th:class="${selectedTab} == 'journals' ? 'active' : ''"><a href="/journals">Journals</a></li>
                     <li th:class="${selectedTab} == 'postJournals' ? 'active' : ''" sec:authorize="hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')"><a href="/postJournals">Post Journals</a></li>
                     <li th:class="${selectedTab} == 'ledger' ? 'active' : ''"><a href="/ledger">Ledger</a></li>
+                    <li th:class="${selectedTab} == 'trialBalance' ? 'active' : ''"><a href="/trialBalance">Trial Balance</a></li>
 
                 </ul>
                 <ul class="nav navbar-nav navbar-right">

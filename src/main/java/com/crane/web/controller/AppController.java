@@ -119,6 +119,13 @@ public class AppController {
         return "postJournals";
     }
 
+    @RequestMapping(value = "/trialBalance")
+    public String trialBalance() {
+      logger.info(" --- RequestMapping from /trialBalance");
+      logger.info(" --- Mapping to /trialBalance");
+      return "trialBalance";
+    }
+
     @RequestMapping(value = "/admin/addUser", method = RequestMethod.POST)
     public String addUser(HttpServletRequest request) {
         logger.info(" --- RequestMapping from /admin/addUser");

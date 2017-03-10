@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head(title='Trial Balance')"></head>
+<body>
+<div th:replace="layout :: nav(selectedTab='trialBalance')"></div>
+<div id="TrialBalance">
+    <block th:replace="layout :: loading"></block>
+</div>
+<block th:replace="layout :: script"></block>
+</body>
+</html>

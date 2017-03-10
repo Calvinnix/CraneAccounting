@@ -1550,9 +1550,9 @@ var AllEvents = React.createClass({
               <div className="row header-row">
                 <div className="col-md-2 text-center" onClick={this.sortEvents}><h5>Timestamp&nbsp;
                   {this.state.sortedByDescending ? (
-                      <span className="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
-                    ) : (
                       <span className="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>
+                    ) : (
+                      <span className="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
                     )}</h5></div>
                 <div className="col-md-2"><h5>User</h5></div>
                 <div className="col-md-8"><h5>Description</h5></div>
@@ -2555,6 +2555,70 @@ if (document.getElementById('AllJournalsToPost') != null) {
     ReactDOM.render(<AllJournalsToPost />, document.getElementById('AllJournalsToPost'));
 }
 
+var TrialBalanceAccount = React.createClass({
+  render: function () {
+    return (
+      <div className="row">
+        <div className="col-md-6">{this.props.account.code} - {this.props.account.name}</div>
+        {!this.props.account.leftNormalSide &&
+            <div className="col-md-2"></div>
+        }
+        {this.props.account.leftNormalSide ? (
+            <div className="col-md-6">{this.props.account.balance}</div>
+          ) : (
+            <div className="col-md-4">{this.props.account.balance}</div>
+          )
+        }
+      </div>
+    );
+  }
+});
+
+var TrialBalanceTable = React.createClass({
+  render: function() {
+    var self = this;
+    var rows = [];
+    this.props.accounts.forEach(function(account) {
+      rows.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+    });
+    return (
+      <div className="well well-lg">
+        {rows}
+      </div>
+    );
+  }
+});
+
+var TrialBalance = React.createClass({
+  getInitialState: function() {
+    return {
+      accounts: []
+    };
+  },
+  componentDidMount: function () {
+    this.loadAccountsFromServer();
+  },
+  loadAccountsFromServer: function() {
+    var self = this;
+      $.ajax({
+      url: "http://localhost:8080/api/accounts"
+    }).then(function (data) {
+      self.setState({accounts: data._embedded.accounts});
+    });
+  },
+  render: function () {
+    return (
+      <div className="container">
+      <h1>Trial Balance</h1>
+      <TrialBalanceTable accounts={this.state.accounts} />
+      </div>
+    );
+  }
+});
+
+if (document.getElementById('TrialBalance') != null) {
+  ReactDOM.render(<TrialBalance />, document.getElementById('TrialBalance'));
+}
 
 
 /*TODO:ctn Eventually will want to convert this code (as well as the login/signup page) to utilize REACT */
