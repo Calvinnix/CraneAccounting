@@ -2599,8 +2599,8 @@ var TrialBalanceAccount = React.createClass({
   render: function () {
     return (
       <div className="row">
-        <div className="col-md-2"></div>
-        <div className="col-md-4">{this.props.account.code} - {this.props.account.name}</div>
+        <div className="col-md-1"></div>
+        <div className="col-md-5">{this.props.account.code} - {this.props.account.name}</div>
         {this.props.account.leftNormalSide ? (
             <div className="col-md-4 text-right">{this.state.balance}</div>
           ) : (
@@ -2610,7 +2610,6 @@ var TrialBalanceAccount = React.createClass({
         {this.props.account.leftNormalSide &&
           <div className="col-md-2"></div>
         }
-        <hr />
       </div>
     );
   }
@@ -2639,7 +2638,11 @@ var TrialBalanceTable = React.createClass({
   },
   render: function() {
     var self = this;
-    var rows = [];
+    var assets = [];
+    var liabilities = [];
+    var ownersEquity = [];
+    var revenues = [];
+    var expenses = [];
     var leftSideBalanceTotal = 0;
     var rightSideBalanceTotal = 0;
     this.props.accounts.forEach(function(account) {
@@ -2648,14 +2651,62 @@ var TrialBalanceTable = React.createClass({
       } else {
         rightSideBalanceTotal += account.balance;
       }
-      rows.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+
+      if (account.type === "Asset") {
+        assets.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+      } else if (account.type === "Liabilities")   {
+        liabilities.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+      } else if (account.type === "Owner's Equity")   {
+        ownersEquity.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+      } else if (account.type === "Revenues")   {
+        revenues.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+      } else if (account.type === "Operating Expenses")   {
+        expenses.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+      } else {
+        //do nothing
+      }
+
     });
+
     return (
       <div className="well well-lg">
-        {rows}
-        <hr className="text-primary"/>
-        <hr className="text-primary"/>
-        <div className="row">
+        {assets.length > 0 &&
+          <div className="row row-striped">
+            <div className="col-md-12"><b>Assets</b></div>
+          </div>
+        }
+        {assets}
+
+        {liabilities.length > 0 &&
+        <div className="row row-striped">
+          <div className="col-md-12"><b>Liabilities</b></div>
+        </div>
+        }
+        {liabilities}
+
+        {ownersEquity.length > 0 &&
+        <div className="row row-striped">
+          <div className="col-md-12"><b>Owner's Equity</b></div>
+        </div>
+        }
+        {ownersEquity}
+
+        {revenues.length > 0 &&
+          <div className="row row-striped">
+            <div className="col-md-12"><b>Revenues</b></div>
+          </div>
+        }
+        {revenues}
+
+        {expenses.length > 0 &&
+          <div className="row row-striped">
+            <div className="col-md-12"><b>Expenses</b></div>
+          </div>
+        }
+        {expenses}
+        <hr/>
+        <hr/>
+        <div className="row text-success">
           <div className="col-md-8"></div>
           <div className="col-md-2 text-right">{this.formatBalance(leftSideBalanceTotal)}</div>
           <div className="col-md-2 text-right">{this.formatBalance(rightSideBalanceTotal)}</div>
