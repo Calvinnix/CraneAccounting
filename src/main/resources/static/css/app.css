@@ -96,6 +96,22 @@ a:hover {
 .wrap-words {
   word-break: break-all; }
 
+.dropdown-menu {
+  max-height: 120px;
+  overflow-y: auto;
+  min-height: 80px; }
+
+.dropup .dropdown-menu, .navbar-fixed-bottom .dropdown .dropdown-menu {
+  bottom: auto;
+  min-width: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
+
+ul.dropdown-menu{
+    text-align: left;
+}
+
 .faq input {
   display: block;
   width: 100%;

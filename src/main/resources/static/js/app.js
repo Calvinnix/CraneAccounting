@@ -638,10 +638,20 @@ var AccountSelect = React.createClass({
             }
         });
         return (
-            <select className="form-control" name="selectAccountName" value={this.props.id} onChange={this.props.onChange}>
+            <select className="form-control" id="basic2" name="selectAccount" data-live-search="true" value={this.props.id} onChange={this.props.onChange}>
                 {accounts}
             </select>
         );
+    },
+
+    componentDidUpdate: function(){
+        if (this.props.accounts.length > 0) {
+            $('#basic2').selectpicker({
+              liveSearch: true,
+              maxOptions: 1
+            });
+        }
+
     }
 });
 
@@ -2908,3 +2918,10 @@ $('#searchBar').click(function(e){
 
       }( document, window, 0 ));
    });
+
+   function a(){
+    $('#basic2').selectpicker({
+      liveSearch: true,
+      maxOptions: 1
+    })
+   }
