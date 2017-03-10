@@ -1699,6 +1699,26 @@ var JournalsCreditTable = React.createClass({
     }
 });
 
+var SupportingDocuments = React.createClass({
+
+  render: function() {
+    var self = this;
+    var files = [];
+    var json = $.parseJSON(this.props.files);
+
+    for (var i = 0; i < json.length; i++) {
+      files.push(<li key={i}><a href={json[i]['href']} download={json[i]['download']}>{json[i]['download']}</a></li>)
+    }
+    return (
+      <div className="container">
+        <ul>
+          {files}
+        </ul>
+      </div>
+    );
+  }
+});
+
 var JournalRow = React.createClass({
     getInitialState: function() {
 
@@ -1840,7 +1860,8 @@ var JournalRow = React.createClass({
                 <h5 className="pull-left"><b>Reason for rejection:</b> <span className="text-danger">{this.state.rejectionReason}</span></h5>
               </div>
               <div className="col-md-6 text-center">
-                <button className="btn btn-default" onClick={this.downloadSupportingDocument}>Download Support Documents</button>
+                <label>Supporting Documents:</label>
+                <SupportingDocuments files={this.props.files}/>
               </div>
             </div>
           </div>
@@ -1880,7 +1901,8 @@ var JournalRow = React.createClass({
             <div className="row">
               <div className="col-md-5"></div>
               <div className="col-md-3">
-                <button className="btn btn-default" onClick={this.downloadSupportingDocument}>Download Support Documents</button>
+                <label>Supporting Documents:</label>
+                <SupportingDocuments files={this.props.files}/>
               </div>
 
               {this.props.canPost &&
@@ -1969,7 +1991,9 @@ var TransactionRow = React.createClass({
                     <h4 className="modal-title" id="myModalLabel">Journal #{this.state.journalEntry.publicId}</h4>
                   </div>
                   <div className="modal-body">
-                    <JournalRow journalEntryId={this.state.journalEntry.publicId} addedOn={this.state.journalEntry.addedOn} transactionsUrl={transactionsUrl} posted={this.state.journalEntry.posted} rejected={this.state.journalEntry.rejected} rejectionReason={this.state.journalEntry.rejectionReason} canPost={false}/>
+                    <JournalRow journalEntryId={this.state.journalEntry.publicId} addedOn={this.state.journalEntry.addedOn} transactionsUrl={transactionsUrl}
+                                posted={this.state.journalEntry.posted} rejected={this.state.journalEntry.rejected} rejectionReason={this.state.journalEntry.rejectionReason}
+                                canPost={false} files={this.state.journalEntry.supportingDocsBase64}/>
                   </div>
                 </div>
               </div>
@@ -2029,9 +2053,10 @@ var JournalEntriesTable = React.createClass({
               var posted = journalEntry.posted;
               var rejected = journalEntry.rejected;
               var rejectionReason = journalEntry.rejectionReason;
+              var files = journalEntry.supportingDocsBase64;
               rows.push(<JournalRow journalEntryId={id} addedOn={addedOn} transactionsUrl={transactionsUrl}
                                     posted={posted} rejected={rejected} rejectionReason={rejectionReason} key={id}
-                                    canPost={self.props.canPost}/>);
+                                    canPost={self.props.canPost} files={files}/>);
           }
       });
       return (
@@ -2268,12 +2293,21 @@ var AllJournals = React.createClass({
 
         var accounts = this.state.JournalsDebit.concat(this.state.JournalsCredit);
 
+        var files = [];
+        var length = $("#upload-file-info").children("a").length;
+        for (var i = 0; i < length; i++) {
+          var download = $("#upload-file-info").children("a").eq(i).attr("download");
+          var href = $("#upload-file-info").children("a").eq(i).attr("href");
+          files[i] = {"download":download, "href":href};
+        }
+
         $.ajax({
             url: "http://localhost:8080/journals/addJournal",
             type: "POST",
             data: {
                accounts: JSON.stringify(accounts),
-               username: username
+               username: username,
+               files: JSON.stringify(files)
             },
             success: function() {
                 toastr.options = {
@@ -2356,11 +2390,13 @@ var AllJournals = React.createClass({
                         <hr />
                         <div className="row">
                             <div className="col-md-10">
+                              <form id="my-file-selector-form">
                                 <label className="btn btn-default pull-right" for="my-file-selector">
-                                    <input id="my-file-selector" className="hidden" type="file" multiple="multiple"/>
+                                    <input id="my-file-selector" className="hidden" type="file" multiple="multiple" name="uploadfile" accept="*"/>
                                     Upload Supporting Documents
                                 </label>
-                                <h4 id="upload-file-info"></h4>
+                              </form>
+                              <h4 id="upload-file-info"></h4>
                             </div>
                             <div className="col-md-2">
                                 { (this.state.JournalsDebit.length > 0 || this.state.JournalsCredit.length > 0) ? (
@@ -2783,9 +2819,7 @@ $("#my-file-selector").on("change", function(e) {
     var reader = new FileReader();
     reader.onload = function(e) {
         data.file_base64 = e.target.result.split(/,/)[1];
-        //$.post("/journals", {json:JSON.stringify(data)}, "json")
-        //.then(function(data) {
-        console.log(data);
+
         var results = $("<a />", {
             "href": "data:" + data.filetype + ";base64," + data.file_base64,
                 "download": data.filename,
@@ -2797,7 +2831,7 @@ $("#my-file-selector").on("change", function(e) {
         console.log(textStatus, errorThrown)
         //})
     };
-    reader.readAsDataURL(file)
+    console.log(reader.readAsDataURL(file))
 });
 
 function validateLoginForm(element, e) {

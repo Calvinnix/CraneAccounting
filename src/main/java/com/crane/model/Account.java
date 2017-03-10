@@ -58,6 +58,7 @@ public class Account {
         this.comment = comment;
     }
 
+    @Column(length = 10000)
     private String comment;
 
     public Long getId() {

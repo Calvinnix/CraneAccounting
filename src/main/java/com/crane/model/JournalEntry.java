@@ -1,5 +1,7 @@
 package com.crane.model;
 
+import org.hibernate.validator.constraints.Length;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -30,7 +32,11 @@ public class JournalEntry {
 
     private Boolean rejected;
 
+    @Column(length = 10000)
     private String rejectionReason;
+
+    @Column(length = 100000) //This size may need to be adjusted
+    private String supportingDocsBase64;
 
     public JournalEntry(List<Transaction> transaction, User addedBy, String addedOn, Boolean posted) {
         this.transaction = transaction;
@@ -100,5 +106,13 @@ public class JournalEntry {
 
     public void setRejectionReason(String rejectionReason) {
         this.rejectionReason = rejectionReason;
+    }
+
+    public String getSupportingDocsBase64() {
+      return supportingDocsBase64;
+    }
+
+    public void setSupportingDocsBase64(String supportingDocsBase64) {
+      this.supportingDocsBase64 = supportingDocsBase64;
     }
 }

@@ -439,6 +439,7 @@ public class AppController {
 
         String accounts = request.getParameter("accounts");
         String username = request.getParameter("username");
+        String files    = request.getParameter("files");
 
         User userFound = userService.findUserByUsername(username);
 
@@ -483,6 +484,7 @@ public class AppController {
         }
 
         JournalEntry journalEntry = new JournalEntry(transactions, userFound, currentTime, false);
+        journalEntry.setSupportingDocsBase64(files);
 
         JournalEntry journalEntryFound = journalEntryService.saveAndReturn(journalEntry);
 
