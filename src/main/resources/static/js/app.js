@@ -637,16 +637,18 @@ var AccountSelect = React.createClass({
                 accounts.push(<Account account={account} key={account.name}/>);
             }
         });
+        var id = "searchableCombo" + this.props.comboId;
         return (
-            <select className="form-control" id="basic2" name="selectAccount" data-live-search="true" value={this.props.id} onChange={this.props.onChange}>
+            <select className="form-control" id={id} name="selectAccount" data-live-search="true" value={this.props.id} onChange={this.props.onChange}>
                 {accounts}
             </select>
         );
     },
 
     componentDidUpdate: function(){
+      var id = "#searchableCombo" + this.props.comboId;
         if (this.props.accounts.length > 0) {
-            $('#basic2').selectpicker({
+            $(id).selectpicker({
               liveSearch: true,
               maxOptions: 1
             });
@@ -1068,7 +1070,7 @@ var AllAccounts = React.createClass({
                      <hr />
                     <div className="row">
                         <div className="col-md-6">
-                            <AccountSelect onChange={this.updateAccountId} accounts={this.state.ChartOfAccounts} id={this.state.id}/>
+                            <AccountSelect onChange={this.updateAccountId} accounts={this.state.ChartOfAccounts} id={this.state.id} comboId={"main"}/>
                         </div>
                         <div className="col-md-4">
                               <textarea type="text" className="form-control" onChange={this.updateAccountComment} aria-label="Comment"/>
@@ -1710,11 +1712,9 @@ var SupportingDocuments = React.createClass({
       files.push(<li key={i}><a href={json[i]['href']} download={json[i]['download']}>{json[i]['download']}</a></li>)
     }
     return (
-      <div className="container">
         <ul>
           {files}
         </ul>
-      </div>
     );
   }
 });
@@ -1774,6 +1774,7 @@ var JournalRow = React.createClass({
                     "extendedTimeOut": 500
                 }
                 toastr.success("Successfully Posted Journal Entry!");
+                self.props.loadJournalEntriesFromServer();
                 self.setState({
                     posted: true
                 });
@@ -1825,6 +1826,7 @@ var JournalRow = React.createClass({
                 "extendedTimeOut": 500
             }
             toastr.success("Successfully Rejected Journal Entry!");
+            self.props.loadJournalEntriesFromServer();
             self.setState({
                 rejected: true
             });
@@ -1859,7 +1861,7 @@ var JournalRow = React.createClass({
               <div className="col-md-6 text-center">
                 <h5 className="pull-left"><b>Reason for rejection:</b> <span className="text-danger">{this.state.rejectionReason}</span></h5>
               </div>
-              <div className="col-md-6 text-center">
+              <div className="col-md-6">
                 <label>Supporting Documents:</label>
                 <SupportingDocuments files={this.props.files}/>
               </div>
@@ -2056,7 +2058,7 @@ var JournalEntriesTable = React.createClass({
               var files = journalEntry.supportingDocsBase64;
               rows.push(<JournalRow journalEntryId={id} addedOn={addedOn} transactionsUrl={transactionsUrl}
                                     posted={posted} rejected={rejected} rejectionReason={rejectionReason} key={id}
-                                    canPost={self.props.canPost} files={files}/>);
+                                    canPost={self.props.canPost} files={files} loadJournalEntriesFromServer={self.props.loadJournalEntriesFromServer}/>);
           }
       });
       return (
@@ -2294,10 +2296,10 @@ var AllJournals = React.createClass({
         var accounts = this.state.JournalsDebit.concat(this.state.JournalsCredit);
 
         var files = [];
-        var length = $("#upload-file-info").children("a").length;
+        var length = $("#upload-file-info").children("li").length;
         for (var i = 0; i < length; i++) {
-          var download = $("#upload-file-info").children("a").eq(i).attr("download");
-          var href = $("#upload-file-info").children("a").eq(i).attr("href");
+          var download = $("#upload-file-info").children("li").eq(i).children("a").eq(0).attr("download");
+          var href = $("#upload-file-info").children("li").eq(i).children("a").eq(0).attr("href");
           files[i] = {"download":download, "href":href};
         }
 
@@ -2320,6 +2322,7 @@ var AllJournals = React.createClass({
                     "extendedTimeOut": 500
                 }
                 toastr.success("Successfully added Journal Entry");
+                $("#upload-file-info").empty(); //clear added files from input field
                 self.loadTransactionsFromServer();
                 self.loadJournalEntriesFromServer();
             },
@@ -2351,7 +2354,7 @@ var AllJournals = React.createClass({
                     <div className="well well-lg">
                         <div className="row">
                             <div className="col-md-5">
-                                <AccountSelect accounts={this.state.accounts} onChange={this.updateDebitAccountID} id={this.state.debitAccountID}/>
+                                <AccountSelect accounts={this.state.accounts} onChange={this.updateDebitAccountID} id={this.state.debitAccountID} comboId={"debit"}/>
                             </div>
                             <div className="col-md-3">
                                 <div className="input-group">
@@ -2369,7 +2372,7 @@ var AllJournals = React.createClass({
                         <div className="row">
                             <div className="col-md-2"></div>
                             <div className="col-md-5">
-                                <AccountSelect accounts={this.state.accounts} onChange={this.updateCreditAccountID} id={this.state.creditAccountID}/>
+                                <AccountSelect accounts={this.state.accounts} onChange={this.updateCreditAccountID} id={this.state.creditAccountID} comboId={"credit"}/>
                             </div>
                             <div className="col-md-3">
                                 <div className="input-group">
@@ -2396,13 +2399,13 @@ var AllJournals = React.createClass({
                                     Upload Supporting Documents
                                 </label>
                               </form>
-                              <h4 id="upload-file-info"></h4>
+                              <ul id="upload-file-info"></ul>
                             </div>
                             <div className="col-md-2">
                                 { (this.state.JournalsDebit.length > 0 || this.state.JournalsCredit.length > 0) ? (
                                     <button className="btn btn-primary" onClick={this.addJournalEntry}>Submit Journal Entry</button>
                                     ) : (
-                                    <button className="btn btn-primary disabled" onClick={this.addJournalEntry}>Submit Journal Entry</button>
+                                    <button className="btn btn-primary disabled">Submit Journal Entry</button>
                                     )
                                 }
                             </div>
@@ -2523,7 +2526,7 @@ var Ledger = React.createClass({
         <div className="container">
           <h1>Ledger</h1>
           <hr />
-          <AccountSelect onChange={this.updateAccountId} accounts={this.state.accounts} id={this.state.accountId}/>
+          <AccountSelect onChange={this.updateAccountId} accounts={this.state.accounts} id={this.state.accountId} comboId={"ledger"}/>
           <hr />
           <div className="faq">
             <input type="search" placeholder="search" id="searchBar"/>
@@ -2583,7 +2586,7 @@ var AllJournalsToPost = React.createClass({
           <div className="faq_not_found">
             <p>No Matches were found</p>
           </div>
-          <JournalEntriesTable className="Journals" journalEntries={this.state.journalEntries} canPost={true} filterJournalStatus={this.state.filterJournalStatus} />
+          <JournalEntriesTable className="Journals" journalEntries={this.state.journalEntries} canPost={true} filterJournalStatus={this.state.filterJournalStatus} loadJournalEntriesFromServer={this.loadJournalEntriesFromServer} />
         </div>
       </div>
     )
@@ -2713,6 +2716,15 @@ var TrialBalanceTable = React.createClass({
         }
         {assets}
 
+        {expenses.length > 0 &&
+        <div className="row">
+          <hr/>
+          <div className="col-md-12"><b>Expenses</b></div>
+          <hr/>
+        </div>
+        }
+        {expenses}
+
         {liabilities.length > 0 &&
         <div className="row">
           <hr/>
@@ -2739,15 +2751,6 @@ var TrialBalanceTable = React.createClass({
           </div>
         }
         {revenues}
-
-        {expenses.length > 0 &&
-          <div className="row">
-            <hr/>
-            <div className="col-md-12"><b>Expenses</b></div>
-            <hr/>
-          </div>
-        }
-        {expenses}
         <hr/>
         <hr/>
         <div className="row text-primary">
@@ -2820,18 +2823,26 @@ $("#my-file-selector").on("change", function(e) {
     reader.onload = function(e) {
         data.file_base64 = e.target.result.split(/,/)[1];
 
-        var results = $("<a />", {
-            "href": "data:" + data.filetype + ";base64," + data.file_base64,
-                "download": data.filename,
-                "target": "_blank",
-                "text": data.filename
-            });
-            $("#upload-file-info").append("<br> Download: ", results[0]);
+        var results = $("<li></li>");
+        var fileData = $("<a />", {
+          "href": "data:" + data.filetype + ";base64," + data.file_base64,
+          "download": data.filename,
+          "target": "_blank",
+          "text": data.filename
+        });
+        results.append(fileData);
+        results.append("&nbsp;","<button class='btn btn-default removeAppendedFile'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button>","<br>");
+
+        $("#upload-file-info").append(results[0]);
     }, function(jqxhr, textStatus, errorThrown) {
         console.log(textStatus, errorThrown)
-        //})
     };
     console.log(reader.readAsDataURL(file))
+
+});
+
+$("body").on("click", ".btn.btn-default.removeAppendedFile", function(){
+  alert($(this).parent().remove())
 });
 
 function validateLoginForm(element, e) {
