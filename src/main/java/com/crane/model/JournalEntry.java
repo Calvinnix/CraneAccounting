@@ -35,7 +35,7 @@ public class JournalEntry {
     @Column(length = 10000)
     private String rejectionReason;
 
-    @Column(length = 100000) //This size may need to be adjusted
+    @Column(length = 25000000) //This should be 25mb ..... I think....
     private String supportingDocsBase64;
 
     public JournalEntry(List<Transaction> transaction, User addedBy, String addedOn, Boolean posted) {

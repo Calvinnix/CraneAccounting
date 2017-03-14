@@ -644,16 +644,20 @@ var AccountSelect = React.createClass({
             </select>
         );
     },
-
     componentDidUpdate: function(){
+      this.registerSelectPicker();
+    },
+    componentDidMount: function(){
+      this.registerSelectPicker();
+    },
+    registerSelectPicker: function () {
       var id = "#searchableCombo" + this.props.comboId;
-        if (this.props.accounts.length > 0) {
-            $(id).selectpicker({
-              liveSearch: true,
-              maxOptions: 1
-            });
-        }
-
+      if (this.props.accounts.length > 0) {
+        $(id).selectpicker({
+          liveSearch: true,
+          maxOptions: 1
+        });
+      }
     }
 });
 
@@ -2842,7 +2846,7 @@ $("#my-file-selector").on("change", function(e) {
 });
 
 $("body").on("click", ".btn.btn-default.removeAppendedFile", function(){
-  alert($(this).parent().remove())
+  $(this).parent().remove();
 });
 
 function validateLoginForm(element, e) {
@@ -3088,10 +3092,3 @@ $('#searchBar').click(function(e){
 
       }( document, window, 0 ));
    });
-
-   function a(){
-    $('#basic2').selectpicker({
-      liveSearch: true,
-      maxOptions: 1
-    })
-   }

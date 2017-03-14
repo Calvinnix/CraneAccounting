@@ -527,3 +527,6 @@ body.fb_hidden {
   position: absolute;
   left: 50%;
   z-index: 4; }
+
+.bootstrap-select.btn-group .dropdown-menu li a {
+  text-align: left; }
