@@ -2812,37 +2812,46 @@ $("#btnSignup").click(function(e) {
 
 $("#my-file-selector").on("change", function(e) {
 //Note: I was not able to figure out what some of the code did so I just commented it out in case it is needed later
-    var file = e.target.files[0];
+  var data_array = [];
+  var loaded = false;
+  for (var i = 0; i < e.target.files.length; i++) {
+    var file = e.target.files[i];
     var filename = name.length > 1 ? name + ".pdf" : file.name;
     var filetype = file.type;
     var filesize = file.size;
     var data = {
-        "filename":filename,
-        "filetype":filetype,
-        "filesize":filesize
+      "filename":filename,
+      "filetype":filetype,
+      "filesize":filesize
     };
+    data_array.push(data)
     console.log("data object: ");
     console.log(data);
+
+    var currentIndex = 0;
     var reader = new FileReader();
     reader.onload = function(e) {
-        data.file_base64 = e.target.result.split(/,/)[1];
+      var file_base64 = e.target.result.split(/,/)[1];
 
-        var results = $("<li></li>");
-        var fileData = $("<a />", {
-          "href": "data:" + data.filetype + ";base64," + data.file_base64,
-          "download": data.filename,
-          "target": "_blank",
-          "text": data.filename
-        });
-        results.append(fileData);
-        results.append("&nbsp;","<button class='btn btn-default removeAppendedFile'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button>","<br>");
+      var results = $("<li></li>");
+      var fileData = $("<a />", {
+        "href": "data:" + data_array[currentIndex].filetype + ";base64," + file_base64,
+        "download": data_array[currentIndex].filename,
+        "target": "_blank",
+        "text": data_array[currentIndex].filename
+      });
+      results.append(fileData);
+      results.append("&nbsp;","<button class='btn btn-default removeAppendedFile'><span class='glyphicon glyphicon-remove' aria-hidden='true'></span></button>","<br>");
 
-        $("#upload-file-info").append(results[0]);
+      $("#upload-file-info").append(results[0]);
+
+      currentIndex++;
+
     }, function(jqxhr, textStatus, errorThrown) {
-        console.log(textStatus, errorThrown)
+      console.log(textStatus, errorThrown)
     };
     console.log(reader.readAsDataURL(file))
-
+  }
 });
 
 $("body").on("click", ".btn.btn-default.removeAppendedFile", function(){
