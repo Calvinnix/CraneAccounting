@@ -2580,7 +2580,7 @@ var AllJournalsToPost = React.createClass({
           <hr />
           <select className="form-control" onChange={this.updateFilterJournalStatus} value={this.state.filterJournalStatus}>
               <option value="">All</option>
-              <option value="new">New</option>
+              <option value="new">Pending</option>
               <option value="approved">Approved</option>
               <option value="rejected">Rejected</option>
           </select>
