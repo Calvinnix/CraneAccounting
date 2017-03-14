@@ -18,6 +18,9 @@
                 <li><a href="/accounts">Edit an Account</a></li>
                 <li><a href="/accounts">Deactivate an Account</a></li>
                 <li><a href="/journals">Add Journal Entry</a></li>
+                <li sec:authorize="hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')"><a href="/postJournals">Post Journal Entries</a></li>
+                <li><a href="/ledger">View Ledger</a></li>
+                <li><a href="/trialBalance">View Trial Balance</a></li>
                 <li sec:authorize="hasRole('ROLE_ADMIN')"><a href="/admin">Manage Users</a></li>
                 <li sec:authorize="hasRole('ROLE_ADMIN')"><a href="/events">View Event Logs</a></li>
             </ul>
