@@ -2711,6 +2711,9 @@ var TrialBalanceTable = React.createClass({
 
     return (
       <div className="well well-lg">
+        <div className="col-md-8">Accounts</div>
+        <div className="col-md-2 text-right">Debit</div>
+        <div className="col-md-2 text-right">Credit</div>
         {assets.length > 0 &&
           <div className="row">
             <hr/>
@@ -2758,7 +2761,7 @@ var TrialBalanceTable = React.createClass({
         <hr/>
         <hr/>
         <div className="row text-primary">
-          <div className="col-md-8"></div>
+          <div className="col-md-8 text-right">Total:</div>
           <div className="col-md-2 text-right">{this.formatBalance(leftSideBalanceTotal)}</div>
           <div className="col-md-2 text-right">{this.formatBalance(rightSideBalanceTotal)}</div>
         </div>
