@@ -467,6 +467,13 @@ public class AppController {
             Double amount = currentAccount.getDouble("amount");
             String accountName = currentAccount.getString("accountName");
             Boolean isDebit = currentAccount.getBoolean("isDebit");
+            String transType;
+
+            if(isDebit){
+                transType = "Debited";
+            }else{
+                transType = "Credited";
+            }
 
             Account accountFound = accountService.findAccountByName(accountName);
             accountFound.setCanDeactivate(false);
@@ -479,7 +486,7 @@ public class AppController {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String currentUser = auth.getName();
 
-            EventLog log = new EventLog(currentTime, currentUser, String.format("Add transaction | account: %s | amount: %s | isDebit: %s", accountName, amount, isDebit));
+            EventLog log = new EventLog(currentTime, currentUser, String.format("Transaction: %s was %s $ %s", accountName, transType, amount));
             eventLogService.save(log);
         }
 
@@ -521,6 +528,13 @@ public class AppController {
             String accountName = transaction.getString("accountName");
             Double amount = transaction.getDouble("amount");
             Boolean isDebit = transaction.getBoolean("debit");
+            String transType;
+
+            if(isDebit){
+                transType = "Debit";
+            }else{
+                transType = "Credit";
+            }
 
             Account accountFound = accountService.findAccountByName(accountName);
             Double beginningBalance = accountFound.getBalance();
@@ -555,7 +569,7 @@ public class AppController {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String currentUser = auth.getName();
 
-            EventLog log = new EventLog(currentTime, currentUser, String.format("Post Journal Entry: %s | Before: %s | After: %s", accountName, beginningBalance, accountFound.getBalance()));
+            EventLog log = new EventLog(currentTime, currentUser, String.format("Post Journal Entry: %s  Before %s: $ %s | After %s: $ %s", accountName, transType, beginningBalance, transType, accountFound.getBalance()));
             eventLogService.save(log);
         }
 
