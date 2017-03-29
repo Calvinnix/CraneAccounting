@@ -2801,7 +2801,7 @@ if (document.getElementById('TrialBalance') != null) {
   ReactDOM.render(<TrialBalance />, document.getElementById('TrialBalance'));
 }
 
-var balanceSheet = React.createClass({
+var BalanceSheetAccount = React.createClass({
   getInitialState: function() {
     return {
       balance: -1
@@ -2877,16 +2877,14 @@ var BalanceSheetTable = React.createClass({
     var assets = [];
     var liabilities = [];
     var ownersEquity = [];
-    var revenues = [];
-    var expenses = [];
     var leftSideBalanceTotal = 0;
     var rightSideBalanceTotal = 0;
     var ownEquity = 0;
     var liability = 0;
     this.props.accounts.forEach(function(account) {
-      if (account.leftNormalSide) {
+      if (account.type === "Asset") {
         leftSideBalanceTotal += account.balance;
-      }else{
+      }else if(account.type === "Owner's Equity" || account.type === "Liabilities" ){
         rightSideBalanceTotal += account.balance;
       }
 
@@ -2896,11 +2894,11 @@ var BalanceSheetTable = React.createClass({
       }
 
       if (account.type === "Asset") {
-        assets.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+        assets.push(<BalanceSheetAccount account={account} key={account.publicId} />);
       } else if (account.type === "Liabilities")   {
-        liabilities.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+        liabilities.push(<BalanceSheetAccount account={account} key={account.publicId} />);
       } else if (account.type === "Owner's Equity")   {
-        ownersEquity.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+        ownersEquity.push(<BalanceSheetAccount account={account} key={account.publicId} />);
       }else {
         //do nothing
       }
@@ -2981,6 +2979,191 @@ var BalanceSheet = React.createClass({
 if (document.getElementById('balanceSheet') != null) {
   ReactDOM.render(<BalanceSheet />, document.getElementById('balanceSheet'));
 }
+
+var IncomeStatementAccount = React.createClass({
+  getInitialState: function() {
+    return {
+      balance: -1
+    };
+  },
+  componentDidMount: function () {
+    this.formatBalance();
+  },
+  formatBalance: function() {
+    //This is used to format the initial balance as a number
+    var formattedBalance = this.props.account.balance;
+    if (!(/^(\d+\.\d\d)$/.test(formattedBalance))) {
+      //number needs formatting
+      formattedBalance = formattedBalance.toFixed(2);
+    }
+    //Add commas to thousands place i.e. 1000000.00 = 1,000,000.00
+    var parts = formattedBalance.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    formattedBalance = parts.join(".");
+
+    if (formattedBalance.charAt(0) === '-') {
+      formattedBalance = "($" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
+    } else {
+      formattedBalance = "$" + formattedBalance;
+    }
+
+    this.setState({
+      balance: formattedBalance
+    });
+  },
+  render: function () {
+    return (
+      <div className="row">
+        <div className="col-md-1"></div>
+        <div className="col-md-5">{this.props.account.code} - {this.props.account.name}</div>
+        {this.props.account.leftNormalSide ? (
+            <div className="col-md-4 text-right">{this.state.balance}</div>
+          ) : (
+            <div className="col-md-6 text-right">{this.state.balance}</div>
+          )
+        }
+        {this.props.account.leftNormalSide &&
+          <div className="col-md-2"></div>
+        }
+      </div>
+    );
+  }
+});
+
+var IncomeStatementTable = React.createClass({
+  formatBalance: function(number) {
+    //This is used to format the initial balance as a number
+    var formattedBalance = number;
+    if (!(/^(\d+\.\d\d)$/.test(formattedBalance))) {
+      //number needs formatting
+      formattedBalance = formattedBalance.toFixed(2);
+    }
+    //Add commas to thousands place i.e. 1000000.00 = 1,000,000.00
+    var parts = formattedBalance.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    formattedBalance = parts.join(".");
+
+    if (formattedBalance.charAt(0) === '-') {
+      formattedBalance = "($" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
+    } else {
+      formattedBalance = "$" + formattedBalance;
+    }
+
+    return formattedBalance;
+  },
+  render: function() {
+    var self = this;
+    var assets = [];
+    var liabilities = [];
+    var ownersEquity = [];
+    var revenues = [];
+    var expenses = [];
+    var leftSideBalanceTotal = 0;
+    var rightSideBalanceTotal = 0;
+    var totalIncome = 0;
+    this.props.accounts.forEach(function(account) {
+      if (account.type === "Operating Expenses") {
+        leftSideBalanceTotal += account.balance;
+      } else if(account.type === "Revenues"){
+        rightSideBalanceTotal += account.balance;
+      }
+
+      //don't show accounts that don't have a balance
+      if (account.balance === 0) {
+        return;
+      }
+
+      if (account.type === "Revenues")   {
+        revenues.push(<IncomeStatementAccount account={account} key={account.publicId} />);
+      } else if (account.type === "Operating Expenses")   {
+        expenses.push(<IncomeStatementAccount account={account} key={account.publicId} />);
+      } else {
+        //do nothing
+      }
+
+      totalIncome = rightSideBalanceTotal - leftSideBalanceTotal;
+
+    });
+
+    return (
+      <div className="well well-lg">
+        <div className="col-md-8">Accounts</div>
+        <div className="col-md-2 text-right">Debit</div>
+        <div className="col-md-2 text-right">Credit</div>
+        {expenses.length > 0 &&
+        <div className="row">
+          <hr/>
+          <div className="col-md-12"><b>Expenses</b></div>
+          <hr/>
+        </div>
+        }
+        {expenses}
+        <hr/>
+        <hr/>
+        <div className="row text-primary">
+          <div className="col-md-8 text-right">Total Expenses:</div>
+          <div className="col-md-2 text-right">{this.formatBalance(leftSideBalanceTotal)}</div>
+        </div>
+
+        {revenues.length > 0 &&
+          <div className="row">
+            <hr/>
+            <div className="col-md-12"><b>Revenues</b></div>
+            <hr/>
+          </div>
+        }
+        {revenues}
+        <hr/>
+        <hr/>
+        <div className="row text-primary">
+          <div className="col-md-8 text-right">Total Revenues:</div>
+          <div className="col-md-2 text-right"></div>
+          <div className="col-md-2 text-right">{this.formatBalance(rightSideBalanceTotal)}</div>
+        </div>
+
+        <hr/>
+        <hr/>
+        <div className="row text-primary">
+          <div className="col-md-8 text-right">Net Income(Loss):</div>
+          <div className="col-md-2 text-right"></div>
+          <div className="col-md-2 text-right">{this.formatBalance(totalIncome)}</div>
+        </div>
+      </div>
+    );
+  }
+});
+
+var IncomeStatement = React.createClass({
+  getInitialState: function() {
+    return {
+      accounts: []
+    };
+  },
+  componentDidMount: function () {
+    this.loadAccountsFromServer();
+  },
+  loadAccountsFromServer: function() {
+    var self = this;
+      $.ajax({
+      url: "http://localhost:8080/api/accounts"
+    }).then(function (data) {
+      self.setState({accounts: data._embedded.accounts});
+    });
+  },
+  render: function () {
+    return (
+      <div className="container">
+      <h1>Trial Balance</h1>
+      <IncomeStatementTable accounts={this.state.accounts} />
+      </div>
+    );
+  }
+});
+
+if (document.getElementById('IncomeStatement') != null) {
+  ReactDOM.render(<IncomeStatement />, document.getElementById('IncomeStatement'));
+}
+
 
 /*TODO:ctn Eventually will want to convert this code (as well as the login/signup page) to utilize REACT */
 /*TODO:ctn some code is repeated... This should be cleaned up */
