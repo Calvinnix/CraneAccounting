@@ -29,16 +29,22 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav">
                     <li th:class="${selectedTab} == 'home' ? 'active' : ''"><a href="/"><span class="glyphicon glyphicon-home" aria-hidden="true"></span></a></li>
-                    <li th:class="${selectedTab} == 'admin' ? 'active' : ''" sec:authorize="hasRole('ROLE_ADMIN')"><a href="/admin">Admin</a></li>
-                    <li sec:authorize="hasRole('ROLE_ADMIN')"><a href="/console">Console</a></li>
-                    <li th:class="${selectedTab} == 'events' ? 'active' : ''" sec:authorize="hasRole('ROLE_ADMIN')"><a href="/events">Event Log</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li th:class="${selectedTab} == 'admin' ? 'active' : ''" sec:authorize="hasRole('ROLE_ADMIN')"><a href="/admin">Users</a></li>
+                            <li sec:authorize="hasRole('ROLE_ADMIN')"><a href="/console">Console</a></li>
+                            <li th:class="${selectedTab} == 'events' ? 'active' : ''" sec:authorize="hasRole('ROLE_ADMIN')"><a href="/events">Event Log</a></li>
+                            <li sec:authorize="hasRole('ROLE_ADMIN')" th:class="${selectedTab} == 'chartOfAccounts' ? 'active' : ''"><a href="/chartOfAccounts">Chart of Accounts</a></li>
+                        </ul>
+                    </li>
                     <li th:class="${selectedTab} == 'accounts' ? 'active' : ''"><a href="/accounts">Accounts</a></li>
-                    <li sec:authorize="hasRole('ROLE_ADMIN')" th:class="${selectedTab} == 'chartOfAccounts' ? 'active' : ''"><a href="/chartOfAccounts">Chart of Accounts</a></li>
                     <li th:class="${selectedTab} == 'journals' ? 'active' : ''"><a href="/journals">Journals</a></li>
                     <li th:class="${selectedTab} == 'postJournals' ? 'active' : ''" sec:authorize="hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')"><a href="/postJournals">Post Journals</a></li>
                     <li th:class="${selectedTab} == 'ledger' ? 'active' : ''"><a href="/ledger">Ledger</a></li>
                     <li th:class="${selectedTab} == 'trialBalance' ? 'active' : ''"><a href="/trialBalance">Trial Balance</a></li>
                     <li th:class="${selectedTab} == 'balanceSheet' ? 'active' : ''"><a href="/balanceSheet">Balance Sheet</a></li>
+                    <li th:class="${selectedTab} == 'incomeStatement' ? 'active' : ''"><a href="/incomeState">Income Statement</a></li>
 
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
