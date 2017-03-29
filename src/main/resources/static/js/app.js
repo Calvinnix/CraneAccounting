@@ -3088,8 +3088,8 @@ var IncomeStatementTable = React.createClass({
     return (
       <div className="well well-lg">
         <div className="col-md-8">Accounts</div>
-        <div className="col-md-2 text-right">Debit</div>
-        <div className="col-md-2 text-right">Credit</div>
+        <div className="col-md-2 text-right">Revenues</div>
+        <div className="col-md-2 text-right">Expenses</div>
         {expenses.length > 0 &&
         <div className="row">
           <hr/>
@@ -3153,7 +3153,7 @@ var IncomeStatement = React.createClass({
   render: function () {
     return (
       <div className="container">
-      <h1>Trial Balance</h1>
+      <h1>Income Statement</h1>
       <IncomeStatementTable accounts={this.state.accounts} />
       </div>
     );
