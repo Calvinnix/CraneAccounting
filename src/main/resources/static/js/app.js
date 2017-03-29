@@ -2801,6 +2801,186 @@ if (document.getElementById('TrialBalance') != null) {
   ReactDOM.render(<TrialBalance />, document.getElementById('TrialBalance'));
 }
 
+var balanceSheet = React.createClass({
+  getInitialState: function() {
+    return {
+      balance: -1
+    };
+  },
+  componentDidMount: function () {
+    this.formatBalance();
+  },
+  formatBalance: function() {
+    //This is used to format the initial balance as a number
+    var formattedBalance = this.props.account.balance;
+    if (!(/^(\d+\.\d\d)$/.test(formattedBalance))) {
+      //number needs formatting
+      formattedBalance = formattedBalance.toFixed(2);
+    }
+    //Add commas to thousands place i.e. 1000000.00 = 1,000,000.00
+    var parts = formattedBalance.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    formattedBalance = parts.join(".");
+
+    if (formattedBalance.charAt(0) === '-') {
+      formattedBalance = "($" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
+    } else {
+      formattedBalance = "$" + formattedBalance;
+    }
+
+    this.setState({
+      balance: formattedBalance
+    });
+  },
+  render: function () {
+    return (
+      <div className="row">
+        <div className="col-md-1"></div>
+        <div className="col-md-5">{this.props.account.code} - {this.props.account.name}</div>
+        {this.props.account.leftNormalSide ? (
+            <div className="col-md-4 text-right">{this.state.balance}</div>
+          ) : (
+            <div className="col-md-6 text-right">{this.state.balance}</div>
+          )
+        }
+        {this.props.account.leftNormalSide &&
+          <div className="col-md-2"></div>
+        }
+      </div>
+    );
+  }
+});
+
+var BalanceSheetTable = React.createClass({
+  formatBalance: function(number) {
+    //This is used to format the initial balance as a number
+    var formattedBalance = number;
+    if (!(/^(\d+\.\d\d)$/.test(formattedBalance))) {
+      //number needs formatting
+      formattedBalance = formattedBalance.toFixed(2);
+    }
+    //Add commas to thousands place i.e. 1000000.00 = 1,000,000.00
+    var parts = formattedBalance.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    formattedBalance = parts.join(".");
+
+    if (formattedBalance.charAt(0) === '-') {
+      formattedBalance = "($" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
+    } else {
+      formattedBalance = "$" + formattedBalance;
+    }
+
+    return formattedBalance;
+  },
+  render: function() {
+    var self = this;
+    var assets = [];
+    var liabilities = [];
+    var ownersEquity = [];
+    var revenues = [];
+    var expenses = [];
+    var leftSideBalanceTotal = 0;
+    var rightSideBalanceTotal = 0;
+    var ownEquity = 0;
+    var liability = 0;
+    this.props.accounts.forEach(function(account) {
+      if (account.leftNormalSide) {
+        leftSideBalanceTotal += account.balance;
+      }else{
+        rightSideBalanceTotal += account.balance;
+      }
+
+      //don't show accounts that don't have a balance
+      if (account.balance === 0) {
+        return;
+      }
+
+      if (account.type === "Asset") {
+        assets.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+      } else if (account.type === "Liabilities")   {
+        liabilities.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+      } else if (account.type === "Owner's Equity")   {
+        ownersEquity.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+      }else {
+        //do nothing
+      }
+
+    });
+
+    return (
+      <div className="well well-lg">
+        <div className="col-md-8">Account</div>
+        <div className="col-md-2 text-right"></div>
+        <div className="col-md-2 text-right"></div>
+        {assets.length > 0 &&
+          <div className="row">
+            <hr/>
+            <div className="col-md-12"><b>Assets</b></div>
+            <hr/>
+          </div>
+        }
+        {assets}
+
+        {liabilities.length > 0 &&
+        <div className="row">
+          <hr/>
+          <div className="col-md-12"><b>Liabilities</b></div>
+          <hr/>
+        </div>
+        }
+        {liabilities}
+
+        {ownersEquity.length > 0 &&
+        <div className="row">
+          <hr/>
+          <div className="col-md-12"><b>Owner's Equity</b></div>
+          <hr/>
+        </div>
+        }
+        {ownersEquity}
+
+        <hr/>
+        <hr/>
+        <div className="row text-primary">
+          <div className="col-md-8 text-right">Total:</div>
+          <div className="col-md-2 text-right">{this.formatBalance(leftSideBalanceTotal)}</div>
+          <div className="col-md-2 text-right">{this.formatBalance(rightSideBalanceTotal)}</div>
+        </div>
+      </div>
+    );
+  }
+});
+
+var BalanceSheet = React.createClass({
+  getInitialState: function() {
+    return {
+      accounts: []
+    };
+  },
+  componentDidMount: function () {
+    this.loadAccountsFromServer();
+  },
+  loadAccountsFromServer: function() {
+    var self = this;
+      $.ajax({
+      url: "http://localhost:8080/api/accounts"
+    }).then(function (data) {
+      self.setState({accounts: data._embedded.accounts});
+    });
+  },
+  render: function () {
+    return (
+      <div className="container">
+      <h1>Balance Sheet</h1>
+      <BalanceSheetTable accounts={this.state.accounts} />
+      </div>
+    );
+  }
+});
+
+if (document.getElementById('balanceSheet') != null) {
+  ReactDOM.render(<BalanceSheet />, document.getElementById('balanceSheet'));
+}
 
 /*TODO:ctn Eventually will want to convert this code (as well as the login/signup page) to utilize REACT */
 /*TODO:ctn some code is repeated... This should be cleaned up */
