@@ -197,6 +197,7 @@ public class DatabaseLoader implements CommandLineRunner {
         this.chartOfAccountsDao.save(new ChartOfAccounts(553.0, "Loss on Sale/Exchange of Equipment", "Operating Expenses", true, priority++, "Other Expenses"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(554.0, "Loss on Bonds Redeemed", "Operating Expenses", true, priority++, "Other Expenses"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(555.0, "Income Tax Expense", "Operating Expenses", true, priority++, "Other Expenses"));
+        this.chartOfAccountsDao.save(new ChartOfAccounts(560.0, "Dividends Declared", "Operating Expenses", true, priority++, "Other Expenses"));
 
         Account Temp = new Account(chartOfAccountsDao.findByName("Cash").getCode(), chartOfAccountsDao.findByName("Cash").getName(),chartOfAccountsDao.findByName("Cash").getType(), chartOfAccountsDao.findByName("Cash").getLeftNormalSide(), 0.00, chartOfAccountsDao.findByName("Cash").getPriority(), userDao.findByUsername("cnix"),"4/03/2017", true, chartOfAccountsDao.findByName("Cash").getmGroup(), "");
         accountDao.save(Temp);
@@ -238,7 +239,9 @@ public class DatabaseLoader implements CommandLineRunner {
         accountDao.save(Temp18);
         Account Temp19 = new Account(chartOfAccountsDao.findByName("Contributed Capital").getCode(), chartOfAccountsDao.findByName("Contributed Capital").getName(),chartOfAccountsDao.findByName("Contributed Capital").getType(), chartOfAccountsDao.findByName("Contributed Capital").getLeftNormalSide(), 0.0, chartOfAccountsDao.findByName("Contributed Capital").getPriority(), userDao.findByUsername("cnix"),"4/03/2017", true, chartOfAccountsDao.findByName("Contributed Capital").getmGroup(), "");
         accountDao.save(Temp19);
-        //Account Temp20 = new Account(chartOfAccountsDao.findByName("Dividends Declared").getCode(), chartOfAccountsDao.findByName("Dividends Declared").getName(),chartOfAccountsDao.findByName("Dividends Declared").getType(), chartOfAccountsDao.findByName("Dividends Declared").getLeftNormalSide(), 0.0, chartOfAccountsDao.findByName("Dividends Declared").getPriority(), userDao.findByUsername("cnix"),"4/03/2017", true, chartOfAccountsDao.findByName("Dividends Declared").getmGroup(), "");
-        //accountDao.save(Temp20);
+        Account Temp20 = new Account(chartOfAccountsDao.findByName("Dividends Declared").getCode(), chartOfAccountsDao.findByName("Dividends Declared").getName(),chartOfAccountsDao.findByName("Dividends Declared").getType(), chartOfAccountsDao.findByName("Dividends Declared").getLeftNormalSide(), 0.0, chartOfAccountsDao.findByName("Dividends Declared").getPriority(), userDao.findByUsername("cnix"),"4/03/2017", true, chartOfAccountsDao.findByName("Dividends Declared").getmGroup(), "");
+        accountDao.save(Temp20);
+        Account Temp21 = new Account(chartOfAccountsDao.findByName("Salaries Payable").getCode(), chartOfAccountsDao.findByName("Salaries Payable").getName(),chartOfAccountsDao.findByName("Salaries Payable").getType(), chartOfAccountsDao.findByName("Salaries Payable").getLeftNormalSide(), 0.0, chartOfAccountsDao.findByName("Salaries Payable").getPriority(), userDao.findByUsername("cnix"),"4/03/2017", true, chartOfAccountsDao.findByName("Salaries Payable").getmGroup(), "");
+        accountDao.save(Temp21);
     }
 }
