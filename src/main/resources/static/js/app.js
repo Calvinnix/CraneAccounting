@@ -2879,6 +2879,9 @@ var BalanceSheetTable = React.createClass({
     var ownersEquity = [];
     var leftSideBalanceTotal = 0;
     var rightSideBalanceTotal = 0;
+    var rev = 0;
+    var expenses = 0;
+    var totalIncome = 0;
     var ownEquity = 0;
     var liability = 0;
     this.props.accounts.forEach(function(account) {
@@ -2887,6 +2890,19 @@ var BalanceSheetTable = React.createClass({
       }else if(account.type === "Owner's Equity" || account.type === "Liabilities" ){
         rightSideBalanceTotal += account.balance;
       }
+
+
+      if(account.type === "Revenues"){
+        rev += account.balance;
+      } else if(account.type === "Operating Expenses")   {
+        expenses += account.balance;
+      } else {
+
+      }
+
+      /*if(account.name === "Retained Earnings"){
+        account.balance = totalIncome;
+      }*/
 
       //don't show accounts that don't have a balance
       if (account.balance === 0) {
@@ -2899,9 +2915,12 @@ var BalanceSheetTable = React.createClass({
         liabilities.push(<BalanceSheetAccount account={account} key={account.publicId} />);
       } else if (account.type === "Owner's Equity")   {
         ownersEquity.push(<BalanceSheetAccount account={account} key={account.publicId} />);
-      }else {
+      }
+      else {
         //do nothing
       }
+
+      totalIncome = rev - expenses;
 
     });
 
@@ -2936,13 +2955,18 @@ var BalanceSheetTable = React.createClass({
         </div>
         }
         {ownersEquity}
+        <div className="row">
+        <div className="col-md-1"></div>
+            <div className="col-md-5">325 - Retained Earnings</div>
+            <div className="col-md-6 text-right">{this.formatBalance(totalIncome)}</div>
+        </div>
 
         <hr/>
         <hr/>
         <div className="row text-primary">
           <div className="col-md-8 text-right">Total:</div>
           <div className="col-md-2 text-right">{this.formatBalance(leftSideBalanceTotal)}</div>
-          <div className="col-md-2 text-right">{this.formatBalance(rightSideBalanceTotal)}</div>
+          <div className="col-md-2 text-right">{this.formatBalance(rightSideBalanceTotal + totalIncome)}</div>
         </div>
       </div>
     );

@@ -1,13 +1,7 @@
 package com.crane.web;
 
-import com.crane.dao.AccountDao;
-import com.crane.dao.ChartOfAccountsDao;
-import com.crane.dao.UserDao;
-import com.crane.dao.RoleDao;
-import com.crane.model.Account;
-import com.crane.model.ChartOfAccounts;
-import com.crane.model.User;
-import com.crane.model.Role;
+import com.crane.dao.*;
+import com.crane.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -25,12 +19,14 @@ public class DatabaseLoader implements CommandLineRunner {
     private final AccountDao accountDao;
 
 
+
     @Autowired
-    public DatabaseLoader(UserDao userDao, RoleDao roleDao, ChartOfAccountsDao chartOfAccountsDao,AccountDao accountDao) {
+    public DatabaseLoader(UserDao userDao, RoleDao roleDao, ChartOfAccountsDao chartOfAccountsDao,AccountDao accountDao, JournalEntryDao journalEntryDao) {
         this.userDao = userDao;
         this.roleDao = roleDao;
         this.chartOfAccountsDao = chartOfAccountsDao;
         this.accountDao = accountDao;
+
     }
 
     @Override
@@ -68,7 +64,7 @@ public class DatabaseLoader implements CommandLineRunner {
         this.chartOfAccountsDao.save(new ChartOfAccounts(132.0, "Raw Materials", "Asset", true, priority++, "Inventories"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(133.0, "Work in Process", "Asset", true, priority++, "Inventories"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(134.0, "Finished Goods", "Asset", true, priority++, "Inventories"));
-        this.chartOfAccountsDao.save(new ChartOfAccounts(141.0, "Supplies (Specialty Items like Medical, Bicycle, Tailoring, etc.", "Asset", true, priority++, "Prepaid Items"));
+        this.chartOfAccountsDao.save(new ChartOfAccounts(141.0, "Supplies", "Asset", true, priority++, "Prepaid Items"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(142.0, "Office Supplies", "Asset", true, priority++, "Prepaid Items"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(144.0, "Food Supplies", "Asset", true, priority++, "Prepaid Items"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(145.0, "Prepaid Insurance", "Asset", true, priority++, "Prepaid Items"));
@@ -139,7 +135,7 @@ public class DatabaseLoader implements CommandLineRunner {
         this.chartOfAccountsDao.save(new ChartOfAccounts(330.0, "Contributed Capital", "Owner's Equity", false, priority++, "Owner's Equity"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(401.1, "Delivery Fees", "Revenues", false, priority++, "Operating Revenues"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(401.2, "Appraisal Fees", "Revenues", false, priority++, "Operating Revenues"));
-        this.chartOfAccountsDao.save(new ChartOfAccounts(401.3, "Service Fees", "Revenues", false, priority++, "Operating Revenues"));
+        this.chartOfAccountsDao.save(new ChartOfAccounts(401.3, "Service Revenue", "Revenues", false, priority++, "Operating Revenues"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(401.4, "Repair Fees", "Revenues", false, priority++, "Operating Revenues"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(401.5, "Sales", "Revenues", false, priority++, "Operating Revenues"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(401.6, "Sales Returns and Allowances", "Revenues", false, priority++, "Operating Revenues"));
@@ -205,7 +201,7 @@ public class DatabaseLoader implements CommandLineRunner {
         accountDao.save(Temp1);
         Account Temp2 = new Account(chartOfAccountsDao.findByName("Prepaid Insurance").getCode(), chartOfAccountsDao.findByName("Prepaid Insurance").getName(),chartOfAccountsDao.findByName("Prepaid Insurance").getType(), chartOfAccountsDao.findByName("Prepaid Insurance").getLeftNormalSide(), 0.0, chartOfAccountsDao.findByName("Prepaid Insurance").getPriority(), userDao.findByUsername("cnix"),"4/03/2017", true, chartOfAccountsDao.findByName("Prepaid Insurance").getmGroup(), "");
         accountDao.save(Temp2);
-        Account Temp3 = new Account(chartOfAccountsDao.findByName("Supplies (Specialty Items like Medical, Bicycle, Tailoring, etc.").getCode(), chartOfAccountsDao.findByName("Supplies (Specialty Items like Medical, Bicycle, Tailoring, etc.").getName(),chartOfAccountsDao.findByName("Supplies (Specialty Items like Medical, Bicycle, Tailoring, etc.").getType(), chartOfAccountsDao.findByName("Supplies (Specialty Items like Medical, Bicycle, Tailoring, etc.").getLeftNormalSide(), 0.0, chartOfAccountsDao.findByName("Supplies (Specialty Items like Medical, Bicycle, Tailoring, etc.").getPriority(), userDao.findByUsername("cnix"),"4/03/2017", true, chartOfAccountsDao.findByName("Supplies (Specialty Items like Medical, Bicycle, Tailoring, etc.").getmGroup(), "");
+        Account Temp3 = new Account(chartOfAccountsDao.findByName("Supplies").getCode(), chartOfAccountsDao.findByName("Supplies").getName(),chartOfAccountsDao.findByName("Supplies").getType(), chartOfAccountsDao.findByName("Supplies").getLeftNormalSide(), 0.0, chartOfAccountsDao.findByName("Supplies").getPriority(), userDao.findByUsername("cnix"),"4/03/2017", true, chartOfAccountsDao.findByName("Supplies").getmGroup(), "");
         accountDao.save(Temp3);
         Account Temp4 = new Account(chartOfAccountsDao.findByName("Accumulated Depreciation-Office Equipment(Also Store Equipment)").getCode(), chartOfAccountsDao.findByName("Accumulated Depreciation-Office Equipment(Also Store Equipment)").getName(),chartOfAccountsDao.findByName("Accumulated Depreciation-Office Equipment(Also Store Equipment)").getType(), chartOfAccountsDao.findByName("Accumulated Depreciation-Office Equipment(Also Store Equipment)").getLeftNormalSide(), 0.0, chartOfAccountsDao.findByName("Accumulated Depreciation-Office Equipment(Also Store Equipment)").getPriority(), userDao.findByUsername("cnix"),"4/03/2017", true, chartOfAccountsDao.findByName("Accumulated Depreciation-Office Equipment(Also Store Equipment)").getmGroup(), "");
         accountDao.save(Temp4);
@@ -219,7 +215,7 @@ public class DatabaseLoader implements CommandLineRunner {
         accountDao.save(Temp8);
         Account Temp9 = new Account(chartOfAccountsDao.findByName("Retained Earnings").getCode(), chartOfAccountsDao.findByName("Retained Earnings").getName(),chartOfAccountsDao.findByName("Retained Earnings").getType(), chartOfAccountsDao.findByName("Retained Earnings").getLeftNormalSide(), 0.0, chartOfAccountsDao.findByName("Retained Earnings").getPriority(), userDao.findByUsername("cnix"),"4/03/2017", true, chartOfAccountsDao.findByName("Retained Earnings").getmGroup(), "");
         accountDao.save(Temp9);
-        Account Temp10 = new Account(chartOfAccountsDao.findByName("Service Fees").getCode(), chartOfAccountsDao.findByName("Service Fees").getName(),chartOfAccountsDao.findByName("Service Fees").getType(), chartOfAccountsDao.findByName("Service Fees").getLeftNormalSide(), 0.0, chartOfAccountsDao.findByName("Service Fees").getPriority(), userDao.findByUsername("cnix"),"4/03/2017", true, chartOfAccountsDao.findByName("Service Fees").getmGroup(), "");
+        Account Temp10 = new Account(chartOfAccountsDao.findByName("Service Revenue").getCode(), chartOfAccountsDao.findByName("Service Revenue").getName(),chartOfAccountsDao.findByName("Service Revenue").getType(), chartOfAccountsDao.findByName("Service Revenue").getLeftNormalSide(), 0.0, chartOfAccountsDao.findByName("Service Revenue").getPriority(), userDao.findByUsername("cnix"),"4/03/2017", true, chartOfAccountsDao.findByName("Service Revenue").getmGroup(), "");
         accountDao.save(Temp10);
         Account Temp11 = new Account(chartOfAccountsDao.findByName("Depreciation Expense-Store Equipment and Fixtures").getCode(), chartOfAccountsDao.findByName("Depreciation Expense-Store Equipment and Fixtures").getName(),chartOfAccountsDao.findByName("Depreciation Expense-Store Equipment and Fixtures").getType(), chartOfAccountsDao.findByName("Depreciation Expense-Store Equipment and Fixtures").getLeftNormalSide(), 0.0, chartOfAccountsDao.findByName("Depreciation Expense-Store Equipment and Fixtures").getPriority(), userDao.findByUsername("cnix"),"4/03/2017", true, chartOfAccountsDao.findByName("Depreciation Expense-Store Equipment and Fixtures").getmGroup(), "");
         accountDao.save(Temp11);
