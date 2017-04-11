@@ -2677,6 +2677,7 @@ var TrialBalanceTable = React.createClass({
     var assets = [];
     var liabilities = [];
     var ownersEquity = [];
+    var dividends = [];
     var revenues = [];
     var expenses = [];
     var leftSideBalanceTotal = 0;
@@ -2703,7 +2704,9 @@ var TrialBalanceTable = React.createClass({
         revenues.push(<TrialBalanceAccount account={account} key={account.publicId} />);
       } else if (account.type === "Operating Expenses")   {
         expenses.push(<TrialBalanceAccount account={account} key={account.publicId} />);
-      } else {
+      } else if (account.type === "Dividends")   {
+        dividends.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+      }else {
         //do nothing
       }
 
@@ -2731,6 +2734,15 @@ var TrialBalanceTable = React.createClass({
         </div>
         }
         {expenses}
+
+        {dividends.length > 0 &&
+        <div className="row">
+          <hr/>
+          <div className="col-md-12"><b>Dividends</b></div>
+          <hr/>
+        </div>
+        }
+        {dividends}
 
         {liabilities.length > 0 &&
         <div className="row">
@@ -2955,18 +2967,13 @@ var BalanceSheetTable = React.createClass({
         </div>
         }
         {ownersEquity}
-        <div className="row">
-        <div className="col-md-1"></div>
-            <div className="col-md-5">325 - Retained Earnings</div>
-            <div className="col-md-6 text-right">{this.formatBalance(totalIncome)}</div>
-        </div>
 
         <hr/>
         <hr/>
         <div className="row text-primary">
           <div className="col-md-8 text-right">Total:</div>
           <div className="col-md-2 text-right">{this.formatBalance(leftSideBalanceTotal)}</div>
-          <div className="col-md-2 text-right">{this.formatBalance(rightSideBalanceTotal + totalIncome)}</div>
+          <div className="col-md-2 text-right">{this.formatBalance(rightSideBalanceTotal)}</div>
         </div>
       </div>
     );
@@ -3110,6 +3117,8 @@ var IncomeStatementTable = React.createClass({
     });
 
     return (
+
+
       <div className="well well-lg">
         <div className="col-md-8">Accounts</div>
         <div className="col-md-2 text-right">Revenues</div>
@@ -3188,6 +3197,179 @@ if (document.getElementById('IncomeStatement') != null) {
   ReactDOM.render(<IncomeStatement />, document.getElementById('IncomeStatement'));
 }
 
+var StatementOfRetainedEarningsAccount = React.createClass({
+  getInitialState: function() {
+    return {
+      balance: -1
+    };
+  },
+  componentDidMount: function () {
+    this.formatBalance();
+  },
+  formatBalance: function() {
+    //This is used to format the initial balance as a number
+    var formattedBalance = this.props.account.balance;
+    if (!(/^(\d+\.\d\d)$/.test(formattedBalance))) {
+      //number needs formatting
+      formattedBalance = formattedBalance.toFixed(2);
+    }
+    //Add commas to thousands place i.e. 1000000.00 = 1,000,000.00
+    var parts = formattedBalance.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    formattedBalance = parts.join(".");
+
+    if (formattedBalance.charAt(0) === '-') {
+      formattedBalance = "($" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
+    } else {
+      formattedBalance = "$" + formattedBalance;
+    }
+
+    this.setState({
+      balance: formattedBalance
+    });
+  },
+  render: function () {
+    return (
+      <div className="row">
+        <div className="col-md-1"></div>
+        <div className="col-md-5">{this.props.account.code} - {this.props.account.name}</div>
+        {this.props.account.leftNormalSide ? (
+            <div className="col-md-4 text-right">{this.state.balance}</div>
+          ) : (
+            <div className="col-md-6 text-right">{this.state.balance}</div>
+          )
+        }
+        {this.props.account.leftNormalSide &&
+          <div className="col-md-2"></div>
+        }
+      </div>
+    );
+  }
+});
+
+var StatementOfRetainedEarningsTable = React.createClass({
+  formatBalance: function(number) {
+    //This is used to format the initial balance as a number
+    var formattedBalance = number;
+    if (!(/^(\d+\.\d\d)$/.test(formattedBalance))) {
+      //number needs formatting
+      formattedBalance = formattedBalance.toFixed(2);
+    }
+    //Add commas to thousands place i.e. 1000000.00 = 1,000,000.00
+    var parts = formattedBalance.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    formattedBalance = parts.join(".");
+
+    if (formattedBalance.charAt(0) === '-') {
+      formattedBalance = "($" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
+    } else {
+      formattedBalance = "$" + formattedBalance;
+    }
+
+    return formattedBalance;
+  },
+  render: function() {
+    var self = this;
+    var assets = [];
+    var liabilities = [];
+    var ownersEquity = [];
+    var revenues = [];
+    var expenses = [];
+    var dividends = [];
+    var leftSideBalanceTotal = 0;
+    var rightSideBalanceTotal = 0;
+    var expend = 0;
+    var totalIncome = 0;
+    this.props.accounts.forEach(function(account) {
+      if (account.type === "Dividends") {
+        leftSideBalanceTotal += account.balance;
+      } else if(account.name === "Retained Earnings"){
+        rightSideBalanceTotal += account.balance;
+      }
+
+      //don't show accounts that don't have a balance
+      if (account.balance === 0) {
+        return;
+      }
+
+      if (account.name === "Retained Earnings")   {
+        ownersEquity.push(<StatementOfRetainedEarningsAccount account={account} key={account.publicId} />);
+      } else if (account.type === "Dividends")   {
+        dividends.push(<StatementOfRetainedEarningsAccount account={account} key={account.publicId} />);
+      } else {
+        //do nothing
+      }
+
+      totalIncome = rightSideBalanceTotal - leftSideBalanceTotal;
+
+
+    });
+
+    return (
+      <div className="well well-lg">
+        <div className="col-md-8">Accounts</div>
+        <div className="col-md-2 text-right">Revenues</div>
+        <div className="col-md-2 text-right">Expenses</div>
+        {dividends.length > 0 &&
+        <div className="row">
+          <hr/>
+          <div className="col-md-12"><b>Dividends</b></div>
+          <hr/>
+        </div>
+        }
+        {dividends}
+
+        {ownersEquity.length > 0 &&
+          <div className="row">
+            <hr/>
+            <div className="col-md-12"><b>Owners Equity</b></div>
+            <hr/>
+          </div>
+        }
+        {ownersEquity}
+
+        <hr/>
+        <hr/>
+        <div className="row text-primary">
+          <div className="col-md-8 text-right">End Retained Earnings:</div>
+          <div className="col-md-2 text-right"></div>
+          <div className="col-md-2 text-right">{this.formatBalance(totalIncome)}</div>
+        </div>
+      </div>
+    );
+  }
+});
+
+var StatementOfRetainedEarnings = React.createClass({
+  getInitialState: function() {
+    return {
+      accounts: []
+    };
+  },
+  componentDidMount: function () {
+    this.loadAccountsFromServer();
+  },
+  loadAccountsFromServer: function() {
+    var self = this;
+      $.ajax({
+      url: "http://localhost:8080/api/accounts"
+    }).then(function (data) {
+      self.setState({accounts: data._embedded.accounts});
+    });
+  },
+  render: function () {
+    return (
+      <div className="container">
+      <h1>Statement of Retained Earnings</h1>
+      <StatementOfRetainedEarningsTable accounts={this.state.accounts} />
+      </div>
+    );
+  }
+});
+
+if (document.getElementById('StatementOfRetainedEarnings') != null) {
+  ReactDOM.render(<StatementOfRetainedEarnings />, document.getElementById('StatementOfRetainedEarnings'));
+}
 
 /*TODO:ctn Eventually will want to convert this code (as well as the login/signup page) to utilize REACT */
 /*TODO:ctn some code is repeated... This should be cleaned up */

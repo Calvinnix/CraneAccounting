@@ -21,7 +21,7 @@ public class DatabaseLoader implements CommandLineRunner {
 
 
     @Autowired
-    public DatabaseLoader(UserDao userDao, RoleDao roleDao, ChartOfAccountsDao chartOfAccountsDao,AccountDao accountDao, JournalEntryDao journalEntryDao) {
+    public DatabaseLoader(UserDao userDao, RoleDao roleDao, ChartOfAccountsDao chartOfAccountsDao,AccountDao accountDao) {
         this.userDao = userDao;
         this.roleDao = roleDao;
         this.chartOfAccountsDao = chartOfAccountsDao;
@@ -163,7 +163,7 @@ public class DatabaseLoader implements CommandLineRunner {
         this.chartOfAccountsDao.save(new ChartOfAccounts(516.0, "Cash Short and Over", "Operating Expenses", true, priority++, "Selling Expenses"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(519.0, "Depreciation Expense-Store Equipment and Fixtures", "Operating Expenses", true, priority++, "Selling Expenses"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(521.0, "Rent Expense", "Operating Expenses", true, priority++, "General And Administrative Expenses"));
-        this.chartOfAccountsDao.save(new ChartOfAccounts(522.0, "Office Salaries Expense", "Operating Expenses", true, priority++, "General And Administrative Expenses"));
+        this.chartOfAccountsDao.save(new ChartOfAccounts(522.0, "Salaries Expense", "Operating Expenses", true, priority++, "General And Administrative Expenses"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(523.0, "Office Supplies Expenses (Also Medial)", "Operating Expenses", true, priority++, "General And Administrative Expenses"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(524.0, "Other Supplies: Food Supplies Expense (Also Laboratory, Travel)", "Operating Expenses", true, priority++, "General And Administrative Expenses"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(525.0, "Telephone Expense", "Operating Expenses", true, priority++, "General And Administrative Expenses"));
@@ -174,7 +174,7 @@ public class DatabaseLoader implements CommandLineRunner {
         this.chartOfAccountsDao.save(new ChartOfAccounts(530.0, "Payroll Taxes Expense", "Operating Expenses", true, priority++, "General And Administrative Expenses"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(531.0, "Workers' Compensation Insurance Expense", "Operating Expenses", true, priority++, "General And Administrative Expenses"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(532.0, "Bad Debt Expense", "Operating Expenses", true, priority++, "General And Administrative Expenses"));
-        this.chartOfAccountsDao.save(new ChartOfAccounts(533.0, "Electricity Expense, Utilities Expense", "Operating Expenses", true, priority++, "General And Administrative Expenses"));
+        this.chartOfAccountsDao.save(new ChartOfAccounts(533.0, "Utilities Expense", "Operating Expenses", true, priority++, "General And Administrative Expenses"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(534.0, "Charitable Contributions Expense", "Operating Expenses", true, priority++, "General And Administrative Expenses"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(535.0, "Insurance Expense", "Operating Expenses", true, priority++, "General And Administrative Expenses"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(536.0, "Postage Expense", "Operating Expenses", true, priority++, "General And Administrative Expenses"));
@@ -193,7 +193,7 @@ public class DatabaseLoader implements CommandLineRunner {
         this.chartOfAccountsDao.save(new ChartOfAccounts(553.0, "Loss on Sale/Exchange of Equipment", "Operating Expenses", true, priority++, "Other Expenses"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(554.0, "Loss on Bonds Redeemed", "Operating Expenses", true, priority++, "Other Expenses"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(555.0, "Income Tax Expense", "Operating Expenses", true, priority++, "Other Expenses"));
-        this.chartOfAccountsDao.save(new ChartOfAccounts(560.0, "Dividends Declared", "Operating Expenses", true, priority++, "Other Expenses"));
+        this.chartOfAccountsDao.save(new ChartOfAccounts(560.0, "Dividends Declared", "Dividends", true, priority++, "Dividends"));
 
         Account Temp = new Account(chartOfAccountsDao.findByName("Cash").getCode(), chartOfAccountsDao.findByName("Cash").getName(),chartOfAccountsDao.findByName("Cash").getType(), chartOfAccountsDao.findByName("Cash").getLeftNormalSide(), 0.00, chartOfAccountsDao.findByName("Cash").getPriority(), userDao.findByUsername("cnix"),"4/03/2017", true, chartOfAccountsDao.findByName("Cash").getmGroup(), "");
         accountDao.save(Temp);
@@ -221,11 +221,11 @@ public class DatabaseLoader implements CommandLineRunner {
         accountDao.save(Temp11);
         Account Temp12 = new Account(chartOfAccountsDao.findByName("Rent Expense").getCode(), chartOfAccountsDao.findByName("Rent Expense").getName(),chartOfAccountsDao.findByName("Rent Expense").getType(), chartOfAccountsDao.findByName("Rent Expense").getLeftNormalSide(), 0.0, chartOfAccountsDao.findByName("Rent Expense").getPriority(), userDao.findByUsername("cnix"),"4/03/2017", true, chartOfAccountsDao.findByName("Rent Expense").getmGroup(), "");
         accountDao.save(Temp12);
-        Account Temp13 = new Account(chartOfAccountsDao.findByName("Office Salaries Expense").getCode(), chartOfAccountsDao.findByName("Office Salaries Expense").getName(),chartOfAccountsDao.findByName("Office Salaries Expense").getType(), chartOfAccountsDao.findByName("Office Salaries Expense").getLeftNormalSide(), 0.0, chartOfAccountsDao.findByName("Office Salaries Expense").getPriority(), userDao.findByUsername("cnix"),"4/03/2017", true, chartOfAccountsDao.findByName("Office Salaries Expense").getmGroup(), "");
+        Account Temp13 = new Account(chartOfAccountsDao.findByName("Salaries Expense").getCode(), chartOfAccountsDao.findByName("Salaries Expense").getName(),chartOfAccountsDao.findByName("Salaries Expense").getType(), chartOfAccountsDao.findByName("Salaries Expense").getLeftNormalSide(), 0.0, chartOfAccountsDao.findByName("Salaries Expense").getPriority(), userDao.findByUsername("cnix"),"4/03/2017", true, chartOfAccountsDao.findByName("Salaries Expense").getmGroup(), "");
         accountDao.save(Temp13);
         Account Temp14 = new Account(chartOfAccountsDao.findByName("Telephone Expense").getCode(), chartOfAccountsDao.findByName("Telephone Expense").getName(),chartOfAccountsDao.findByName("Telephone Expense").getType(), chartOfAccountsDao.findByName("Telephone Expense").getLeftNormalSide(), 0.0, chartOfAccountsDao.findByName("Telephone Expense").getPriority(), userDao.findByUsername("cnix"),"4/03/2017", true, chartOfAccountsDao.findByName("Telephone Expense").getmGroup(), "");
         accountDao.save(Temp14);
-        Account Temp15 = new Account(chartOfAccountsDao.findByName("Electricity Expense, Utilities Expense").getCode(), chartOfAccountsDao.findByName("Electricity Expense, Utilities Expense").getName(),chartOfAccountsDao.findByName("Electricity Expense, Utilities Expense").getType(), chartOfAccountsDao.findByName("Electricity Expense, Utilities Expense").getLeftNormalSide(), 0.0, chartOfAccountsDao.findByName("Electricity Expense, Utilities Expense").getPriority(), userDao.findByUsername("cnix"),"4/03/2017", true, chartOfAccountsDao.findByName("Electricity Expense, Utilities Expense").getmGroup(), "");
+        Account Temp15 = new Account(chartOfAccountsDao.findByName("Utilities Expense").getCode(), chartOfAccountsDao.findByName("Utilities Expense").getName(),chartOfAccountsDao.findByName("Utilities Expense").getType(), chartOfAccountsDao.findByName("Utilities Expense").getLeftNormalSide(), 0.0, chartOfAccountsDao.findByName("Utilities Expense").getPriority(), userDao.findByUsername("cnix"),"4/03/2017", true, chartOfAccountsDao.findByName("Utilities Expense").getmGroup(), "");
         accountDao.save(Temp15);
         Account Temp16 = new Account(chartOfAccountsDao.findByName("Advertising Expense").getCode(), chartOfAccountsDao.findByName("Advertising Expense").getName(),chartOfAccountsDao.findByName("Advertising Expense").getType(), chartOfAccountsDao.findByName("Advertising Expense").getLeftNormalSide(), 0.0, chartOfAccountsDao.findByName("Advertising Expense").getPriority(), userDao.findByUsername("cnix"),"4/03/2017", true, chartOfAccountsDao.findByName("Advertising Expense").getmGroup(), "");
         accountDao.save(Temp16);

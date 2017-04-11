@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head(title='Statement of Returned Earnings')"></head>
+<body>
+<div th:replace="layout :: nav(selectedTab='statementOfRetainedEarnings')"></div>
+<div id="StatementOfRetainedEarnings">
+    <block th:replace="layout :: loading"></block>
+</div>
+<block th:replace="layout :: script"></block>
+</body>
+</html>

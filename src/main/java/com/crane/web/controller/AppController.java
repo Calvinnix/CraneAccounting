@@ -140,6 +140,13 @@ public class AppController {
         return "incomeStatement";
     }
 
+    @RequestMapping(value = "/statementOfRetainedEarnings")
+    public String stamentOfRetainedEarnings() {
+        logger.info(" --- RequestMapping from /trialBalance");
+        logger.info(" --- Mapping to /trialBalance");
+        return "statementOfRetainedEarnings";
+    }
+
     @RequestMapping(value = "/admin/addUser", method = RequestMethod.POST)
     public String addUser(HttpServletRequest request) {
         logger.info(" --- RequestMapping from /admin/addUser");
