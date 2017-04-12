@@ -2771,7 +2771,7 @@ var TrialBalanceTable = React.createClass({
         }
         {revenues}
         <hr/>
-        <hr/>
+        <hr className="bar-balance"/>
         <div className="row text-primary">
           <div className="col-md-8 text-right">Total:</div>
           <div className="col-md-2 text-right">{this.formatBalance(leftSideBalanceTotal)}</div>
@@ -2969,7 +2969,7 @@ var BalanceSheetTable = React.createClass({
         {ownersEquity}
 
         <hr/>
-        <hr/>
+        <hr className="bar-balance"/>
         <div className="row text-primary">
           <div className="col-md-8 text-right">Total:</div>
           <div className="col-md-2 text-right">{this.formatBalance(leftSideBalanceTotal)}</div>
@@ -3121,8 +3121,8 @@ var IncomeStatementTable = React.createClass({
 
       <div className="well well-lg">
         <div className="col-md-8">Accounts</div>
-        <div className="col-md-2 text-right">Revenues</div>
-        <div className="col-md-2 text-right">Expenses</div>
+        <div className="col-md-2 text-right"></div>
+        <div className="col-md-2 text-right">Balance</div>
         {expenses.length > 0 &&
         <div className="row">
           <hr/>
@@ -3131,12 +3131,6 @@ var IncomeStatementTable = React.createClass({
         </div>
         }
         {expenses}
-        <hr/>
-        <hr/>
-        <div className="row text-primary">
-          <div className="col-md-8 text-right">Total Expenses:</div>
-          <div className="col-md-2 text-right">{this.formatBalance(leftSideBalanceTotal)}</div>
-        </div>
 
         {revenues.length > 0 &&
           <div className="row">
@@ -3146,16 +3140,9 @@ var IncomeStatementTable = React.createClass({
           </div>
         }
         {revenues}
-        <hr/>
-        <hr/>
-        <div className="row text-primary">
-          <div className="col-md-8 text-right">Total Revenues:</div>
-          <div className="col-md-2 text-right"></div>
-          <div className="col-md-2 text-right">{this.formatBalance(rightSideBalanceTotal)}</div>
-        </div>
 
         <hr/>
-        <hr/>
+        <hr className="bar"/>
         <div className="row text-primary">
           <div className="col-md-8 text-right">Net Income(Loss):</div>
           <div className="col-md-2 text-right"></div>
@@ -3308,8 +3295,8 @@ var StatementOfRetainedEarningsTable = React.createClass({
     return (
       <div className="well well-lg">
         <div className="col-md-8">Accounts</div>
-        <div className="col-md-2 text-right">Revenues</div>
-        <div className="col-md-2 text-right">Expenses</div>
+        <div className="col-md-2 text-right"></div>
+        <div className="col-md-2 text-right"></div>
         {dividends.length > 0 &&
         <div className="row">
           <hr/>
@@ -3329,7 +3316,7 @@ var StatementOfRetainedEarningsTable = React.createClass({
         {ownersEquity}
 
         <hr/>
-        <hr/>
+        <hr className="bar"/>
         <div className="row text-primary">
           <div className="col-md-8 text-right">End Retained Earnings:</div>
           <div className="col-md-2 text-right"></div>
