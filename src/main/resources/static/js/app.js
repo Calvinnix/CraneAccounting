@@ -2540,6 +2540,12 @@ var Ledger = React.createClass({
             <LedgerTable className="Ledger" accountId={this.state.accountId} transactions={this.state.transactions}/>
           </div>
         </div>
+        <div className="container">
+          <div className="row">
+            <div className="col-md-2">Current Balance</div>
+            <div>{currentBalance}</div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -2800,9 +2806,20 @@ var TrialBalance = React.createClass({
     });
   },
   render: function () {
+
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth()+1; //January is 0!
+    var yyyy = today.getFullYear();
+
+    var date = document.getElementById("date");
+    today = mm+'/'+dd+'/'+yyyy;
+
     return (
       <div className="container">
-      <h1>Trial Balance</h1>
+      <h3>Crane Accounting</h3>
+      <h3>Trial Balance</h3>
+      <h3>{today}</h3>
       <TrialBalanceTable accounts={this.state.accounts} />
       </div>
     );
@@ -2998,9 +3015,21 @@ var BalanceSheet = React.createClass({
     });
   },
   render: function () {
+
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth()+1; //January is 0!
+    var yyyy = today.getFullYear();
+
+    var date = document.getElementById("date");
+    today = mm+'/'+dd+'/'+yyyy;
+
+
     return (
       <div className="container">
-      <h1>Balance Sheet</h1>
+      <h3>Crane Accounting</h3>
+      <h3>Balance Sheet</h3>
+      <h3 id="date">{today}</h3>
       <BalanceSheetTable accounts={this.state.accounts} />
       </div>
     );
@@ -3171,9 +3200,20 @@ var IncomeStatement = React.createClass({
     });
   },
   render: function () {
+
+      var today = new Date();
+      var dd = today.getDate();
+      var mm = today.getMonth()+1; //January is 0!
+      var yyyy = today.getFullYear();
+
+      var date = document.getElementById("date");
+      today = mm+'/'+dd+'/'+yyyy;
+
     return (
       <div className="container">
-      <h1>Income Statement</h1>
+      <h3>Crane Accounting</h3>
+      <h3>Income Statement</h3>
+      <h3>{today}</h3>
       <IncomeStatementTable accounts={this.state.accounts} />
       </div>
     );
@@ -3345,9 +3385,20 @@ var StatementOfRetainedEarnings = React.createClass({
     });
   },
   render: function () {
+
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth()+1; //January is 0!
+    var yyyy = today.getFullYear();
+
+    var date = document.getElementById("date");
+    today = mm+'/'+dd+'/'+yyyy;
+
     return (
       <div className="container">
-      <h1>Statement of Retained Earnings</h1>
+      <h3>Crane Accounting</h3>
+      <h3>Statement Of Retained Earnings</h3>
+      <h3>{today}</h3>
       <StatementOfRetainedEarningsTable accounts={this.state.accounts} />
       </div>
     );
