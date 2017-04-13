@@ -488,6 +488,7 @@ public class AppController {
             Double amount = currentAccount.getDouble("amount");
             String accountName = currentAccount.getString("accountName");
             Boolean isDebit = currentAccount.getBoolean("isDebit");
+            String journalID = request.getParameter("journalId");
             String transType;
 
             if(isDebit){
@@ -552,9 +553,9 @@ public class AppController {
             String transType;
 
             if(isDebit){
-                transType = "Debit";
+                transType = "Debited";
             }else{
-                transType = "Credit";
+                transType = "Credited";
             }
 
             Account accountFound = accountService.findAccountByName(accountName);
@@ -590,7 +591,7 @@ public class AppController {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String currentUser = auth.getName();
 
-            EventLog log = new EventLog(currentTime, currentUser, String.format("Post Journal Entry: %s  Before %s: $ %s | After %s: $ %s", accountName, transType, beginningBalance, transType, accountFound.getBalance()));
+            EventLog log = new EventLog(currentTime, currentUser, String.format("Post Journal Entry %s: %s  was %s and had a balance of $ %s . After it was %s it now has a balance of $ %s",strJournalId, accountName, transType, beginningBalance, transType, accountFound.getBalance()));
             eventLogService.save(log);
         }
 
@@ -650,7 +651,7 @@ public class AppController {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     String currentUser = auth.getName();
 
-    EventLog log = new EventLog(currentTime, currentUser, String.format("Reject Journal Entry: %s | Reason: %s", journalId, rejectionReason));
+    EventLog log = new EventLog(currentTime, currentUser, String.format("Rejected Journal Entry with ID of %s because %s", journalId, rejectionReason));
     eventLogService.save(log);
 
     logger.info(" --- Redirecting to /journals");
