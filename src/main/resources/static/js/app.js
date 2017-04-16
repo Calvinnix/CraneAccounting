@@ -2944,7 +2944,6 @@ var BalanceSheetTable = React.createClass({
       }
 
       totalIncome = rev - expenses;
-
     });
 
     return (
@@ -3337,12 +3336,12 @@ var StatementOfRetainedEarningsTable = React.createClass({
         </div>
         }
 
-        {Math.abs(leftSideBalanceTotal) > 0 &&
+        {Math.abs(rightSideBalanceTotal) > 0 &&
         <div className="row">
           <div className="col-md-1"></div>
           <div className="col-md-5 text-left">Current Net Income</div>
           <div className="col-md-4 text-right"></div>
-          <div className="col-md-2 text-right">{this.formatBalance(leftSideBalanceTotal)}</div>
+          <div className="col-md-2 text-right">{this.formatBalance(rightSideBalanceTotal)}</div>
         </div>
         }
 
@@ -3408,6 +3407,375 @@ var StatementOfRetainedEarnings = React.createClass({
 
 if (document.getElementById('StatementOfRetainedEarnings') != null) {
   ReactDOM.render(<StatementOfRetainedEarnings />, document.getElementById('StatementOfRetainedEarnings'));
+}
+
+var RatioAnalysisTable = React.createClass({
+  formatBalance: function(number) {
+    //This is used to format the initial balance as a number
+    var formattedBalance = number;
+    if (!(/^(\d+\.\d\d)$/.test(formattedBalance))) {
+      //number needs formatting
+      formattedBalance = formattedBalance.toFixed(2);
+    }
+    //Add commas to thousands place i.e. 1000000.00 = 1,000,000.00
+    var parts = formattedBalance.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    formattedBalance = parts.join(".");
+
+    if (formattedBalance.charAt(0) === '-') {
+      formattedBalance = "($" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
+    } else {
+      formattedBalance = "$" + formattedBalance;
+    }
+
+    return formattedBalance;
+  },
+  render: function() {
+    var self = this;
+    var assets = [];
+    var liabilities = [];
+    var ownersEquity = [];
+    var revenues = [];
+    var expenses = [];
+    var dividends = [];
+    var sales = 0;
+    var rightSideBalanceTotal = 0;
+    var leftSideBalanceTotal = 0;
+    var currentAssets = 0;
+    var currentLiabilities = 0;
+    var currentDepreciation = 0;
+    var commonEquity = 0;
+    var currentRatio = 0;
+    var receivables = 0;
+    var quickRatio = 0;
+    var fixedAsset = 0;
+    var totalIncome = 0;
+    var currentRetainedRevenues = 0;
+    var ebit = 0;
+    var invTurnover = 0;
+    var intExpense = 0;
+    var cogs = 0;
+    var dso = 0;
+    var fixedAssetRatio = 0;
+    var totalAsset = 0;
+    var debtRatio = 0;
+    var pm = 0;
+    var om = 0;
+    var gpm = 0;
+    var tie = 0;
+    var ec = 0;
+    var bep = 0;
+    var roa = 0;
+    var roe = 0;
+    var currentInventories = 0;
+    this.props.accounts.forEach(function(account) {
+
+      if (account.type === "Asset") {
+        currentAssets += account.balance;
+      }
+
+      if (account.type === "Asset" && account.name.includes("Accumulated Depreciation") === false) {
+        fixedAsset += account.balance;
+      }else if(account.name.includes("Accumulated Depreciation")){
+        fixedAsset -= account.balance;
+      }
+
+      if(account.type === "Liabilities"){
+        currentLiabilities += account.balance;
+      }
+
+      if(account.mGroup === "Inventories") {
+        currentInventories -= account.balance;
+      }
+
+      if(account.name === "Sales"){
+        sales += account.balance;
+      }
+
+      if(account.name === "Cost Of Goods Sold"){
+        cogs += account.balance;
+      }
+
+      if(account.type === "Owner's Equity"){
+        commonEquity += account.balance;
+      }
+
+      if (account.type === "Dividends") {
+        leftSideBalanceTotal += account.balance;
+      } else if(account.type === "Revenues"){
+        rightSideBalanceTotal += account.balance;
+      }else if(account.type === "Operating Expenses") {
+        rightSideBalanceTotal -= account.balance;
+      }else if(account.name === "Retained Earnings"){
+        currentRetainedRevenues += account.balance;
+      }
+
+      if(account.name.includes("Interest Expense ")){
+        intExpense += account.balance;
+      }
+
+      if(account.mGroup === "Receivables"){
+        receivables += account.balance;
+      }
+
+      if(account.name.includes("Depreciation")){
+        currentDepreciation += account.balance;
+      }
+
+      if(account.type === "Revenue"){
+        ebit += account.balance;
+      }else if(account.type === "Operating Expenses"){
+        ebit -= account.balance;
+      }
+
+      quickRatio = (currentAssets - currentInventories)/currentLiabilities;
+      currentRatio = currentAssets/currentLiabilities;
+      invTurnover = sales/currentInventories;
+
+      if(sales === 0){
+        dso = 0;
+        pm = 0;
+        om = 0;
+        gpm = 0;
+      }else{
+        dso = receivables/(sales/365);
+        pm = totalIncome/sales;
+        om = ebit/sales;
+        gpm = (sales - cogs)/sales;
+      }
+
+      totalAsset = sales/currentAssets;
+      bep = totalIncome/currentAssets;
+      debtRatio = currentLiabilities/currentAssets;
+      roa = totalIncome/currentAssets;
+      fixedAssetRatio = sales/fixedAsset;
+
+      if(intExpense === 0){
+        tie = 0;
+        ec = 0;
+      }else{
+        tie = ebit/intExpense;
+        ec = (ebit-currentDepreciation)/intExpense;
+      }
+
+      roe = totalIncome/commonEquity;
+
+      currentRatio = currentAssets/currentLiabilities;
+      totalIncome = rightSideBalanceTotal - leftSideBalanceTotal + currentRetainedRevenues;
+    });
+
+    return (
+      <div className="well well-lg">
+        <div className="col-md-1"></div>
+        <div className="col-md-5"></div>
+        <div className="col-md-4 text-right"></div>
+        <div className="col-md-2 text-right"></div>
+
+        <div className="row">
+          <hr/>
+          <div className="col-md-12"><b>Liquidity</b></div>
+          <hr/>
+        </div>
+
+        {Math.abs(currentRatio) > 0 &&
+        <div className="row">
+          <div className="col-md-1"></div>
+          <div className="col-md-5 text-left">Current Ratio</div>
+          <div className="col-md-4 text-right"></div>
+          <div className="col-md-2 text-right">{currentRatio.toFixed(2)}</div>
+        </div>
+        }
+
+        {Math.abs(quickRatio) > 0 &&
+        <div className="row">
+          <div className="col-md-1"></div>
+          <div className="col-md-5 text-left">Quick Ratio</div>
+          <div className="col-md-4 text-right"></div>
+          <div className="col-md-2 text-right">{quickRatio.toFixed(2)}</div>
+        </div>
+        }
+
+        <div className="row">
+          <hr/>
+          <div className="col-md-12"><b>Asset Management</b></div>
+          <hr/>
+        </div>
+
+        {Math.abs(invTurnover) > 0 &&
+        <div className="row">
+          <div className="col-md-1"></div>
+          <div className="col-md-5 text-left">Inventory Turnover</div>
+          <div className="col-md-4 text-right"></div>
+          <div className="col-md-2 text-right">{invTurnover.tofixed(2)}</div>
+        </div>
+        }
+
+        {Math.abs(dso) > 0 &&
+        <div className="row">
+          <div className="col-md-1"></div>
+          <div className="col-md-5 text-left">DSO</div>
+          <div className="col-md-4 text-right"></div>
+          <div className="col-md-2 text-right">{dso.toFixed(2)}</div>
+        </div>
+        }
+
+        {Math.abs(fixedAssetRatio) > 0 &&
+        <div className="row">
+          <div className="col-md-1"></div>
+          <div className="col-md-5 text-left">Fixed Asset Turnover</div>
+          <div className="col-md-4 text-right"></div>
+          <div className="col-md-2 text-right">{fixedAssetRatio.toFixed(2)}</div>
+        </div>
+        }
+
+        {Math.abs(totalAsset) > 0 &&
+        <div className="row">
+          <div className="col-md-1"></div>
+          <div className="col-md-5 text-left">Total Asset Turnover</div>
+          <div className="col-md-4 text-right"></div>
+          <div className="col-md-2 text-right">{totalAsset.toFixed(2)}</div>
+        </div>
+        }
+
+
+        <div className="row">
+          <hr/>
+          <div className="col-md-12"><b>Debt Management</b></div>
+          <hr/>
+        </div>
+
+        {Math.abs(debtRatio) > 0 &&
+        <div className="row">
+          <div className="col-md-1"></div>
+          <div className="col-md-5 text-left">Debt Ratio</div>
+          <div className="col-md-4 text-right"></div>
+          <div className="col-md-2 text-right">{debtRatio.toFixed(2)}</div>
+        </div>
+        }
+
+        {Math.abs(tie) > 0 &&
+        <div className="row">
+          <div className="col-md-1"></div>
+          <div className="col-md-5 text-left">TIE</div>
+          <div className="col-md-4 text-right"></div>
+          <div className="col-md-2 text-right">{tie.toFixed(2)}</div>
+        </div>
+        }
+
+        {Math.abs(ec) > 0 &&
+        <div className="row">
+          <div className="col-md-1"></div>
+          <div className="col-md-5 text-left">EC</div>
+          <div className="col-md-4 text-right"></div>
+          <div className="col-md-2 text-right">{ec.toFixed(2)}</div>
+        </div>
+        }
+
+
+        <div className="row">
+          <hr/>
+          <div className="col-md-12"><b>Profitability</b></div>
+          <hr/>
+        </div>
+
+        {Math.abs(pm) > 0 &&
+        <div className="row">
+          <div className="col-md-1"></div>
+          <div className="col-md-5 text-left">Net Profit Margin (PM)</div>
+          <div className="col-md-4 text-right"></div>
+          <div className="col-md-2 text-right">{pm.toFixed(2)}</div>
+        </div>
+        }
+
+        {Math.abs(om) > 0 &&
+        <div className="row">
+          <div className="col-md-1"></div>
+          <div className="col-md-5 text-left">Operating Profit Margin (OM)</div>
+          <div className="col-md-4 text-right"></div>
+          <div className="col-md-2 text-right">{om.toFixed(2)}</div>
+        </div>
+        }
+
+        {Math.abs(gpm) > 0 &&
+        <div className="row">
+          <div className="col-md-1"></div>
+          <div className="col-md-5 text-left">Gross Profit Margin (GPM)</div>
+          <div className="col-md-4 text-right"></div>
+          <div className="col-md-2 text-right">{gpm.toFixed(2)}</div>
+        </div>
+        }
+
+        {Math.abs(bep) > 0 &&
+        <div className="row">
+          <div className="col-md-1"></div>
+          <div className="col-md-5 text-left">BEP</div>
+          <div className="col-md-4 text-right"></div>
+          <div className="col-md-2 text-right">{bep.toFixed(2)}</div>
+        </div>
+        }
+
+        {Math.abs(roa) > 0 &&
+        <div className="row">
+          <div className="col-md-1"></div>
+          <div className="col-md-5 text-left">ROA</div>
+          <div className="col-md-4 text-right"></div>
+          <div className="col-md-2 text-right">{roa.toFixed(2)}</div>
+        </div>
+        }
+
+        {Math.abs(currentRatio) > 0 &&
+        <div className="row">
+          <div className="col-md-1"></div>
+          <div className="col-md-5 text-left">ROE</div>
+          <div className="col-md-4 text-right"></div>
+          <div className="col-md-2 text-right">{roe.toFixed(2)}</div>
+        </div>
+        }
+      </div>
+    );
+  }
+});
+
+var RatioAnalysis = React.createClass({
+  getInitialState: function() {
+    return {
+      accounts: []
+    };
+  },
+  componentDidMount: function () {
+    this.loadAccountsFromServer();
+  },
+  loadAccountsFromServer: function() {
+    var self = this;
+      $.ajax({
+      url: "http://localhost:8080/api/accounts"
+    }).then(function (data) {
+      self.setState({accounts: data._embedded.accounts});
+    });
+  },
+  render: function () {
+
+    var today = new Date();
+    var dd = today.getDate();
+    var mm = today.getMonth()+1; //January is 0!
+    var yyyy = today.getFullYear();
+
+    var date = document.getElementById("date");
+    today = mm+'/'+dd+'/'+yyyy;
+
+    return (
+      <div className="container">
+      <h3>Crane Accounting</h3>
+      <h3>Ratio Analysis</h3>
+      <h3 id="date">{today}</h3>
+      <RatioAnalysisTable accounts={this.state.accounts} />
+      </div>
+    );
+  }
+});
+
+if (document.getElementById('RatioAnalysis') != null) {
+  ReactDOM.render(<RatioAnalysis/>, document.getElementById('RatioAnalysis'));
 }
 
 /*TODO:ctn Eventually will want to convert this code (as well as the login/signup page) to utilize REACT */

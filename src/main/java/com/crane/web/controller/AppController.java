@@ -128,23 +128,30 @@ public class AppController {
 
     @RequestMapping(value = "/balanceSheet")
     public String balanceSheet() {
-        logger.info(" --- RequestMapping from /trialBalance");
-        logger.info(" --- Mapping to /trialBalance");
+        logger.info(" --- RequestMapping from /balanceSheet");
+        logger.info(" --- Mapping to /balanceSheet");
         return "balanceSheet";
     }
 
     @RequestMapping(value = "/incomeState")
     public String incomeStatement() {
-        logger.info(" --- RequestMapping from /trialBalance");
-        logger.info(" --- Mapping to /trialBalance");
+        logger.info(" --- RequestMapping from /incomestate");
+        logger.info(" --- Mapping to /incomestate");
         return "incomeStatement";
     }
 
     @RequestMapping(value = "/statementOfRetainedEarnings")
     public String stamentOfRetainedEarnings() {
-        logger.info(" --- RequestMapping from /trialBalance");
-        logger.info(" --- Mapping to /trialBalance");
+        logger.info(" --- RequestMapping from /statementOfRetainedEarnings");
+        logger.info(" --- Mapping to /statementOfRetainedEarnings");
         return "statementOfRetainedEarnings";
+    }
+
+    @RequestMapping(value = "/ratioAnalysis")
+    public String ratioAnalysis() {
+        logger.info(" --- RequestMapping from /ratioAnalysis");
+        logger.info(" --- Mapping to /ratioAnalysis");
+        return "ratioAnalysis";
     }
 
     @RequestMapping(value = "/admin/addUser", method = RequestMethod.POST)
