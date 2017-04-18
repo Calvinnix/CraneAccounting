@@ -3439,9 +3439,12 @@ var RatioAnalysisTable = React.createClass({
     var expenses = [];
     var dividends = [];
     var sales = 0;
+    var totalAssets = 0;
+    var totalLiabilities = 0;
     var rightSideBalanceTotal = 0;
     var leftSideBalanceTotal = 0;
     var currentAssets = 0;
+    var longTermDebt = 0;
     var currentLiabilities = 0;
     var currentDepreciation = 0;
     var commonEquity = 0;
@@ -3467,10 +3470,19 @@ var RatioAnalysisTable = React.createClass({
     var bep = 0;
     var roa = 0;
     var roe = 0;
+    var invWorkingCap = 0;
     var currentInventories = 0;
+    var debtEquity = 0;
+    var longDebtEquity = 0;
+    var interestEarned = 0;
+    var interest = 0;
     this.props.accounts.forEach(function(account) {
 
       if (account.type === "Asset") {
+        totalAssets += account.balance;
+      }
+
+      if(account.code  < 150 && account.type === "Asset"){
         currentAssets += account.balance;
       }
 
@@ -3481,19 +3493,31 @@ var RatioAnalysisTable = React.createClass({
       }
 
       if(account.type === "Liabilities"){
+        totalLiabilities += account.balance;
+      }
+
+      if(account.code < 250 && account.type === "Liabilities"){
         currentLiabilities += account.balance;
       }
 
       if(account.mGroup === "Inventories") {
-        currentInventories -= account.balance;
+        currentInventories += account.balance;
       }
 
       if(account.name === "Sales"){
         sales += account.balance;
       }
 
+      if(account.name === "Interest Expense"){
+        interest += account.balance;
+      }
+
       if(account.name === "Cost Of Goods Sold"){
         cogs += account.balance;
+      }
+
+      if(account.code > 240 && account.code < 300){
+        longTermDebt += account.balance;
       }
 
       if(account.type === "Owner's Equity"){
@@ -3510,7 +3534,7 @@ var RatioAnalysisTable = React.createClass({
         currentRetainedRevenues += account.balance;
       }
 
-      if(account.name.includes("Interest Expense ")){
+      if(account.name.includes("Interest Expense")){
         intExpense += account.balance;
       }
 
@@ -3532,6 +3556,7 @@ var RatioAnalysisTable = React.createClass({
       currentRatio = currentAssets/currentLiabilities;
       invTurnover = sales/currentInventories;
 
+
       if(sales === 0){
         dso = 0;
         pm = 0;
@@ -3540,14 +3565,14 @@ var RatioAnalysisTable = React.createClass({
       }else{
         dso = receivables/(sales/365);
         pm = totalIncome/sales;
-        om = ebit/sales;
+        om = totalIncome/sales;
         gpm = (sales - cogs)/sales;
       }
 
-      totalAsset = sales/currentAssets;
-      bep = totalIncome/currentAssets;
-      debtRatio = currentLiabilities/currentAssets;
-      roa = totalIncome/currentAssets;
+      totalAsset = sales/totalAssets;
+      bep = totalIncome/totalAssets;
+      debtRatio = totalLiabilities/totalAssets;
+      roa = totalIncome/totalAssets;
       fixedAssetRatio = sales/fixedAsset;
 
       if(intExpense === 0){
@@ -3562,6 +3587,10 @@ var RatioAnalysisTable = React.createClass({
 
       currentRatio = currentAssets/currentLiabilities;
       totalIncome = rightSideBalanceTotal - leftSideBalanceTotal + currentRetainedRevenues;
+      invWorkingCap = currentInventories/(currentAssets - currentLiabilities);
+      debtEquity = totalLiabilities/commonEquity;
+      longDebtEquity = longTermDebt/commonEquity;
+      interestEarned = totalIncome/interest;
     });
 
     return (
@@ -3595,6 +3624,15 @@ var RatioAnalysisTable = React.createClass({
         </div>
         }
 
+        {Math.abs(invWorkingCap) > 0 &&
+        <div className="row">
+          <div className="col-md-1"></div>
+          <div className="col-md-5 text-left">Inventory to Net Working Capital</div>
+          <div className="col-md-4 text-right"></div>
+          <div className="col-md-2 text-right">{invWorkingCap.toFixed(2)}</div>
+        </div>
+        }
+
         <div className="row">
           <hr/>
           <div className="col-md-12"><b>Asset Management</b></div>
@@ -3606,14 +3644,14 @@ var RatioAnalysisTable = React.createClass({
           <div className="col-md-1"></div>
           <div className="col-md-5 text-left">Inventory Turnover</div>
           <div className="col-md-4 text-right"></div>
-          <div className="col-md-2 text-right">{invTurnover.tofixed(2)}</div>
+          <div className="col-md-2 text-right">{invTurnover.toFixed(2)}</div>
         </div>
         }
 
         {Math.abs(dso) > 0 &&
         <div className="row">
           <div className="col-md-1"></div>
-          <div className="col-md-5 text-left">DSO</div>
+          <div className="col-md-5 text-left">Days Sales Outstanding (DSO)</div>
           <div className="col-md-4 text-right"></div>
           <div className="col-md-2 text-right">{dso.toFixed(2)}</div>
         </div>
@@ -3647,16 +3685,34 @@ var RatioAnalysisTable = React.createClass({
         {Math.abs(debtRatio) > 0 &&
         <div className="row">
           <div className="col-md-1"></div>
-          <div className="col-md-5 text-left">Debt Ratio</div>
+          <div className="col-md-5 text-left">Debt-to-Asset Ratio</div>
           <div className="col-md-4 text-right"></div>
           <div className="col-md-2 text-right">{debtRatio.toFixed(2)}</div>
+        </div>
+        }
+
+        {Math.abs(longDebtEquity) > 0 &&
+        <div className="row">
+          <div className="col-md-1"></div>
+          <div className="col-md-5 text-left">Debt-to-Equity Ratio</div>
+          <div className="col-md-4 text-right"></div>
+          <div className="col-md-2 text-right">{longDebtEquity.toFixed(2)}</div>
+        </div>
+        }
+
+        {Math.abs(interestEarned) > 0 &&
+        <div className="row">
+          <div className="col-md-1"></div>
+          <div className="col-md-5 text-left">Times-interest-earned Ratio</div>
+          <div className="col-md-4 text-right"></div>
+          <div className="col-md-2 text-right">{interestEarned.toFixed(2)}</div>
         </div>
         }
 
         {Math.abs(tie) > 0 &&
         <div className="row">
           <div className="col-md-1"></div>
-          <div className="col-md-5 text-left">TIE</div>
+          <div className="col-md-5 text-left">Times Interest Earned (TIE)</div>
           <div className="col-md-4 text-right"></div>
           <div className="col-md-2 text-right">{tie.toFixed(2)}</div>
         </div>
@@ -3665,7 +3721,7 @@ var RatioAnalysisTable = React.createClass({
         {Math.abs(ec) > 0 &&
         <div className="row">
           <div className="col-md-1"></div>
-          <div className="col-md-5 text-left">EC</div>
+          <div className="col-md-5 text-left">Economic Capital (EC)</div>
           <div className="col-md-4 text-right"></div>
           <div className="col-md-2 text-right">{ec.toFixed(2)}</div>
         </div>
@@ -3708,7 +3764,7 @@ var RatioAnalysisTable = React.createClass({
         {Math.abs(bep) > 0 &&
         <div className="row">
           <div className="col-md-1"></div>
-          <div className="col-md-5 text-left">BEP</div>
+          <div className="col-md-5 text-left">Basic Earning Power (BEP)</div>
           <div className="col-md-4 text-right"></div>
           <div className="col-md-2 text-right">{bep.toFixed(2)}</div>
         </div>
@@ -3717,7 +3773,7 @@ var RatioAnalysisTable = React.createClass({
         {Math.abs(roa) > 0 &&
         <div className="row">
           <div className="col-md-1"></div>
-          <div className="col-md-5 text-left">ROA</div>
+          <div className="col-md-5 text-left">Return on Assets (ROA)</div>
           <div className="col-md-4 text-right"></div>
           <div className="col-md-2 text-right">{roa.toFixed(2)}</div>
         </div>
@@ -3726,7 +3782,7 @@ var RatioAnalysisTable = React.createClass({
         {Math.abs(currentRatio) > 0 &&
         <div className="row">
           <div className="col-md-1"></div>
-          <div className="col-md-5 text-left">ROE</div>
+          <div className="col-md-5 text-left">Return on Equity (ROE)</div>
           <div className="col-md-4 text-right"></div>
           <div className="col-md-2 text-right">{roe.toFixed(2)}</div>
         </div>

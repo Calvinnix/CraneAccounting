@@ -188,7 +188,7 @@ public class DatabaseLoader implements CommandLineRunner {
         this.chartOfAccountsDao.save(new ChartOfAccounts(544.0, "Patent Amortization", "Operating Expenses", true, priority++, "General And Administrative Expenses"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(545.0, "Amortization of Organization Cost", "Operating Expenses", true, priority++, "General And Administrative Expenses"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(549.0, "Miscellaneous Expense", "Operating Expenses", true, priority++, "General And Administrative Expenses"));
-        this.chartOfAccountsDao.save(new ChartOfAccounts(551.0, "Interest Expense (Also Bond Interest Expense)", "Operating Expenses", true, priority++, "Other Expenses"));
+        this.chartOfAccountsDao.save(new ChartOfAccounts(551.0, "Interest Expense", "Operating Expenses", true, priority++, "Other Expenses"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(552.0, "Loss on Discarded Equipment", "Operating Expenses", true, priority++, "Other Expenses"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(553.0, "Loss on Sale/Exchange of Equipment", "Operating Expenses", true, priority++, "Other Expenses"));
         this.chartOfAccountsDao.save(new ChartOfAccounts(554.0, "Loss on Bonds Redeemed", "Operating Expenses", true, priority++, "Other Expenses"));
