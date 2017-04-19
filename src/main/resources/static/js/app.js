@@ -1743,11 +1743,15 @@ var JournalRow = React.createClass({
         var self = this;
         var tempRow = [];
         var index = 0;
+        var firstCredit = true;
         $.ajax({
             url: self.props.transactionsUrl
         }).then(function (data) {
            data._embedded.transactions.forEach(function(transaction) {
-                tempRow.push(<TransactionRow transaction={transaction} key={index++}/>);
+                tempRow.push(<TransactionRow index={index} firstCredit={firstCredit} transaction={transaction} key={index++}/>);
+               if (transaction.debit === false) {
+                 firstCredit = false;
+               }
            });
            self.setState({
                 rows: tempRow
@@ -1992,7 +1996,7 @@ var TransactionRow = React.createClass({
               {!this.props.transaction.debit && <div className="col-md-1"></div> }
               <div className="col-md-2">{this.props.transaction.accountName}</div> 
               {!this.props.transaction.debit && <div className="col-md-1"></div>  }
-              <div className="col-md-2 wrap-words text-right">{this.state.amount}</div>
+              <div className="col-md-2 wrap-words text-right">{this.props.index === 0 || (this.props.firstCredit && !this.props.transaction.debit)  ? '$' : ''} {this.state.amount}</div>
               {this.props.transaction.debit ? (
                 <div className="col-md-4"></div> 
               ) : (
@@ -2030,7 +2034,7 @@ var TransactionRow = React.createClass({
             {!this.props.transaction.debit && <div className="col-md-1"></div> }
             <div className="col-md-2">{this.props.transaction.accountName}</div> 
             {!this.props.transaction.debit && <div className="col-md-1"></div>  }
-            <div className="col-md-2 wrap-words text-right">{this.state.amount}</div>
+            <div className="col-md-2 wrap-words text-right">{this.props.index === 0 || (this.props.firstCredit && !this.props.transaction.debit)  ? '$' : ''} {this.state.amount}</div>
             {this.props.transaction.debit ? (
               <div className="col-md-4"></div> 
             ) : (
@@ -2349,6 +2353,9 @@ var AllJournals = React.createClass({
                 $("#upload-file-info").empty(); //clear added files from input field
                 self.loadTransactionsFromServer();
                 self.loadJournalEntriesFromServer();
+                self.setState({
+                  comment: ''
+                });
             },
             error: function(xhr, ajaxOptions, thrownError) {
                 toastr.options = {
@@ -2418,7 +2425,7 @@ var AllJournals = React.createClass({
                         <div className="row">
                             <div className="col-md-5">
                                 <label>Comment</label>
-                                <textarea type="text" className="form-control" aria-label="Comment" onChange={this.updateComment}></textarea>
+                                <textarea type="text" className="form-control" aria-label="Comment" value={this.state.comment} onChange={this.updateComment}></textarea>
                             </div>
                             <div className="col-md-5">
                               <form id="my-file-selector-form">
@@ -2471,9 +2478,15 @@ var LedgerTable = React.createClass({
   render: function() {
     var self = this;
     var rows = [];
+    var index = 0;
+    var firstCredit = true;
     this.props.transactions.forEach(function(transaction) {
       if (Number(self.props.accountId) === transaction.accountId) {
-        rows.push(<TransactionRow transaction={transaction} key={transaction.publicId} ledger={true}/>);
+
+        rows.push(<TransactionRow index={index++} firstCredit={firstCredit} transaction={transaction} key={transaction.publicId} ledger={true}/>);
+        if (transaction.debit === false) {
+          firstCredit = false;
+        }
       }
     });
     return (
@@ -2732,6 +2745,7 @@ var TrialBalanceTable = React.createClass({
     var expenses = [];
     var leftSideBalanceTotal = 0;
     var rightSideBalanceTotal = 0;
+
     this.props.accounts.forEach(function(account) {
       if (account.leftNormalSide) {
         leftSideBalanceTotal += account.balance;
