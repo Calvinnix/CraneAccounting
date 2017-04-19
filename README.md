@@ -18,7 +18,7 @@ View Running Application
 [localhost:8080](http://localhost:8080)
 
 
-Weird things I encountered
+NOTES
 -
 1. If none of the spring things are loading try to refresh Maven
 2. If application.properties isn't being found make sure the resources folder is marked as 'resources'
