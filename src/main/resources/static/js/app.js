@@ -1865,7 +1865,8 @@ var JournalRow = React.createClass({
             <hr />
             <div className="row">
               <div className="col-md-6">
-                <label>Comment: {this.props.comment}</label>
+                <label>Comment:</label>
+                <p>{this.props.comment}</p>
               </div>
             </div>
             <div className="row">
@@ -1915,7 +1916,8 @@ var JournalRow = React.createClass({
             <hr />
             <div className="row">
               <div className="col-md-3">
-                <label>Comment: {this.props.comment}</label>
+                <label>Comment:</label>
+                <p>{this.props.comment}</p>
               </div>
             </div>
             <div className="row">
