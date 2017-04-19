@@ -3977,8 +3977,6 @@ $("#my-file-selector").on("change", function(e) {
       "filesize":filesize
     };
     data_array.push(data)
-    console.log("data object: ");
-    console.log(data);
 
     var currentIndex = 0;
     var reader = new FileReader();
@@ -4000,9 +3998,9 @@ $("#my-file-selector").on("change", function(e) {
       currentIndex++;
 
     }, function(jqxhr, textStatus, errorThrown) {
-      console.log(textStatus, errorThrown)
+      //console.log(textStatus, errorThrown)
     };
-    console.log(reader.readAsDataURL(file))
+    //console.log(reader.readAsDataURL(file))
   }
 });
 
