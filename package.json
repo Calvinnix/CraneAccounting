@@ -6,7 +6,9 @@
     "type": "git",
     "url": "git+https://github.com/Calvinnix/CraneAccounting.git"
   },
-  "scripts": { "start" : "mvn spring-boot:run" },
+  "scripts": {
+    "start": "mvn spring-boot:run"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
