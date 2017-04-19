@@ -2722,8 +2722,10 @@ var TrialBalanceTable = React.createClass({
   },
   render: function() {
     var self = this;
-    var assets = [];
-    var liabilities = [];
+    var currentAssets = [];
+    var longTermAssets = [];
+    var currentLiabilities = [];
+    var longTermLiabilities = [];
     var ownersEquity = [];
     var dividends = [];
     var revenues = [];
@@ -2742,17 +2744,21 @@ var TrialBalanceTable = React.createClass({
         return;
       }
 
-      if (account.type === "Asset") {
-        assets.push(<TrialBalanceAccount account={account} key={account.publicId} />);
-      } else if (account.type === "Liabilities")   {
-        liabilities.push(<TrialBalanceAccount account={account} key={account.publicId} />);
-      } else if (account.type === "Owner's Equity")   {
+      if (account.type === "Asset" && account.code < 150 && account.code >= 100) {
+        currentAssets.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+      }else if (account.type === "Asset" && account.code < 200 && account.code >= 150) {
+        longTermAssets.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+      }else if (account.type === "Liabilities" && account.code < 240 && account.code >= 200)   {
+        currentLiabilities.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+      }else if (account.type === "Liabilities" && account.code < 300 && account.code >= 240)   {
+         longTermLiabilities.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+      }else if (account.type === "Owner's Equity")   {
         ownersEquity.push(<TrialBalanceAccount account={account} key={account.publicId} />);
-      } else if (account.type === "Revenues")   {
+      }else if (account.type === "Revenues")   {
         revenues.push(<TrialBalanceAccount account={account} key={account.publicId} />);
-      } else if (account.type === "Operating Expenses")   {
+      }else if (account.type === "Operating Expenses")   {
         expenses.push(<TrialBalanceAccount account={account} key={account.publicId} />);
-      } else if (account.type === "Dividends")   {
+      }else if (account.type === "Dividends")   {
         dividends.push(<TrialBalanceAccount account={account} key={account.publicId} />);
       }else {
         //do nothing
@@ -2765,14 +2771,23 @@ var TrialBalanceTable = React.createClass({
         <div className="col-md-8">Accounts</div>
         <div className="col-md-2 text-right">Debit</div>
         <div className="col-md-2 text-right">Credit</div>
-        {assets.length > 0 &&
+        {currentAssets.length > 0 &&
           <div className="row">
             <hr/>
-            <div className="col-md-12"><b>Assets</b></div>
+            <div className="col-md-12"><b>Current Assets</b></div>
             <hr/>
           </div>
         }
-        {assets}
+        {currentAssets}
+
+        {longTermAssets.length > 0 &&
+          <div className="row">
+            <hr/>
+            <div className="col-md-12"><b>Long Term Assets</b></div>
+            <hr/>
+          </div>
+        }
+        {longTermAssets}
 
         {expenses.length > 0 &&
         <div className="row">
@@ -2792,14 +2807,23 @@ var TrialBalanceTable = React.createClass({
         }
         {dividends}
 
-        {liabilities.length > 0 &&
+        {currentLiabilities.length > 0 &&
         <div className="row">
           <hr/>
-          <div className="col-md-12"><b>Liabilities</b></div>
+          <div className="col-md-12"><b>Current Liabilities</b></div>
           <hr/>
         </div>
         }
-        {liabilities}
+        {currentLiabilities}
+
+        {longTermLiabilities.length > 0 &&
+        <div className="row">
+          <hr/>
+          <div className="col-md-12"><b>Long Term Liabilities</b></div>
+          <hr/>
+        </div>
+        }
+        {longTermLiabilities}
 
         {ownersEquity.length > 0 &&
         <div className="row">
@@ -2949,8 +2973,10 @@ var BalanceSheetTable = React.createClass({
   },
   render: function() {
     var self = this;
-    var assets = [];
-    var liabilities = [];
+    var currentAssets = [];
+    var longTermAssets = [];
+    var currentLiabilities = [];
+    var longTermLiabilities = [];
     var ownersEquity = [];
     var leftSideBalanceTotal = 0;
     var rightSideBalanceTotal = 0;
@@ -2984,11 +3010,15 @@ var BalanceSheetTable = React.createClass({
         return;
       }
 
-      if (account.type === "Asset") {
-        assets.push(<BalanceSheetAccount account={account} key={account.publicId} />);
-      } else if (account.type === "Liabilities")   {
-        liabilities.push(<BalanceSheetAccount account={account} key={account.publicId} />);
-      } else if (account.type === "Owner's Equity")   {
+      if (account.type === "Asset" && account.code < 150 && account.code >= 100) {
+        currentAssets.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+      }else if (account.type === "Asset" && account.code < 200 && account.code >= 150) {
+        longTermAssets.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+      }else if (account.type === "Liabilities" && account.code < 240 && account.code >= 200)   {
+        currentLiabilities.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+      }else if (account.type === "Liabilities" && account.code < 300 && account.code >= 240)   {
+         longTermLiabilities.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+      }else if (account.type === "Owner's Equity")   {
         ownersEquity.push(<BalanceSheetAccount account={account} key={account.publicId} />);
       }
       else {
@@ -3003,23 +3033,41 @@ var BalanceSheetTable = React.createClass({
         <div className="col-md-8">Account</div>
         <div className="col-md-2 text-right"></div>
         <div className="col-md-2 text-right"></div>
-        {assets.length > 0 &&
+        {currentAssets.length > 0 &&
           <div className="row">
             <hr/>
-            <div className="col-md-12"><b>Assets</b></div>
+            <div className="col-md-12"><b>Current Assets</b></div>
             <hr/>
           </div>
         }
-        {assets}
+        {currentAssets}
 
-        {liabilities.length > 0 &&
+        {longTermAssets.length > 0 &&
+          <div className="row">
+            <hr/>
+            <div className="col-md-12"><b>Long Term Assets</b></div>
+            <hr/>
+          </div>
+        }
+        {longTermAssets}
+
+        {currentLiabilities.length > 0 &&
         <div className="row">
           <hr/>
-          <div className="col-md-12"><b>Liabilities</b></div>
+          <div className="col-md-12"><b>Current Liabilities</b></div>
           <hr/>
         </div>
         }
-        {liabilities}
+        {currentLiabilities}
+
+        {longTermLiabilities.length > 0 &&
+        <div className="row">
+          <hr/>
+          <div className="col-md-12"><b>Long Term Liabilities</b></div>
+          <hr/>
+        </div>
+        }
+        {longTermLiabilities}
 
         {ownersEquity.length > 0 &&
         <div className="row">
