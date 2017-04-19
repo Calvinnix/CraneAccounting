@@ -541,14 +541,14 @@ body.fb_hidden {
   height: 1px;
   size: 100px;
   margin-right: 0px;
-  width: 200px; }
+  width: 100px; }
 
 .bar-balance {
   border-top: 5px double;
   height: 1px;
   size: 100px;
   margin-right: 0px;
-  width: 350px; }
+  width: 100px; }
 
 h3 {
   text-align: center; }

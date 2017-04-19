@@ -2523,14 +2523,44 @@ var Ledger = React.createClass({
       accountId: evt.target.value
     });
   },
+  formatBalance: function(number) {
+      //This is used to format the initial balance as a number
+      var formattedBalance = number;
+      if (!(/^(\d+\.\d\d)$/.test(formattedBalance))) {
+        //number needs formatting
+        formattedBalance = formattedBalance.toFixed(2);
+      }
+      //Add commas to thousands place i.e. 1000000.00 = 1,000,000.00
+      var parts = formattedBalance.toString().split(".");
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      formattedBalance = parts.join(".");
+
+      if (formattedBalance.charAt(0) === '-') {
+        formattedBalance = "($" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
+      } else {
+        formattedBalance = "$" + formattedBalance;
+      }
+
+      return formattedBalance;
+    },
   render: function() {
     var self = this;
+
+    var currentAccount = this.state.accounts[this.state.accountId - 1];
+    var balance;
+
+    if (currentAccount) {
+        balance = this.formatBalance(currentAccount.balance);
+    }
+
     return (
       <div>
         <div className="container">
           <h1>Ledger</h1>
           <hr />
           <AccountSelect onChange={this.updateAccountId} accounts={this.state.accounts} id={this.state.accountId} comboId={"ledger"}/>
+          <hr />
+          <h4>Account Balance: {balance}</h4>
           <hr />
           <div className="faq">
             <input type="search" placeholder="search" id="searchBar"/>
@@ -2771,7 +2801,15 @@ var TrialBalanceTable = React.createClass({
         }
         {revenues}
         <hr/>
-        <hr className="bar-balance"/>
+        <div className="row">
+            <div className="col-md-8"></div>
+            <div className="col-md-2">
+                <hr className="bar"/>
+            </div>
+            <div className="col-md-2">
+                <hr className="bar"/>
+            </div>
+        </div>
         <div className="row text-primary">
           <div className="col-md-8 text-right">Total:</div>
           <div className="col-md-2 text-right">{this.formatBalance(leftSideBalanceTotal)}</div>
@@ -2979,7 +3017,15 @@ var BalanceSheetTable = React.createClass({
         {ownersEquity}
 
         <hr/>
-        <hr className="bar-balance"/>
+        <div className="row">
+            <div className="col-md-8"></div>
+            <div className="col-md-2">
+                <hr className="bar"/>
+            </div>
+            <div className="col-md-2">
+                <hr className="bar"/>
+            </div>
+        </div>
         <div className="row text-primary">
           <div className="col-md-8 text-right">Total:</div>
           <div className="col-md-2 text-right">{this.formatBalance(leftSideBalanceTotal)}</div>
@@ -3590,7 +3636,12 @@ var RatioAnalysisTable = React.createClass({
       invWorkingCap = currentInventories/(currentAssets - currentLiabilities);
       debtEquity = totalLiabilities/commonEquity;
       longDebtEquity = longTermDebt/commonEquity;
-      interestEarned = totalIncome/interest;
+
+      if(interest === 0){
+        interestEarned = 0;
+      }else{
+        interestEarned = totalIncome/interest;
+      }
     });
 
     return (
