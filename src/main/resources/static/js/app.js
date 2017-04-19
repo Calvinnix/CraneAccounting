@@ -688,9 +688,7 @@ var AccountRow = React.createClass({
       formattedBalance = parts.join(".");
 
       if (formattedBalance.charAt(0) === '-') {
-        formattedBalance = "($" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
-      } else {
-        formattedBalance = "$" + formattedBalance;
+        formattedBalance = "(" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
       }
 
       this.setState({
@@ -1862,9 +1860,16 @@ var JournalRow = React.createClass({
             {this.state.rows}
             <hr />
             <div className="row">
+              <div className="col-md-6">
+                <label>Comment: {this.props.comment}</label>
+              </div>
+            </div>
+            <div className="row">
               <div className="col-md-6 text-center">
                 <h5 className="pull-left"><b>Reason for rejection:</b> <span className="text-danger">{this.state.rejectionReason}</span></h5>
               </div>
+            </div>
+            <div className="row">
               <div className="col-md-6">
                 <label>Supporting Documents:</label>
                 <SupportingDocuments files={this.props.files}/>
@@ -1905,11 +1910,16 @@ var JournalRow = React.createClass({
             {this.state.rows}
             <hr />
             <div className="row">
-              <div className="col-md-5"></div>
+              <div className="col-md-3">
+                <label>Comment: {this.props.comment}</label>
+              </div>
+            </div>
+            <div className="row">
               <div className="col-md-3">
                 <label>Supporting Documents:</label>
                 <SupportingDocuments files={this.props.files}/>
               </div>
+
 
               {this.props.canPost &&
                 <div className="col-md-2">
@@ -1982,7 +1992,7 @@ var TransactionRow = React.createClass({
               {!this.props.transaction.debit && <div className="col-md-1"></div> }
               <div className="col-md-2">{this.props.transaction.accountName}</div> 
               {!this.props.transaction.debit && <div className="col-md-1"></div>  }
-              <div className="col-md-2 wrap-words text-right">${this.state.amount}</div>
+              <div className="col-md-2 wrap-words text-right">{this.state.amount}</div>
               {this.props.transaction.debit ? (
                 <div className="col-md-4"></div> 
               ) : (
@@ -1999,7 +2009,7 @@ var TransactionRow = React.createClass({
                   <div className="modal-body">
                     <JournalRow journalEntryId={this.state.journalEntry.publicId} addedOn={this.state.journalEntry.addedOn} transactionsUrl={transactionsUrl}
                                 posted={this.state.journalEntry.posted} rejected={this.state.journalEntry.rejected} rejectionReason={this.state.journalEntry.rejectionReason}
-                                canPost={false} files={this.state.journalEntry.supportingDocsBase64}/>
+                                canPost={false} files={this.state.journalEntry.supportingDocsBase64} comment={this.state.journalEntry.comment}/>
                   </div>
                 </div>
               </div>
@@ -2020,7 +2030,7 @@ var TransactionRow = React.createClass({
             {!this.props.transaction.debit && <div className="col-md-1"></div> }
             <div className="col-md-2">{this.props.transaction.accountName}</div> 
             {!this.props.transaction.debit && <div className="col-md-1"></div>  }
-            <div className="col-md-2 wrap-words text-right">${this.state.amount}</div>
+            <div className="col-md-2 wrap-words text-right">{this.state.amount}</div>
             {this.props.transaction.debit ? (
               <div className="col-md-4"></div> 
             ) : (
@@ -2060,9 +2070,10 @@ var JournalEntriesTable = React.createClass({
               var rejected = journalEntry.rejected;
               var rejectionReason = journalEntry.rejectionReason;
               var files = journalEntry.supportingDocsBase64;
+              var comment = journalEntry.comment;
               rows.push(<JournalRow journalEntryId={id} addedOn={addedOn} transactionsUrl={transactionsUrl}
                                     posted={posted} rejected={rejected} rejectionReason={rejectionReason} key={id}
-                                    canPost={self.props.canPost} files={files} loadJournalEntriesFromServer={self.props.loadJournalEntriesFromServer}/>);
+                                    canPost={self.props.canPost} files={files} loadJournalEntriesFromServer={self.props.loadJournalEntriesFromServer} comment={comment}/>);
           }
       });
       return (
@@ -2093,7 +2104,8 @@ var AllJournals = React.createClass({
                 creditAmount: 0,
                 debitAccountID: 1,
                 creditAccountID: 1,
-                filterJournalStatus: ''
+                filterJournalStatus: '',
+                comment: ''
         };
     },
     componentDidMount: function () {
@@ -2148,6 +2160,11 @@ var AllJournals = React.createClass({
     updateFilterJournalStatus: function (evt) {
         this.setState({
             filterJournalStatus: evt.target.value
+        });
+    },
+    updateComment: function(evt){
+        this.setState({
+            comment: evt.target.value
         });
     },
     addDebit: function() {
@@ -2307,13 +2324,16 @@ var AllJournals = React.createClass({
           files[i] = {"download":download, "href":href};
         }
 
+        var comment = this.state.comment;
+
         $.ajax({
             url: "http://localhost:8080/journals/addJournal",
             type: "POST",
             data: {
                accounts: JSON.stringify(accounts),
                username: username,
-               files: JSON.stringify(files)
+               files: JSON.stringify(files),
+               comment: comment
             },
             success: function() {
                 toastr.options = {
@@ -2357,7 +2377,7 @@ var AllJournals = React.createClass({
                     <h1>Add Journal Entries</h1>
                     <div className="well well-lg">
                         <div className="row">
-                            <div className="col-md-5">
+                            <div className="col-md-4">
                                 <AccountSelect accounts={this.state.accounts} onChange={this.updateDebitAccountID} id={this.state.debitAccountID} comboId={"debit"}/>
                             </div>
                             <div className="col-md-3">
@@ -2396,7 +2416,11 @@ var AllJournals = React.createClass({
                         <JournalsCreditTable removeCreditJournalEntry={this.removeCreditJournalEntry} JournalsCredit={this.state.JournalsCredit} />
                         <hr />
                         <div className="row">
-                            <div className="col-md-10">
+                            <div className="col-md-5">
+                                <label>Comment</label>
+                                <textarea type="text" className="form-control" aria-label="Comment" onChange={this.updateComment}></textarea>
+                            </div>
+                            <div className="col-md-5">
                               <form id="my-file-selector-form">
                                 <label className="btn btn-default pull-right" for="my-file-selector">
                                     <input id="my-file-selector" className="hidden" type="file" multiple="multiple" name="uploadfile" accept="*"/>
@@ -2536,9 +2560,7 @@ var Ledger = React.createClass({
       formattedBalance = parts.join(".");
 
       if (formattedBalance.charAt(0) === '-') {
-        formattedBalance = "($" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
-      } else {
-        formattedBalance = "$" + formattedBalance;
+        formattedBalance = "(" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
       }
 
       return formattedBalance;
@@ -2560,7 +2582,7 @@ var Ledger = React.createClass({
           <hr />
           <AccountSelect onChange={this.updateAccountId} accounts={this.state.accounts} id={this.state.accountId} comboId={"ledger"}/>
           <hr />
-          <h4>Account Balance: {balance}</h4>
+          <h4>Account Balance: $ {balance}</h4>
           <hr />
           <div className="faq">
             <input type="search" placeholder="search" id="searchBar"/>
@@ -2653,9 +2675,7 @@ var TrialBalanceAccount = React.createClass({
     formattedBalance = parts.join(".");
 
     if (formattedBalance.charAt(0) === '-') {
-      formattedBalance = "($" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
-    } else {
-      formattedBalance = "$" + formattedBalance;
+      formattedBalance = "(" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
     }
 
     this.setState({
@@ -2695,9 +2715,7 @@ var TrialBalanceTable = React.createClass({
     formattedBalance = parts.join(".");
 
     if (formattedBalance.charAt(0) === '-') {
-      formattedBalance = "($" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
-    } else {
-      formattedBalance = "$" + formattedBalance;
+      formattedBalance = "(" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
     }
 
     return formattedBalance;
@@ -2884,9 +2902,7 @@ var BalanceSheetAccount = React.createClass({
     formattedBalance = parts.join(".");
 
     if (formattedBalance.charAt(0) === '-') {
-      formattedBalance = "($" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
-    } else {
-      formattedBalance = "$" + formattedBalance;
+      formattedBalance = "(" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
     }
 
     this.setState({
@@ -2926,9 +2942,7 @@ var BalanceSheetTable = React.createClass({
     formattedBalance = parts.join(".");
 
     if (formattedBalance.charAt(0) === '-') {
-      formattedBalance = "($" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
-    } else {
-      formattedBalance = "$" + formattedBalance;
+      formattedBalance = "(" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
     }
 
     return formattedBalance;
@@ -3101,9 +3115,7 @@ var IncomeStatementAccount = React.createClass({
     formattedBalance = parts.join(".");
 
     if (formattedBalance.charAt(0) === '-') {
-      formattedBalance = "($" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
-    } else {
-      formattedBalance = "$" + formattedBalance;
+      formattedBalance = "(" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
     }
 
     this.setState({
@@ -3135,9 +3147,7 @@ var IncomeStatementTable = React.createClass({
     formattedBalance = parts.join(".");
 
     if (formattedBalance.charAt(0) === '-') {
-      formattedBalance = "($" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
-    } else {
-      formattedBalance = "$" + formattedBalance;
+      formattedBalance = "(" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
     }
 
     return formattedBalance;
@@ -3277,9 +3287,7 @@ var StatementOfRetainedEarningsAccount = React.createClass({
     formattedBalance = parts.join(".");
 
     if (formattedBalance.charAt(0) === '-') {
-      formattedBalance = "($" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
-    } else {
-      formattedBalance = "$" + formattedBalance;
+      formattedBalance = "(" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
     }
 
     this.setState({
@@ -3319,9 +3327,7 @@ var StatementOfRetainedEarningsTable = React.createClass({
     formattedBalance = parts.join(".");
 
     if (formattedBalance.charAt(0) === '-') {
-      formattedBalance = "($" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
-    } else {
-      formattedBalance = "$" + formattedBalance;
+      formattedBalance = "(" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
     }
 
     return formattedBalance;
@@ -3469,9 +3475,7 @@ var RatioAnalysisTable = React.createClass({
     formattedBalance = parts.join(".");
 
     if (formattedBalance.charAt(0) === '-') {
-      formattedBalance = "($" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
-    } else {
-      formattedBalance = "$" + formattedBalance;
+      formattedBalance = "(" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
     }
 
     return formattedBalance;

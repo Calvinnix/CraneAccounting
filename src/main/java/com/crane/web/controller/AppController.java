@@ -318,12 +318,14 @@ public class AppController {
         //Need to strip $ and () from the number
         //i.e. $5.00 = 5.00
         //i.e. ($5.00) = -5.00
-        if (strBalance.charAt(0) == '$') {
-            //assuming positive
-            strBalance = strBalance.substring(1);
-        } else if (strBalance.charAt(0) == '(') {
+//        if (strBalance.charAt(0) == '$') {
+//            //assuming positive
+//            strBalance = strBalance.substring(1);
+//        } else
+
+        if (strBalance.charAt(0) == '(') {
             //assuming negative
-            strBalance = "-" + strBalance.substring(2, strBalance.length() - 1);
+            strBalance = "-" + strBalance.substring(1, strBalance.length() - 1);
         } else {
             logger.error("Unexpected format of balance: " + strBalance);
         }
@@ -468,6 +470,7 @@ public class AppController {
         String accounts = request.getParameter("accounts");
         String username = request.getParameter("username");
         String files    = request.getParameter("files");
+        String comment  = request.getParameter("comment");
 
         User userFound = userService.findUserByUsername(username);
 
@@ -521,6 +524,7 @@ public class AppController {
 
         JournalEntry journalEntry = new JournalEntry(transactions, userFound, currentTime, false);
         journalEntry.setSupportingDocsBase64(files);
+        journalEntry.setComment(comment);
 
         JournalEntry journalEntryFound = journalEntryService.saveAndReturn(journalEntry);
 

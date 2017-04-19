@@ -33,6 +33,9 @@ public class JournalEntry {
     private Boolean rejected;
 
     @Column(length = 10000)
+    private String comment;
+
+    @Column(length = 10000)
     private String rejectionReason;
 
     @Column(length = 25000000) //This should be 25mb ..... I think....
@@ -98,6 +101,14 @@ public class JournalEntry {
 
     public void setRejected(Boolean rejected) {
         this.rejected = rejected;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public String getRejectionReason() {
