@@ -42,10 +42,15 @@
                     <li th:class="${selectedTab} == 'journals' ? 'active' : ''"><a href="/journals">Journals</a></li>
                     <li th:class="${selectedTab} == 'postJournals' ? 'active' : ''" sec:authorize="hasRole('ROLE_ADMIN') || hasRole('ROLE_MANAGER')"><a href="/postJournals">Post Journals</a></li>
                     <li th:class="${selectedTab} == 'ledger' ? 'active' : ''"><a href="/ledger">Ledger</a></li>
-                    <li th:class="${selectedTab} == 'trialBalance' ? 'active' : ''"><a href="/trialBalance">Trial Balance</a></li>
-                    <li th:class="${selectedTab} == 'balanceSheet' ? 'active' : ''"><a href="/balanceSheet">Balance Sheet</a></li>
-                    <li th:class="${selectedTab} == 'incomeStatement' ? 'active' : ''"><a href="/incomeState">Income Statement</a></li>
-                    <li th:class="${selectedTab} == 'statementOfRetainedEarnings' ? 'active' : ''"><a href="/statementOfRetainedEarnings">Retained Earnings</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Financial Statements<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li th:class="${selectedTab} == 'trialBalance' ? 'active' : ''"><a href="/trialBalance">Trial Balance</a></li>
+                            <li th:class="${selectedTab} == 'balanceSheet' ? 'active' : ''"><a href="/balanceSheet">Balance Sheet</a></li>
+                            <li th:class="${selectedTab} == 'incomeStatement' ? 'active' : ''"><a href="/incomeState">Income Statement</a></li>
+                            <li th:class="${selectedTab} == 'statementOfRetainedEarnings' ? 'active' : ''"><a href="/statementOfRetainedEarnings">Retained Earnings</a></li>
+                        </ul>
+                    </li>
                     <li th:class="${selectedTab} == 'ratioAnalysis' ? 'active' : ''"><a href="/ratioAnalysis">Ratio Analysis</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
