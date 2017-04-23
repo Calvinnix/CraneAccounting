@@ -1,4 +1,6 @@
 /**
+This file contains the user accounts.
+
 The class acts as the handler for the User objects.
 
 Methods:

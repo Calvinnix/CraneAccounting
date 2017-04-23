@@ -1,21 +1,253 @@
 var RatioAnalysisTable = React.createClass({
-  formatBalance: function(number) {
-    //This is used to format the initial balance as a number
-    var formattedBalance = number;
-    if (!(/^(\d+\.\d\d)$/.test(formattedBalance))) {
-      //number needs formatting
-      formattedBalance = formattedBalance.toFixed(2);
+  currentRatioColor: function(){
+    var cRatio = document.getElementById("currentRatio");
+    var test = document.getElementById("currentRatio");
+    if(cRatio.textContent < 5){
+        cRatio.style.color = "red";
+    }else if (cRatio.textContent > 6){
+        cRatio.style.color = "green";
+    }else{
+        cRatio.style.color = "#efd300";
     }
-    //Add commas to thousands place i.e. 1000000.00 = 1,000,000.00
-    var parts = formattedBalance.toString().split(".");
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    formattedBalance = parts.join(".");
-
-    if (formattedBalance.charAt(0) === '-') {
-      formattedBalance = "(" + (formattedBalance.substr(1)) + ")" //format -1000 to (1000)
+  },
+  quickRatioColor: function(){
+    var qRatio = document.getElementById("quickRatio");
+    if(qRatio === null){
+        return;
     }
-
-    return formattedBalance;
+    else if(qRatio.textContent < 5){
+      qRatio.style.color = "red";
+    }else if (qRatio.textContent > 6){
+      qRatio.style.color = "green";
+    }else{
+      qRatio.style.color = "#efd300";
+    }
+  },
+  invWorkingCapColor: function(){
+    var workingCap = document.getElementById("invWorkingCap");
+    if(workingCap === null){
+        return;
+    }
+    else if(workingCap.textContent < 5){
+        workingCap.style.color = "red";
+    }else if (workingCap.textContent > 6){
+        workingCap.style.color = "green";
+    }else{
+        workingCap.style.color = "#efd300";
+    }
+  },
+  invTurnoverColor: function(){
+    var invTurnover = document.getElementById("invTurnover");
+    if(invTurnover === null){
+        return;
+    }
+    else if(invTurnover.textContent < 5){
+      invTurnover.style.color = "red";
+    }else if (invTurnover.textContent > 6){
+      invTurnover.style.color = "green";
+    }else{
+      invTurnover.style.color = "#efd300";
+    }
+  },
+  dsoColor: function(){
+    var dso = document.getElementById("dso");
+    if(dso === null){
+        return;
+    }
+    else if(dso.textContent < 5){
+      dso.style.color = "red";
+    }else if (dso.textContent > 6){
+      dso.style.color = "green";
+    }else{
+      dso.style.color = "#efd300";
+    }
+  },
+  fixedAssetColor: function(){
+    var fixedAsset = document.getElementById("fixedAsset");
+    if(fixedAsset === null){
+        return;
+    }else if(fixedAsset.textContent < 5){
+        fixedAsset.style.color = "red";
+    }else if (fixedAsset.textContent > 6){
+        fixedAsset.style.color = "green";
+    }else{
+        fixedAsset.style.color = "#efd300";
+    }
+  },
+  totalAssetColor: function(){
+    var totalAsset = document.getElementById("totalAsset");
+    if(totalAsset === null){
+        return;
+    }else if(totalAsset.textContent < 5){
+        totalAsset.style.color = "red";
+    }else if (totalAsset.textContent > 6){
+        totalAsset.style.color = "green";
+    }else{
+        totalAsset.style.color = "#efd300";
+    }
+  },
+  debtRatioColor: function(){
+    var debtRatio = document.getElementById("debtRatio");
+    if(debtRatio === null){
+        return;
+    }
+    else if(debtRatio.textContent < 5){
+        debtRatio.style.color = "red";
+    }else if (debtRatio.textContent > 6){
+        debtRatio.style.color = "green";
+    }else{
+        debtRatio.style.color = "#efd300";
+    }
+  },
+  longDebtEquityColor: function(){
+    var longDebtEquity = document.getElementById("longDebtEquity");
+    if(longDebtEquity === null){
+        return;
+    }
+    else if(longDebtEquity.textContent < 5){
+        longDebtEquity.style.color = "red";
+    }else if (longDebtEquity.textContent > 6){
+        longDebtEquity.style.color = "green";
+    }else{
+        longDebtEquity.style.color = "#efd300";
+    }
+  },
+  tieColor: function(){
+    var tie = document.getElementById("tie");
+    if(tie === null){
+        return;
+    }
+    else if(tie.textContent < 5){
+      tie.style.color = "red";
+    }else if (tie.textContent > 6){
+      tie.style.color = "green";
+    }else{
+      tie.style.color = "#efd300";
+    }
+  },
+  ecColor: function(){
+     var ec = document.getElementById("ec");
+    if(ec === null){
+        return;
+    }
+    else if(ec.textContent < 5){
+      ec.style.color = "red";
+    }else if (ec.textContent > 6){
+      ec.style.color = "green";
+    }else{
+      ec.style.color = "#efd300";
+    }
+  },
+  pmColor: function(){
+    var pm = document.getElementById("pm");
+    if(pm === null){
+        return;
+    }
+    else if(pm.textContent < 5){
+      pm.style.color = "red";
+    }else if (pm.textContent > 6){
+      pm.style.color = "green";
+    }else{
+      pm.style.color = "#efd300";
+    }
+  },
+  gpmColor: function(){
+    var gpm = document.getElementById("gpm");
+    if(gpm === null){
+        return;
+    }
+    else if(gpm.textContent < 5){
+      gpm.style.color = "red";
+    }else if (gpm.textContent > 6){
+      gpm.style.color = "green";
+    }else{
+      gpm.style.color = "#efd300";
+    }
+  },
+  omColor: function(){
+    var om = document.getElementById("om");
+    if(om === null){
+        return;
+    }
+    else if(om.textContent < 5){
+      om.style.color = "red";
+    }else if (om.textContent > 6){
+      om.style.color = "green";
+    }else{
+      om.style.color = "#efd300";
+    }
+  },
+  bepColor: function(){
+    var bep = document.getElementById("bep");
+    if(bep === null){
+        return;
+    }
+    else if(bep.textContent < 5){
+      bep.style.color = "red";
+    }else if (bep.textContent > 6){
+      bep.style.color = "green";
+    }else{
+      bep.style.color = "#efd300";
+    }
+  },
+  roaColor: function(){
+    var roa = document.getElementById("roa");
+    if(roa === null){
+        return;
+    }
+    else if(roa.textContent < 5){
+      roa.style.color = "red";
+    }else if (roa.textContent > 6){
+      roa.style.color = "green";
+    }else{
+      roa.style.color = "#efd300";
+    }
+  },
+  roeColor: function(){
+    var roe = document.getElementById("roe");
+    if(roe === null){
+        return;
+    }
+    else if(roe.textContent < 5){
+      roe.style.color = "red";
+    }else if (roe.textContent > 6){
+      roe.style.color = "green";
+    }else{
+      roe.style.color = "#efd300";
+    }
+  },
+  interestEarnedColor: function(){
+    var interestEarned = document.getElementById("interestEarned");
+    if(interestEarned === null){
+        return;
+    }
+    else if(interestEarned.textContent < 5){
+      interestEarned.style.color = "red";
+    }else if (interestEarned.textContent > 6){
+      interestEarned.style.color = "green";
+    }else{
+      interestEarned.style.color = "#efd300";
+    }
+  },
+  componentDidUpdate: function(){
+    this.currentRatioColor();
+    this.quickRatioColor();
+    this.debtRatioColor();
+    this.longDebtEquityColor();
+    this.invWorkingCapColor();
+    this.bepColor();
+    this.invTurnoverColor();
+    this.totalAssetColor();
+    this.fixedAssetColor();
+    this.dsoColor();
+    this.roaColor();
+    this.roeColor();
+    this.gpmColor();
+    this.omColor();
+    this.pmColor();
+    this.ecColor();
+    this.tieColor();
+    this.interestEarnedColor();
   },
   render: function() {
     var self = this;
@@ -203,7 +435,7 @@ var RatioAnalysisTable = React.createClass({
           <div className="col-md-1"></div>
           <div className="col-md-5 text-left">Current Ratio</div>
           <div className="col-md-4 text-right"></div>
-          <div className="col-md-2 text-right" id="currentRatio" >{currentRatio.toFixed(2)}</div>
+          <div className="col-md-2 text-right" id="currentRatio">{currentRatio.toFixed(2)}</div>
         </div>
         }
 
