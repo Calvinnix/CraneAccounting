@@ -4002,7 +4002,7 @@ $("#my-file-selector").on("change", function(e) {
     }, function(jqxhr, textStatus, errorThrown) {
       //console.log(textStatus, errorThrown)
     };
-    //console.log(reader.readAsDataURL(file))
+    reader.readAsDataURL(file);//This line is needed otherwise file upload fails.
   }
 });
 
