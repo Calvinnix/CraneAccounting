@@ -80,6 +80,12 @@ var TrialBalanceTable = React.createClass({
 
     var firstShortTermAsset = true;
     var firstLongTermAsset = true;
+    var firstCurrentLiabilities = true;
+    var firstLongTermLiabilities = true;
+    var firstOwnersEquity = true;
+    var firstRevenue = true;
+    var firstExpense = true;
+    var firstDividend = true;
 
     this.props.accounts.forEach(function(account) {
       if (account.leftNormalSide) {
@@ -100,17 +106,23 @@ var TrialBalanceTable = React.createClass({
         longTermAssets.push(<TrialBalanceAccount first={firstLongTermAsset} account={account} key={account.publicId} />);
         firstLongTermAsset = false;
       }else if (account.type === "Liabilities" && account.code < 240 && account.code >= 200)   {
-        currentLiabilities.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+        currentLiabilities.push(<TrialBalanceAccount first={firstCurrentLiabilities} account={account} key={account.publicId} />);
+        firstCurrentLiabilities = false;
       }else if (account.type === "Liabilities" && account.code < 300 && account.code >= 240)   {
-         longTermLiabilities.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+         longTermLiabilities.push(<TrialBalanceAccount first={firstLongTermLiabilities} account={account} key={account.publicId} />);
+         firstLongTermLiabilities = false;
       }else if (account.type === "Owner's Equity")   {
-        ownersEquity.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+        ownersEquity.push(<TrialBalanceAccount first={firstOwnersEquity} account={account} key={account.publicId} />);
+        firstOwnersEquity = false;
       }else if (account.type === "Revenues")   {
-        revenues.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+        revenues.push(<TrialBalanceAccount first={firstRevenue} account={account} key={account.publicId} />);
+        firstRevenue = false;
       }else if (account.type === "Operating Expenses")   {
-        expenses.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+        expenses.push(<TrialBalanceAccount first={firstExpense} account={account} key={account.publicId} />);
+        firstExpense = false;
       }else if (account.type === "Dividends")   {
-        dividends.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+        dividends.push(<TrialBalanceAccount first={firstDividend} account={account} key={account.publicId} />);
+        firstDividend = false;
       }else {
         //do nothing
       }
@@ -290,9 +302,9 @@ var BalanceSheetAccount = React.createClass({
         <div className="col-md-1"></div>
         <div className="col-md-5">{this.props.account.code} - {this.props.account.name}</div>
         {this.props.account.leftNormalSide ? (
-            <div className="col-md-4 text-right">{this.state.balance}</div>
+            <div className="col-md-4 text-right">{this.props.first ? '$' : ''} {this.state.balance}</div>
           ) : (
-            <div className="col-md-6 text-right">{this.state.balance}</div>
+            <div className="col-md-6 text-right">{this.props.first ? '$' : ''} {this.state.balance}</div>
           )
         }
         {this.props.account.leftNormalSide &&
@@ -336,6 +348,13 @@ var BalanceSheetTable = React.createClass({
     var totalIncome = 0;
     var ownEquity = 0;
     var liability = 0;
+
+    var firstShortTermAsset = true;
+    var firstLongTermAsset = true;
+    var firstCurrentLiabilities = true;
+    var firstLongTermLiabilities = true;
+    var firstOwnersEquity = true;
+
     this.props.accounts.forEach(function(account) {
       if (account.type === "Asset") {
         leftSideBalanceTotal += account.balance;
@@ -362,15 +381,20 @@ var BalanceSheetTable = React.createClass({
       }
 
       if (account.type === "Asset" && account.code < 150 && account.code >= 100) {
-        currentAssets.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+        currentAssets.push(<TrialBalanceAccount first={firstShortTermAsset} account={account} key={account.publicId} />);
+        firstShortTermAsset = false;
       }else if (account.type === "Asset" && account.code < 200 && account.code >= 150) {
-        longTermAssets.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+        longTermAssets.push(<TrialBalanceAccount first={firstLongTermAsset} account={account} key={account.publicId} />);
+        firstShortTermAsset = false;
       }else if (account.type === "Liabilities" && account.code < 240 && account.code >= 200)   {
-        currentLiabilities.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+        currentLiabilities.push(<TrialBalanceAccount first={firstCurrentLiabilities} account={account} key={account.publicId} />);
+        firstCurrentLiabilities = false;
       }else if (account.type === "Liabilities" && account.code < 300 && account.code >= 240)   {
-         longTermLiabilities.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+         longTermLiabilities.push(<TrialBalanceAccount first={firstLongTermLiabilities} account={account} key={account.publicId} />);
+         firstLongTermLiabilities = false;
       }else if (account.type === "Owner's Equity")   {
-        ownersEquity.push(<BalanceSheetAccount account={account} key={account.publicId} />);
+        ownersEquity.push(<BalanceSheetAccount first={firstOwnersEquity} account={account} key={account.publicId} />);
+        firstOwnersEquity = false;
       }
       else {
         //do nothing
@@ -441,8 +465,8 @@ var BalanceSheetTable = React.createClass({
         </div>
         <div className="row text-primary">
           <div className="col-md-8 text-right">Total:</div>
-          <div className="col-md-2 text-right">{this.formatBalance(leftSideBalanceTotal)}</div>
-          <div className="col-md-2 text-right">{this.formatBalance(rightSideBalanceTotal)}</div>
+          <div className="col-md-2 text-right">$ {this.formatBalance(leftSideBalanceTotal)}</div>
+          <div className="col-md-2 text-right">$ {this.formatBalance(rightSideBalanceTotal)}</div>
         </div>
       </div>
     );
@@ -526,7 +550,7 @@ var IncomeStatementAccount = React.createClass({
       <div className="row">
         <div className="col-md-1"></div>
         <div className="col-md-5">{this.props.account.code} - {this.props.account.name}</div>
-            <div className="col-md-6 text-right">{this.state.balance}</div>
+            <div className="col-md-6 text-right">{this.props.first ? '$' : ''} {this.state.balance}</div>
       </div>
     );
   }
@@ -561,6 +585,8 @@ var IncomeStatementTable = React.createClass({
     var leftSideBalanceTotal = 0;
     var rightSideBalanceTotal = 0;
     var totalIncome = 0;
+    var firstRevenue = true;
+    var firstExpense = true;
     this.props.accounts.forEach(function(account) {
       if (account.type === "Operating Expenses") {
         leftSideBalanceTotal += account.balance;
@@ -574,9 +600,11 @@ var IncomeStatementTable = React.createClass({
       }
 
       if (account.type === "Revenues")   {
-        revenues.push(<IncomeStatementAccount account={account} key={account.publicId} />);
+        revenues.push(<IncomeStatementAccount first={firstRevenue} account={account} key={account.publicId} />);
+        firstRevenue = false;
       } else if (account.type === "Operating Expenses")   {
-        expenses.push(<IncomeStatementAccount account={account} key={account.publicId} />);
+        expenses.push(<IncomeStatementAccount first={firstExpense} account={account} key={account.publicId} />);
+        firstExpense = false;
       } else {
         //do nothing
       }
@@ -615,7 +643,7 @@ var IncomeStatementTable = React.createClass({
         <div className="row text-primary">
           <div className="col-md-1"></div>
           <div className="col-md-5">Net Income(Loss):</div>
-          <div className="col-md-6 text-right">{this.formatBalance(totalIncome)}</div>
+          <div className="col-md-6 text-right">$ {this.formatBalance(totalIncome)}</div>
         </div>
       </div>
     );
@@ -699,9 +727,9 @@ var StatementOfRetainedEarningsAccount = React.createClass({
         <div className="col-md-1"></div>
         <div className="col-md-5">{this.props.account.code} - {this.props.account.name}</div>
         {this.props.account.leftNormalSide ? (
-            <div className="col-md-4 text-right">{this.state.balance}</div>
+            <div className="col-md-4 text-right">{this.props.first ? '$' : ''} {this.state.balance}</div>
           ) : (
-            <div className="col-md-6 text-right">{this.state.balance}</div>
+            <div className="col-md-6 text-right">{this.props.first ? '$' : ''} {this.state.balance}</div>
           )
         }
         {this.props.account.leftNormalSide &&
@@ -744,6 +772,7 @@ var StatementOfRetainedEarningsTable = React.createClass({
     var currentRetainedRevenues = 0;
     var expend = 0;
     var totalIncome = 0;
+    var firstDividend = true;
     this.props.accounts.forEach(function(account) {
       if (account.type === "Dividends") {
         leftSideBalanceTotal += account.balance;
@@ -761,7 +790,8 @@ var StatementOfRetainedEarningsTable = React.createClass({
       }
 
       if (account.type === "Dividends")   {
-        dividends.push(<StatementOfRetainedEarningsAccount account={account} key={account.publicId} />);
+        dividends.push(<StatementOfRetainedEarningsAccount first={firstDividend} account={account} key={account.publicId} />);
+        firstDividend = false;
       } else {
         //do nothing
       }
@@ -783,7 +813,7 @@ var StatementOfRetainedEarningsTable = React.createClass({
           <div className="col-md-1"></div>
           <div className="col-md-5 text-left">Beginning Retained Revenues</div>
           <div className="col-md-4 text-right"></div>
-          <div className="col-md-2 text-right">{this.formatBalance(currentRetainedRevenues)}</div>
+          <div className="col-md-2 text-right">$ {this.formatBalance(currentRetainedRevenues)}</div>
         </div>
         }
 
@@ -792,7 +822,7 @@ var StatementOfRetainedEarningsTable = React.createClass({
           <div className="col-md-1"></div>
           <div className="col-md-5 text-left">Current Net Income</div>
           <div className="col-md-4 text-right"></div>
-          <div className="col-md-2 text-right">{this.formatBalance(rightSideBalanceTotal)}</div>
+          <div className="col-md-2 text-right">$ {this.formatBalance(rightSideBalanceTotal)}</div>
         </div>
         }
 
@@ -811,7 +841,7 @@ var StatementOfRetainedEarningsTable = React.createClass({
           <div className="col-md-1"></div>
           <div className="col-md-5 text-left">End Retained Earnings:</div>
           <div className="col-md-4 text-right"></div>
-          <div className="col-md-2 text-right">{this.formatBalance(totalIncome)}</div>
+          <div className="col-md-2 text-right">$ {this.formatBalance(totalIncome)}</div>
         </div>
       </div>
     );
