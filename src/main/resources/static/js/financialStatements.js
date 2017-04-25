@@ -33,9 +33,9 @@ var TrialBalanceAccount = React.createClass({
         <div className="col-md-1"></div>
         <div className="col-md-5">{this.props.account.code} - {this.props.account.name}</div>
         {this.props.account.leftNormalSide ? (
-            <div className="col-md-4 text-right">{this.state.balance}</div>
+            <div className="col-md-4 text-right">{this.props.first ? '$' : ''} {this.state.balance}</div>
           ) : (
-            <div className="col-md-6 text-right">{this.state.balance}</div>
+            <div className="col-md-6 text-right">{this.props.first ? '$' : ''} {this.state.balance}</div>
           )
         }
         {this.props.account.leftNormalSide &&
@@ -78,6 +78,9 @@ var TrialBalanceTable = React.createClass({
     var leftSideBalanceTotal = 0;
     var rightSideBalanceTotal = 0;
 
+    var firstShortTermAsset = true;
+    var firstLongTermAsset = true;
+
     this.props.accounts.forEach(function(account) {
       if (account.leftNormalSide) {
         leftSideBalanceTotal += account.balance;
@@ -91,9 +94,11 @@ var TrialBalanceTable = React.createClass({
       }
 
       if (account.type === "Asset" && account.code < 150 && account.code >= 100) {
-        currentAssets.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+        currentAssets.push(<TrialBalanceAccount first={firstShortTermAsset} account={account} key={account.publicId} />);
+        firstShortTermAsset = false;
       }else if (account.type === "Asset" && account.code < 200 && account.code >= 150) {
-        longTermAssets.push(<TrialBalanceAccount account={account} key={account.publicId} />);
+        longTermAssets.push(<TrialBalanceAccount first={firstLongTermAsset} account={account} key={account.publicId} />);
+        firstLongTermAsset = false;
       }else if (account.type === "Liabilities" && account.code < 240 && account.code >= 200)   {
         currentLiabilities.push(<TrialBalanceAccount account={account} key={account.publicId} />);
       }else if (account.type === "Liabilities" && account.code < 300 && account.code >= 240)   {
